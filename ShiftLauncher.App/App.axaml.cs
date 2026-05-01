@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -28,14 +29,21 @@ public partial class App : Application
                 new MinecraftDirectoryService(),
                 _settingsService);
             _mainWindowViewModel = new MainWindowViewModel();
-
-            var settings = await _launcherService.LoadSettingsAsync();
-            _mainWindowViewModel.ApplySettings(settings);
-            var versions = await _launcherService.GetVersionsAsync(settings);
-            _mainWindowViewModel.ApplyVersions(versions);
-
             desktop.MainWindow = new MainWindow(_mainWindowViewModel);
             desktop.ShutdownRequested += OnShutdownRequested;
+
+            try
+            {
+                var settings = await _launcherService.LoadSettingsAsync();
+                _mainWindowViewModel.ApplySettings(settings);
+
+                var versions = await _launcherService.GetVersionsAsync(settings);
+                _mainWindowViewModel.ApplyVersions(versions);
+            }
+            catch (Exception ex)
+            {
+                _mainWindowViewModel.StatusText = $"Startup error: {ex.Message}";
+            }
         }
 
         base.OnFrameworkInitializationCompleted();
