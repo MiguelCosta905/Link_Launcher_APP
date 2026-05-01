@@ -1,6 +1,6 @@
 using CmlLib.Core;
 
-namespace ShiftLauncher.Core.Services;
+namespace ShiftLauncher.Core.Launch;
 
 public sealed class MinecraftDirectoryService
 {

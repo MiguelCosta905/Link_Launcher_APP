@@ -2,8 +2,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="using:ShiftLauncher.App.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="ShiftLauncher.App.MainWindow"
-        Title="ShiftLauncher.App">
-    Welcome to Avalonia!
+        x:DataType="viewModels:MainWindowViewModel"
+        Title="Shift Launcher"
+        Width="900"
+        Height="560">
+    <StackPanel Margin="24" Spacing="12">
+        <TextBlock FontSize="28" FontWeight="Bold" Text="Shift Launcher" />
+        <TextBlock Text="{Binding StatusText}" />
+        <TextBlock Text="{Binding GameDirectory, StringFormat=Game directory: {0}}" />
+        <TextBlock Text="Minecraft version" FontWeight="SemiBold" />
+        <ComboBox ItemsSource="{Binding Versions}"
+                  SelectedItem="{Binding SelectedVersion}"
+                  MinWidth="260" />
+        <TextBlock Text="{Binding MinecraftVersion, StringFormat=Selected version: {0}}" />
+        <TextBlock Text="{Binding MaximumRamMb, StringFormat=RAM: {0} MB}" />
+        <TextBlock Text="{Binding PlayerName, StringFormat=Offline player: {0}}" />
+    </StackPanel>
 </Window>

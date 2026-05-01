@@ -484,7 +484,7 @@
           }
         }
       },
-      "LZMA-SDK/22.1.1": {
+      "LZMA-SDK/19.0.0": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/SevenZip.dll": {
@@ -665,38 +665,6 @@
           }
         }
       },
-      "System.Text.Json/10.0.7": {
-        "type": "package",
-        "compile": {
-          "lib/net10.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net10.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "System.Threading.Tasks.Dataflow/10.0.7": {
-        "type": "package",
-        "compile": {
-          "lib/net10.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net10.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
       "Tmds.DBus.Protocol/0.21.2": {
         "type": "package",
         "compile": {
@@ -726,6 +694,21 @@
         },
         "runtime": {
           "lib/netstandard2.0/XboxAuthNet.Game.dll": {}
+        }
+      },
+      "ShiftLauncher.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "CmlLib.Core": "4.0.6",
+          "CmlLib.Core.Auth.Microsoft": "3.3.1",
+          "Newtonsoft.Json": "13.0.4"
+        },
+        "compile": {
+          "bin/placeholder/ShiftLauncher.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ShiftLauncher.Core.dll": {}
         }
       }
     }
@@ -1357,10 +1340,10 @@
         "runtimes/win-x86/native/libHarfBuzzSharp.dll"
       ]
     },
-    "LZMA-SDK/22.1.1": {
-      "sha512": "lxG8/H53OCqebnDFlTStwzbgtmUN/DqnXN8kffa/ctHcSEHhIPDyEa3jLzpZxVX5F8bmJgvb1mna6gnhetykIw==",
+    "LZMA-SDK/19.0.0": {
+      "sha512": "/4yPB/YNtttdbxmHifyNUw6rUiBqCCUgeuokXsWvM/X9CDXJq1eQdI9uVgNpJdrzAZhTIAqNzbOP7Z2ogZt+2g==",
       "type": "package",
-      "path": "lzma-sdk/22.1.1",
+      "path": "lzma-sdk/19.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1370,7 +1353,7 @@
         "lib/netstandard2.0/SevenZip.deps.json",
         "lib/netstandard2.0/SevenZip.dll",
         "lib/netstandard2.0/SevenZip.xml",
-        "lzma-sdk.22.1.1.nupkg.sha512",
+        "lzma-sdk.19.0.0.nupkg.sha512",
         "lzma-sdk.nuspec"
       ]
     },
@@ -1721,109 +1704,6 @@
         "skiasharp.nativeassets.win32.nuspec"
       ]
     },
-    "System.Text.Json/10.0.7": {
-      "sha512": "F8Pu2QLUMeniVbtiyk7n7LCfFYxlcJ8ASaSwglJyq6dxa34iCQrikQszsgJClIJWuSWjcyhKkV7daAzYJqeVwA==",
-      "type": "package",
-      "path": "system.text.json/10.0.7",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "PACKAGE.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "analyzers/dotnet/roslyn3.11/cs/System.Text.Json.SourceGeneration.dll",
-        "analyzers/dotnet/roslyn3.11/cs/cs/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/de/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/es/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/fr/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/it/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/ja/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/ko/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/pl/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/pt-BR/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/ru/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/tr/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/zh-Hans/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn3.11/cs/zh-Hant/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/System.Text.Json.SourceGeneration.dll",
-        "analyzers/dotnet/roslyn4.0/cs/cs/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/de/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/es/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/fr/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/it/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/ja/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/ko/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/pl/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/pt-BR/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/ru/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/tr/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/zh-Hans/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.0/cs/zh-Hant/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/System.Text.Json.SourceGeneration.dll",
-        "analyzers/dotnet/roslyn4.4/cs/cs/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/de/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/es/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/fr/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/it/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/ja/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/ko/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/pl/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/pt-BR/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/ru/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/tr/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/zh-Hans/System.Text.Json.SourceGeneration.resources.dll",
-        "analyzers/dotnet/roslyn4.4/cs/zh-Hant/System.Text.Json.SourceGeneration.resources.dll",
-        "buildTransitive/net461/System.Text.Json.targets",
-        "buildTransitive/net462/System.Text.Json.targets",
-        "buildTransitive/net8.0/System.Text.Json.targets",
-        "buildTransitive/netcoreapp2.0/System.Text.Json.targets",
-        "buildTransitive/netstandard2.0/System.Text.Json.targets",
-        "lib/net10.0/System.Text.Json.dll",
-        "lib/net10.0/System.Text.Json.xml",
-        "lib/net462/System.Text.Json.dll",
-        "lib/net462/System.Text.Json.xml",
-        "lib/net8.0/System.Text.Json.dll",
-        "lib/net8.0/System.Text.Json.xml",
-        "lib/net9.0/System.Text.Json.dll",
-        "lib/net9.0/System.Text.Json.xml",
-        "lib/netstandard2.0/System.Text.Json.dll",
-        "lib/netstandard2.0/System.Text.Json.xml",
-        "system.text.json.10.0.7.nupkg.sha512",
-        "system.text.json.nuspec",
-        "useSharedDesignerContext.txt"
-      ]
-    },
-    "System.Threading.Tasks.Dataflow/10.0.7": {
-      "sha512": "yLsXNuCRMv9sf/Lw4sadgXcezh6bEFS8Bp7hclCRThbUshttXtzhMz0R/oDrV9Ro08ilE8/3LtSORcHoh3ev8Q==",
-      "type": "package",
-      "path": "system.threading.tasks.dataflow/10.0.7",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "PACKAGE.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "buildTransitive/net461/System.Threading.Tasks.Dataflow.targets",
-        "buildTransitive/net462/_._",
-        "buildTransitive/net8.0/_._",
-        "buildTransitive/netcoreapp2.0/System.Threading.Tasks.Dataflow.targets",
-        "lib/net10.0/System.Threading.Tasks.Dataflow.dll",
-        "lib/net10.0/System.Threading.Tasks.Dataflow.xml",
-        "lib/net462/System.Threading.Tasks.Dataflow.dll",
-        "lib/net462/System.Threading.Tasks.Dataflow.xml",
-        "lib/net8.0/System.Threading.Tasks.Dataflow.dll",
-        "lib/net8.0/System.Threading.Tasks.Dataflow.xml",
-        "lib/net9.0/System.Threading.Tasks.Dataflow.dll",
-        "lib/net9.0/System.Threading.Tasks.Dataflow.xml",
-        "lib/netstandard2.0/System.Threading.Tasks.Dataflow.dll",
-        "lib/netstandard2.0/System.Threading.Tasks.Dataflow.xml",
-        "lib/netstandard2.1/System.Threading.Tasks.Dataflow.dll",
-        "lib/netstandard2.1/System.Threading.Tasks.Dataflow.xml",
-        "system.threading.tasks.dataflow.10.0.7.nupkg.sha512",
-        "system.threading.tasks.dataflow.nuspec",
-        "useSharedDesignerContext.txt"
-      ]
-    },
     "Tmds.DBus.Protocol/0.21.2": {
       "sha512": "ScSMrUrrw8px4kK1Glh0fZv/HQUlg1078bNXNPfRPKQ3WbRzV9HpsydYEOgSoMK5LWICMf2bMwIFH0pGjxjcMA==",
       "type": "package",
@@ -1865,6 +1745,11 @@
         "xboxauthnet.game.1.4.1.nupkg.sha512",
         "xboxauthnet.game.nuspec"
       ]
+    },
+    "ShiftLauncher.Core/1.0.0": {
+      "type": "project",
+      "path": "../ShiftLauncher.Core/ShiftLauncher.Core.csproj",
+      "msbuildProject": "../ShiftLauncher.Core/ShiftLauncher.Core.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1874,14 +1759,8 @@
       "Avalonia.Diagnostics >= 11.3.12",
       "Avalonia.Fonts.Inter >= 11.3.12",
       "Avalonia.Themes.Fluent >= 11.3.12",
-      "CmlLib.Core >= 4.0.6",
-      "CmlLib.Core.Auth.Microsoft >= 3.3.1",
-      "CmlLib.Core.Commons >= 4.0.0",
-      "LZMA-SDK >= 22.1.1",
       "Newtonsoft.Json >= 13.0.4",
-      "SharpZipLib >= 1.4.2",
-      "System.Text.Json >= 10.0.7",
-      "System.Threading.Tasks.Dataflow >= 10.0.7"
+      "ShiftLauncher.Core >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -1897,6 +1776,7 @@
       "outputPath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
+        "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\NuGet.Config",
         "C:\\Users\\linkl\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1904,13 +1784,16 @@
         "net10.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.Core\\ShiftLauncher.Core.csproj": {
+              "projectPath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.Core\\ShiftLauncher.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -1949,37 +1832,9 @@
             "target": "Package",
             "version": "[11.3.12, )"
           },
-          "CmlLib.Core": {
-            "target": "Package",
-            "version": "[4.0.6, )"
-          },
-          "CmlLib.Core.Auth.Microsoft": {
-            "target": "Package",
-            "version": "[3.3.1, )"
-          },
-          "CmlLib.Core.Commons": {
-            "target": "Package",
-            "version": "[4.0.0, )"
-          },
-          "LZMA-SDK": {
-            "target": "Package",
-            "version": "[22.1.1, )"
-          },
           "Newtonsoft.Json": {
             "target": "Package",
             "version": "[13.0.4, )"
-          },
-          "SharpZipLib": {
-            "target": "Package",
-            "version": "[1.4.2, )"
-          },
-          "System.Text.Json": {
-            "target": "Package",
-            "version": "[10.0.7, )"
-          },
-          "System.Threading.Tasks.Dataflow": {
-            "target": "Package",
-            "version": "[10.0.7, )"
           }
         },
         "imports": [
@@ -2277,26 +2132,6 @@
     }
   },
   "logs": [
-    {
-      "code": "NU1510",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "PackageReference System.Text.Json will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
-      "libraryId": "System.Text.Json",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1510",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "PackageReference System.Threading.Tasks.Dataflow will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
-      "libraryId": "System.Threading.Tasks.Dataflow",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
     {
       "code": "NU1903",
       "level": "Warning",

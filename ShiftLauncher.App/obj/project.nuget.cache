@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "Q1gvqLY00oU=",
+  "dgSpecHash": "FZFCkUKEykk=",
   "success": true,
   "projectFilePath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
   "expectedPackageFiles": [
@@ -27,7 +27,7 @@
     "C:\\Users\\linkl\\.nuget\\packages\\harfbuzzsharp.nativeassets.macos\\8.3.1.1\\harfbuzzsharp.nativeassets.macos.8.3.1.1.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\harfbuzzsharp.nativeassets.webassembly\\8.3.1.1\\harfbuzzsharp.nativeassets.webassembly.8.3.1.1.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\harfbuzzsharp.nativeassets.win32\\8.3.1.1\\harfbuzzsharp.nativeassets.win32.8.3.1.1.nupkg.sha512",
-    "C:\\Users\\linkl\\.nuget\\packages\\lzma-sdk\\22.1.1\\lzma-sdk.22.1.1.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\lzma-sdk\\19.0.0\\lzma-sdk.19.0.0.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\microcom.runtime\\0.11.0\\microcom.runtime.0.11.0.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.1\\microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.1\\microsoft.extensions.logging.abstractions.8.0.1.nupkg.sha512",
@@ -38,37 +38,11 @@
     "C:\\Users\\linkl\\.nuget\\packages\\skiasharp.nativeassets.macos\\2.88.9\\skiasharp.nativeassets.macos.2.88.9.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\skiasharp.nativeassets.webassembly\\2.88.9\\skiasharp.nativeassets.webassembly.2.88.9.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\skiasharp.nativeassets.win32\\2.88.9\\skiasharp.nativeassets.win32.2.88.9.nupkg.sha512",
-    "C:\\Users\\linkl\\.nuget\\packages\\system.text.json\\10.0.7\\system.text.json.10.0.7.nupkg.sha512",
-    "C:\\Users\\linkl\\.nuget\\packages\\system.threading.tasks.dataflow\\10.0.7\\system.threading.tasks.dataflow.10.0.7.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\tmds.dbus.protocol\\0.21.2\\tmds.dbus.protocol.0.21.2.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet\\3.0.4\\xboxauthnet.3.0.4.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet.game\\1.4.1\\xboxauthnet.game.1.4.1.nupkg.sha512"
   ],
   "logs": [
-    {
-      "code": "NU1510",
-      "level": "Warning",
-      "message": "PackageReference System.Text.Json will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
-      "projectPath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
-      "libraryId": "System.Text.Json",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1510",
-      "level": "Warning",
-      "message": "PackageReference System.Threading.Tasks.Dataflow will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
-      "projectPath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
-      "libraryId": "System.Threading.Tasks.Dataflow",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
     {
       "code": "NU1903",
       "level": "Warning",
