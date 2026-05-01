@@ -28,7 +28,7 @@ public partial class App : Application
             _launcherService = new LauncherService(
                 new MinecraftDirectoryService(),
                 _settingsService);
-            _mainWindowViewModel = new MainWindowViewModel();
+           _mainWindowViewModel = new MainWindowViewModel(_launcherService);
             desktop.MainWindow = new MainWindow(_mainWindowViewModel);
             desktop.ShutdownRequested += OnShutdownRequested;
 

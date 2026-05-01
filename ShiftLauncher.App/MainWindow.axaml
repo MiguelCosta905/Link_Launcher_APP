@@ -20,5 +20,10 @@
         <TextBlock Text="{Binding MinecraftVersion, StringFormat=Selected version: {0}}" />
         <TextBlock Text="{Binding MaximumRamMb, StringFormat=RAM: {0} MB}" />
         <TextBlock Text="{Binding PlayerName, StringFormat=Offline player: {0}}" />
+        <Button Content="Jogar Offline"
+        Command="{Binding PlayOfflineCommand}"
+        Width="180"
+        Height="40" />
+
     </StackPanel>
 </Window>

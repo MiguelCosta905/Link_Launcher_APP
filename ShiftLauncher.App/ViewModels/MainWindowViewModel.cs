@@ -4,14 +4,66 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using ShiftLauncher.Core.Models;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using ShiftLauncher.Core.Launch;
+
 
 namespace ShiftLauncher.App.ViewModels;
 
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
+    private readonly LauncherService _launcherService;
     private LauncherSettings _settings = new();
     private string _statusText = "Launcher ready.";
     private MinecraftVersionItem? _selectedVersion;
+    private bool _isBusy;
+
+    public MainWindowViewModel(LauncherService launcherService)
+    {
+        _launcherService = launcherService;
+        PlayOfflineCommand = new AsyncRelayCommand(PlayOfflineAsync, () => !IsBusy);
+    }
+    public ICommand PlayOfflineCommand { get; }
+
+public bool IsBusy
+{
+    get => _isBusy;
+    private set
+    {
+        if (_isBusy == value)
+            return;
+
+        _isBusy = value;
+        OnPropertyChanged();
+
+        if (PlayOfflineCommand is AsyncRelayCommand command)
+            command.RaiseCanExecuteChanged();
+    }
+}
+
+private async Task PlayOfflineAsync()
+{
+    IsBusy = true;
+    StatusText = "Preparing Minecraft...";
+
+    try
+    {
+        var request = _launcherService.CreateLaunchRequest(Settings);
+
+        StatusText = $"Launching Minecraft {request.VersionName}...";
+        var result = await _launcherService.LaunchOfflineAsync(request);
+
+        StatusText = result.Success
+            ? $"Minecraft launched. Process ID: {result.ProcessId}"
+            : $"Launch failed: {result.Message}";
+    }
+    finally
+    {
+        IsBusy = false;
+    }
+}
+
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
