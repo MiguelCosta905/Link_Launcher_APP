@@ -9,6 +9,7 @@ public sealed class LaunchRequest
     public int MaximumRamMb { get; set; } = 4096;
     public bool UseOfflineMode { get; set; } = true;
     public string GameDirectory { get; set; } = string.Empty;
+    public Action<LaunchProgress>? ProgressChanged { get; set; }
 
     public static LaunchRequest FromSettings(LauncherSettings settings)
     {
@@ -20,5 +21,10 @@ public sealed class LaunchRequest
             GameDirectory = settings.GameDirectory,
             UseOfflineMode = true
         };
+    }
+
+    public void ReportProgress(LaunchProgress progress)
+    {
+        ProgressChanged?.Invoke(progress);
     }
 }

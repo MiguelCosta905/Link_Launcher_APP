@@ -67,6 +67,25 @@ public sealed class LauncherService
 
             var path = _directoryService.CreatePath(request.GameDirectory);
             var launcher = new MinecraftLauncher(path);
+            
+            launcher.FileProgressChanged += (_, e) =>
+{
+    request.ReportProgress(new LaunchProgress
+    {
+        StatusText = $"{e.EventType}: {e.Name}",
+        CurrentFile = e.Name,
+        FileProgressPercent = GetPercent(e.ProgressedTasks, e.TotalTasks)
+    });
+};
+
+launcher.ByteProgressChanged += (_, e) =>
+{
+    request.ReportProgress(new LaunchProgress
+    {
+        StatusText = "Downloading files...",
+        ByteProgressPercent = GetPercent(e.ProgressedBytes, e.TotalBytes)
+    });
+};
 
             var option = new MLaunchOption
             {
@@ -93,5 +112,12 @@ public sealed class LauncherService
                 Exception = ex
             };
         }
+    }
+    private static double GetPercent(long progressed, long total)
+    {
+        if (total <= 0)
+            return 0;
+
+        return Math.Clamp((double)progressed / total * 100, 0, 100);
     }
 }

@@ -17,13 +17,26 @@
         <ComboBox ItemsSource="{Binding Versions}"
                   SelectedItem="{Binding SelectedVersion}"
                   MinWidth="260" />
-        <TextBlock Text="{Binding MinecraftVersion, StringFormat=Selected version: {0}}" />
-        <TextBlock Text="{Binding MaximumRamMb, StringFormat=RAM: {0} MB}" />
+                <TextBlock Text="{Binding MaximumRamMb, StringFormat=RAM: {0} MB}" />
         <TextBlock Text="{Binding PlayerName, StringFormat=Offline player: {0}}" />
+
+        <StackPanel IsVisible="{Binding IsProgressVisible}" Spacing="6">
+            <TextBlock Text="Files" />
+            <ProgressBar Minimum="0"
+                        Maximum="100"
+                        Value="{Binding FileProgressPercent}" />
+
+            <TextBlock Text="Download" />
+            <ProgressBar Minimum="0"
+                        Maximum="100"
+                        Value="{Binding ByteProgressPercent}" />
+        </StackPanel>
+
         <Button Content="Jogar Offline"
-        Command="{Binding PlayOfflineCommand}"
-        Width="180"
-        Height="40" />
+                Command="{Binding PlayOfflineCommand}"
+                Width="180"
+                Height="40" />
+
 
     </StackPanel>
 </Window>

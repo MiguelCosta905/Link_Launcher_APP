@@ -7,7 +7,7 @@ using ShiftLauncher.Core.Models;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ShiftLauncher.Core.Launch;
-
+using Avalonia.Threading;
 
 namespace ShiftLauncher.App.ViewModels;
 
@@ -18,6 +18,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _statusText = "Launcher ready.";
     private MinecraftVersionItem? _selectedVersion;
     private bool _isBusy;
+    private double _fileProgressPercent;
+    private double _byteProgressPercent;
+    private bool _isProgressVisible;
 
     public MainWindowViewModel(LauncherService launcherService)
     {
@@ -25,22 +28,60 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         PlayOfflineCommand = new AsyncRelayCommand(PlayOfflineAsync, () => !IsBusy);
     }
     public ICommand PlayOfflineCommand { get; }
-
-public bool IsBusy
-{
-    get => _isBusy;
-    private set
+    public double FileProgressPercent
     {
-        if (_isBusy == value)
-            return;
+        get => _fileProgressPercent;
+        private set
+        {
+            if (_fileProgressPercent == value)
+                return;
 
-        _isBusy = value;
-        OnPropertyChanged();
-
-        if (PlayOfflineCommand is AsyncRelayCommand command)
-            command.RaiseCanExecuteChanged();
+            _fileProgressPercent = value;
+            OnPropertyChanged();
+        }
     }
-}
+
+    public double ByteProgressPercent
+    {
+        get => _byteProgressPercent;
+        private set
+        {
+            if (_byteProgressPercent == value)
+                return;
+
+            _byteProgressPercent = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsProgressVisible
+    {
+        get => _isProgressVisible;
+        private set
+        {
+            if (_isProgressVisible == value)
+                return;
+
+            _isProgressVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsBusy
+    {
+        get => _isBusy;
+        private set
+        {
+            if (_isBusy == value)
+                return;
+
+            _isBusy = value;
+            OnPropertyChanged();
+
+            if (PlayOfflineCommand is AsyncRelayCommand command)
+                command.RaiseCanExecuteChanged();
+        }
+    }
 
 private async Task PlayOfflineAsync()
 {
@@ -50,6 +91,25 @@ private async Task PlayOfflineAsync()
     try
     {
         var request = _launcherService.CreateLaunchRequest(Settings);
+        
+        IsProgressVisible = true;
+        FileProgressPercent = 0;
+        ByteProgressPercent = 0;
+
+        request.ProgressChanged = progress =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (!string.IsNullOrWhiteSpace(progress.StatusText))
+                    StatusText = progress.StatusText;
+
+                if (progress.FileProgressPercent > 0)
+                    FileProgressPercent = progress.FileProgressPercent;
+
+                if (progress.ByteProgressPercent > 0)
+                    ByteProgressPercent = progress.ByteProgressPercent;
+            });
+        };
 
         StatusText = $"Launching Minecraft {request.VersionName}...";
         var result = await _launcherService.LaunchOfflineAsync(request);
@@ -61,6 +121,7 @@ private async Task PlayOfflineAsync()
     finally
     {
         IsBusy = false;
+        IsProgressVisible = false;
     }
 }
 
