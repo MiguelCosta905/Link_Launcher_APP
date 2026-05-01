@@ -18,6 +18,21 @@
                   SelectedItem="{Binding SelectedVersion}"
                   MinWidth="260" />
                 <TextBlock Text="{Binding MaximumRamMb, StringFormat=RAM: {0} MB}" />
+
+                <Slider Minimum="{Binding MinimumRamMb}"
+                        Maximum="{Binding MaximumAllowedRamMb}"
+                        TickFrequency="512"
+                        IsSnapToTickEnabled="True"
+                        Value="{Binding MaximumRamMb, Mode=TwoWay}"
+                        Width="320" />
+
+                <NumericUpDown Minimum="{Binding MinimumRamMb}"
+               Maximum="{Binding MaximumAllowedRamMb}"
+               Increment="512"
+               Value="{Binding MaximumRamMbDecimal, Mode=TwoWay}"
+               Width="160" />
+
+
         <TextBlock Text="{Binding PlayerName, StringFormat=Offline player: {0}}" />
 
         <StackPanel IsVisible="{Binding IsProgressVisible}" Spacing="6">

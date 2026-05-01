@@ -199,8 +199,19 @@ private async Task PlayOfflineAsync()
 
             Settings.LastProfile.MaximumRamMb = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(MaximumRamMbDecimal));
         }
     }
+    public decimal MaximumRamMbDecimal
+    {
+        get => MaximumRamMb;
+        set => MaximumRamMb = (int)value;
+    }
+
+    public int MinimumRamMb => 1024;
+
+    public int MaximumAllowedRamMb => 16384;
+
 
     public string PlayerName
     {
