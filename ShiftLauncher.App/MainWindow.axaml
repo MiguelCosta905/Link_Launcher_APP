@@ -9,7 +9,7 @@
         Title="Shift Launcher"
         Width="900"
         Height="560">
-    <StackPanel Margin="24" Spacing="12">
+        <StackPanel Margin="24" Spacing="12">
         <TextBlock FontSize="28" FontWeight="Bold" Text="Shift Launcher" />
         <TextBlock Text="{Binding StatusText}" />
         <TextBlock Text="{Binding AccountText}" />
@@ -33,41 +33,33 @@
                Value="{Binding MaximumRamMbDecimal, Mode=TwoWay}"
                Width="160" />
 
-
-        <TextBlock Text="{Binding PlayerName, StringFormat=Offline player: {0}}" />
-
+                <TextBlock Text="{Binding PlayerName, StringFormat=Offline player: {0}}" />
         <StackPanel IsVisible="{Binding IsProgressVisible}" Spacing="6">
-            <TextBlock Text="Files" />
-            <ProgressBar Minimum="0"
+        <TextBlock Text="Files" />
+        <ProgressBar Minimum="0"
                         Maximum="100"
                         Value="{Binding FileProgressPercent}" />
 
-            <TextBlock Text="Download" />
-            <ProgressBar Minimum="0"
+        <TextBlock Text="Download" />
+        <ProgressBar Minimum="0"
                         Maximum="100"
                         Value="{Binding ByteProgressPercent}" />
-                        <TextBlock Text="{Binding AccountText}" />
+        </StackPanel>
 
         <Button Content="Entrar com Microsoft"
                 Command="{Binding LoginMicrosoftCommand}"
                 Width="220"
                 Height="40" />
 
+        <Button Content="Jogar Online"
+                Command="{Binding PlayOnlineCommand}"
+                Width="180"
+                Height="40" />
+
         <Button Content="Jogar Offline"
                 Command="{Binding PlayOfflineCommand}"
                 Width="180"
                 Height="40" />
-        </StackPanel>
-
-        <Button Content="Jogar Offline"
-                Command="{Binding PlayOfflineCommand}"
-                Width="180"
-                Height="40" />
-
-        <Button Content="Entrar com Microsoft"
-        Command="{Binding LoginMicrosoftCommand}"
-        Width="220"
-        Height="40" />
 
         <TextBlock Text="Logs" FontWeight="SemiBold" Margin="0,12,0,0" />
 
@@ -82,6 +74,5 @@
                 MinHeight="120"
                 MaxHeight="220"
                 MinWidth="520" />
-
     </StackPanel>
 </Window>

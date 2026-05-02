@@ -108,11 +108,13 @@ request.ReportProgress(new LaunchProgress
     StatusText = $"Using Java {java.MajorVersion}: {java.JavaPath}"
 });
 
+var session = request.Session ?? MSession.CreateOfflineSession(request.PlayerName);
+
 var option = new MLaunchOption
 {
     MaximumRamMb = request.MaximumRamMb,
     JavaPath = request.JavaPath,
-    Session = MSession.CreateOfflineSession(request.PlayerName)
+    Session = session
 };
 
 
@@ -122,7 +124,7 @@ var option = new MLaunchOption
             return new LaunchResult
             {
                 Success = true,
-                Message = "Minecraft launched successfully.",
+                Message = "Minecraft launcLaunchOfflineAsynched successfully.",
                 ProcessId = process.Id
             };
         }

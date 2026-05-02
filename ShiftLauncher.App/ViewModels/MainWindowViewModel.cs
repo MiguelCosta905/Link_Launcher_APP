@@ -22,6 +22,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _statusText = "Launcher ready.";
     private MinecraftVersionItem? _selectedVersion;
     private MSession? _microsoftSession;
+    public ICommand PlayOnlineCommand { get; }
     private string _accountText = "Not logged in";
     private bool _isBusy;
     private double _fileProgressPercent;
@@ -57,6 +58,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         PlayOfflineCommand = new AsyncRelayCommand(PlayOfflineAsync, () => !IsBusy);
         LoginMicrosoftCommand = new AsyncRelayCommand(LoginMicrosoftAsync, () => !IsBusy);
+        PlayOnlineCommand = new AsyncRelayCommand(PlayOnlineAsync, () => !IsBusy && _microsoftSession is not null);
+
     }
 
     private void AddLog(string level, string message, string details = "")
@@ -162,8 +165,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _isBusy = value;
             OnPropertyChanged();
 
-            if (PlayOfflineCommand is AsyncRelayCommand command)
-                command.RaiseCanExecuteChanged();
+            if (PlayOfflineCommand is AsyncRelayCommand offlineCommand)
+            offlineCommand.RaiseCanExecuteChanged();
+
+            if (LoginMicrosoftCommand is AsyncRelayCommand loginCommand)
+                loginCommand.RaiseCanExecuteChanged();
+
+            if (PlayOnlineCommand is AsyncRelayCommand onlineCommand)
+            onlineCommand.RaiseCanExecuteChanged();
         }
     }
 
@@ -351,7 +360,6 @@ private async Task PlayOfflineAsync()
                 StatusText = message;
                 AddLog("Info", "Microsoft device code received.", message);
             });
-
             return Task.CompletedTask;
         });
 
@@ -373,5 +381,72 @@ private async Task PlayOfflineAsync()
     {
         IsBusy = false;
     }
+    if (PlayOnlineCommand is AsyncRelayCommand onlineCommand)
+    onlineCommand.RaiseCanExecuteChanged();
 }
+
+    private async Task PlayOnlineAsync()
+    {
+        if (_microsoftSession is null)
+        {
+            StatusText = "Login with Microsoft before playing online.";
+            AddLog("Warning", "Online launch blocked.", "No Microsoft session is available.");
+            return;
+        }
+
+        IsBusy = true;
+        StatusText = "Preparing online Minecraft launch...";
+
+        try
+        {
+            var request = _launcherService.CreateLaunchRequest(Settings);
+            request.UseOfflineMode = false;
+            request.Session = _microsoftSession;
+            request.PlayerName = _microsoftSession.Username;
+
+            IsProgressVisible = true;
+            FileProgressPercent = 0;
+            ByteProgressPercent = 0;
+
+            request.ProgressChanged = progress =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (!string.IsNullOrWhiteSpace(progress.StatusText))
+                        StatusText = progress.StatusText;
+
+                    if (progress.FileProgressPercent > 0)
+                        FileProgressPercent = progress.FileProgressPercent;
+
+                    if (progress.ByteProgressPercent > 0)
+                        ByteProgressPercent = progress.ByteProgressPercent;
+                });
+            };
+
+            StatusText = $"Checking Java for Minecraft {request.VersionName}...";
+            AddLog("Info", "Online launch started.", $"Version: {request.VersionName}");
+
+            var result = await _launcherService.LaunchOfflineAsync(request);
+
+            StatusText = result.Success
+                ? $"Minecraft launched online. Process ID: {result.ProcessId}"
+                : $"Online launch failed: {result.Message}";
+
+            AddLog(
+                result.Success ? "Info" : "Error",
+                result.Success ? "Online launch completed." : "Online launch failed.",
+                result.Exception is null ? result.Message : BuildExceptionDetails(result.Exception));
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"Online launch failed: {ex.Message}";
+            AddLog("Error", "Online launch failed.", BuildExceptionDetails(ex));
+        }
+        finally
+        {
+            IsBusy = false;
+            IsProgressVisible = false;
+        }
+    }
+
 }
