@@ -12,6 +12,7 @@
     <StackPanel Margin="24" Spacing="12">
         <TextBlock FontSize="28" FontWeight="Bold" Text="Shift Launcher" />
         <TextBlock Text="{Binding StatusText}" />
+        <TextBlock Text="{Binding AccountText}" />
         <TextBlock Text="{Binding GameDirectory, StringFormat=Game directory: {0}}" />
         <TextBlock Text="Minecraft version" FontWeight="SemiBold" />
         <ComboBox ItemsSource="{Binding Versions}"
@@ -45,6 +46,17 @@
             <ProgressBar Minimum="0"
                         Maximum="100"
                         Value="{Binding ByteProgressPercent}" />
+                        <TextBlock Text="{Binding AccountText}" />
+
+        <Button Content="Entrar com Microsoft"
+                Command="{Binding LoginMicrosoftCommand}"
+                Width="220"
+                Height="40" />
+
+        <Button Content="Jogar Offline"
+                Command="{Binding PlayOfflineCommand}"
+                Width="180"
+                Height="40" />
         </StackPanel>
 
         <Button Content="Jogar Offline"
@@ -52,6 +64,24 @@
                 Width="180"
                 Height="40" />
 
+        <Button Content="Entrar com Microsoft"
+        Command="{Binding LoginMicrosoftCommand}"
+        Width="220"
+        Height="40" />
+
+        <TextBlock Text="Logs" FontWeight="SemiBold" Margin="0,12,0,0" />
+
+        <ComboBox ItemsSource="{Binding Logs}"
+                SelectedItem="{Binding SelectedLogEntry}"
+                MinWidth="520" />
+
+        <TextBox Text="{Binding SelectedLogDetails}"
+                AcceptsReturn="True"
+                IsReadOnly="True"
+                TextWrapping="Wrap"
+                MinHeight="120"
+                MaxHeight="220"
+                MinWidth="520" />
 
     </StackPanel>
 </Window>

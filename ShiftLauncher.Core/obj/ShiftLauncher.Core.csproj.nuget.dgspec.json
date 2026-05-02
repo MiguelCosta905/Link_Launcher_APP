@@ -57,6 +57,10 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.4, )"
+            },
+            "XboxAuthNet.Game.Msal": {
+              "target": "Package",
+              "version": "[0.1.2, )"
             }
           },
           "imports": [

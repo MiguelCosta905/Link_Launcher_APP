@@ -11,14 +11,18 @@ public sealed class LauncherService
 {
     private readonly MinecraftDirectoryService _directoryService;
     private readonly SettingsService _settingsService;
-
+    private readonly JavaService _javaService;
+    
     public LauncherService(
-        MinecraftDirectoryService directoryService,
-        SettingsService settingsService)
-    {
-        _directoryService = directoryService;
-        _settingsService = settingsService;
-    }
+    MinecraftDirectoryService directoryService,
+    SettingsService settingsService,
+    JavaService javaService)
+{
+    _directoryService = directoryService;
+    _settingsService = settingsService;
+    _javaService = javaService;
+}
+
 
     public Task<LauncherSettings> LoadSettingsAsync()
     {
@@ -66,9 +70,9 @@ public sealed class LauncherService
             Guard.AgainstNullOrWhiteSpace(request.GameDirectory, nameof(request.GameDirectory));
 
             var path = _directoryService.CreatePath(request.GameDirectory);
-            var launcher = new MinecraftLauncher(path);
-            
-            launcher.FileProgressChanged += (_, e) =>
+var launcher = new MinecraftLauncher(path);
+
+launcher.FileProgressChanged += (_, e) =>
 {
     request.ReportProgress(new LaunchProgress
     {
@@ -87,11 +91,30 @@ launcher.ByteProgressChanged += (_, e) =>
     });
 };
 
-            var option = new MLaunchOption
-            {
-                MaximumRamMb = request.MaximumRamMb,
-                Session = MSession.CreateOfflineSession(request.PlayerName)
-            };
+var java = await _javaService.FindBestJavaAsync(request.VersionName);
+
+if (java is null)
+{
+    return new LaunchResult
+    {
+        Success = false,
+        Message = $"No compatible Java installation found for Minecraft {request.VersionName}."
+    };
+}
+
+request.JavaPath = java.JavaPath;
+request.ReportProgress(new LaunchProgress
+{
+    StatusText = $"Using Java {java.MajorVersion}: {java.JavaPath}"
+});
+
+var option = new MLaunchOption
+{
+    MaximumRamMb = request.MaximumRamMb,
+    JavaPath = request.JavaPath,
+    Session = MSession.CreateOfflineSession(request.PlayerName)
+};
+
 
             var process = await launcher.InstallAndBuildProcessAsync(request.VersionName, option);
             process.Start();

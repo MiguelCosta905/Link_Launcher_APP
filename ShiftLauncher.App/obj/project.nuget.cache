@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "FZFCkUKEykk=",
+  "dgSpecHash": "CCVY9lYv4QY=",
   "success": true,
   "projectFilePath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
   "expectedPackageFiles": [
@@ -31,6 +31,9 @@
     "C:\\Users\\linkl\\.nuget\\packages\\microcom.runtime\\0.11.0\\microcom.runtime.0.11.0.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.1\\microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.1\\microsoft.extensions.logging.abstractions.8.0.1.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\microsoft.identity.client\\4.61.3\\microsoft.identity.client.4.61.3.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\microsoft.identity.client.extensions.msal\\4.61.3\\microsoft.identity.client.extensions.msal.4.61.3.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\microsoft.identitymodel.abstractions\\6.35.0\\microsoft.identitymodel.abstractions.6.35.0.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\sharpziplib\\1.4.2\\sharpziplib.1.4.2.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\skiasharp\\2.88.9\\skiasharp.2.88.9.nupkg.sha512",
@@ -38,9 +41,11 @@
     "C:\\Users\\linkl\\.nuget\\packages\\skiasharp.nativeassets.macos\\2.88.9\\skiasharp.nativeassets.macos.2.88.9.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\skiasharp.nativeassets.webassembly\\2.88.9\\skiasharp.nativeassets.webassembly.2.88.9.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\skiasharp.nativeassets.win32\\2.88.9\\skiasharp.nativeassets.win32.2.88.9.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\system.security.cryptography.protecteddata\\4.5.0\\system.security.cryptography.protecteddata.4.5.0.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\tmds.dbus.protocol\\0.21.2\\tmds.dbus.protocol.0.21.2.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet\\3.0.4\\xboxauthnet.3.0.4.nupkg.sha512",
-    "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet.game\\1.4.1\\xboxauthnet.game.1.4.1.nupkg.sha512"
+    "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet.game\\1.4.1\\xboxauthnet.game.1.4.1.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet.game.msal\\0.1.2\\xboxauthnet.game.msal.0.1.2.nupkg.sha512"
   ],
   "logs": [
     {

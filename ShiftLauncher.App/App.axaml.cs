@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using ShiftLauncher.App.ViewModels;
 using ShiftLauncher.Core.Launch;
 using ShiftLauncher.Core.Storage;
+using ShiftLauncher.Core.Auth;
 
 namespace ShiftLauncher.App;
 
@@ -25,10 +26,16 @@ public partial class App : Application
         {
             var baseDirectory = FilePaths.GetAppDataDirectory();
             _settingsService = new SettingsService(baseDirectory);
+
             _launcherService = new LauncherService(
                 new MinecraftDirectoryService(),
-                _settingsService);
-           _mainWindowViewModel = new MainWindowViewModel(_launcherService);
+                _settingsService,
+                new JavaService());
+
+            _mainWindowViewModel = new MainWindowViewModel(
+            _launcherService,
+            new MicrosoftAuthService());
+
             desktop.MainWindow = new MainWindow(_mainWindowViewModel);
             desktop.ShutdownRequested += OnShutdownRequested;
 

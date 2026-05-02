@@ -31,6 +31,9 @@ C:\Users\linkl\.nuget\packages\microcom.runtime\0.11.0\lib\net5.0\MicroCom.Runti
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\Microsoft.CSharp.dll
 C:\Users\linkl\.nuget\packages\microsoft.extensions.dependencyinjection.abstractions\8.0.1\lib\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\linkl\.nuget\packages\microsoft.extensions.logging.abstractions\8.0.1\lib\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\linkl\.nuget\packages\microsoft.identity.client\4.61.3\lib\net6.0\Microsoft.Identity.Client.dll
+C:\Users\linkl\.nuget\packages\microsoft.identity.client.extensions.msal\4.61.3\lib\net6.0\Microsoft.Identity.Client.Extensions.Msal.dll
+C:\Users\linkl\.nuget\packages\microsoft.identitymodel.abstractions\6.35.0\lib\net6.0\Microsoft.IdentityModel.Abstractions.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\Microsoft.VisualBasic.Core.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\Microsoft.VisualBasic.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\Microsoft.Win32.Primitives.dll
@@ -161,6 +164,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\Syste
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Security.Cryptography.Encoding.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Security.Cryptography.OpenSsl.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Security.Cryptography.Primitives.dll
+C:\Users\linkl\.nuget\packages\system.security.cryptography.protecteddata\4.5.0\ref\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Security.Cryptography.X509Certificates.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Security.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\System.Security.Principal.dll
@@ -204,3 +208,4 @@ C:\Users\linkl\.nuget\packages\tmds.dbus.protocol\0.21.2\lib\net8.0\Tmds.DBus.Pr
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\10.0.5\ref\net10.0\WindowsBase.dll
 C:\Users\linkl\.nuget\packages\xboxauthnet\3.0.4\lib\netstandard2.0\XboxAuthNet.dll
 C:\Users\linkl\.nuget\packages\xboxauthnet.game\1.4.1\lib\netstandard2.0\XboxAuthNet.Game.dll
+C:\Users\linkl\.nuget\packages\xboxauthnet.game.msal\0.1.2\lib\netstandard2.0\XboxAuthNet.Game.Msal.dll

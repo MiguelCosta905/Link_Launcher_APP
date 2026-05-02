@@ -4,6 +4,7 @@ namespace ShiftLauncher.Core.Launch;
 
 public sealed class LaunchRequest
 {
+    public string? JavaPath { get; set; }
     public string VersionName { get; set; } = "latest-release";
     public string PlayerName { get; set; } = "Player";
     public int MaximumRamMb { get; set; } = 4096;
