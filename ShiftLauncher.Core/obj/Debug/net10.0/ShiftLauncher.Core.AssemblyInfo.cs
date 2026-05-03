@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ShiftLauncher.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+283fee13cd9f92bcc5d942ca199892818ce92a28")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f685f032dfce59f1db7b0797d918c5eba295fd0a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ShiftLauncher.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ShiftLauncher.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

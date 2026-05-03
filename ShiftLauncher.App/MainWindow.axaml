@@ -3,76 +3,278 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="using:ShiftLauncher.App.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d"
+        d:DesignWidth="1120"
+        d:DesignHeight="760"
         x:Class="ShiftLauncher.App.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
-        Title="Shift Launcher"
-        Width="900"
-        Height="560">
-        <StackPanel Margin="24" Spacing="12">
-        <TextBlock FontSize="28" FontWeight="Bold" Text="Shift Launcher" />
-        <TextBlock Text="{Binding StatusText}" />
-        <TextBlock Text="{Binding AccountText}" />
-        <TextBlock Text="{Binding GameDirectory, StringFormat=Game directory: {0}}" />
-        <TextBlock Text="Minecraft version" FontWeight="SemiBold" />
-        <ComboBox ItemsSource="{Binding Versions}"
-                  SelectedItem="{Binding SelectedVersion}"
-                  MinWidth="260" />
-                <TextBlock Text="{Binding MaximumRamMb, StringFormat=RAM: {0} MB}" />
+        Title="Link Launcher"
+        Width="1120"
+        Height="760"
+        MinWidth="940"
+        MinHeight="640"
+        Background="#F5F8F0">
 
-                <Slider Minimum="{Binding MinimumRamMb}"
-                        Maximum="{Binding MaximumAllowedRamMb}"
-                        TickFrequency="512"
-                        IsSnapToTickEnabled="True"
-                        Value="{Binding MaximumRamMb, Mode=TwoWay}"
-                        Width="320" />
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="MinHeight" Value="42" />
+            <Setter Property="Padding" Value="16,10" />
+        </Style>
 
-                <NumericUpDown Minimum="{Binding MinimumRamMb}"
-               Maximum="{Binding MaximumAllowedRamMb}"
-               Increment="512"
-               Value="{Binding MaximumRamMbDecimal, Mode=TwoWay}"
-               Width="160" />
+        <Style Selector="ComboBox">
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderBrush" Value="#C8D6C4" />
+            <Setter Property="Background" Value="#F8FBF6" />
+            <Setter Property="Foreground" Value="#17201C" />
+        </Style>
 
-                <TextBlock Text="{Binding PlayerName, StringFormat=Offline player: {0}}" />
-        <StackPanel IsVisible="{Binding IsProgressVisible}" Spacing="6">
-        <TextBlock Text="Files" />
-        <ProgressBar Minimum="0"
-                        Maximum="100"
-                        Value="{Binding FileProgressPercent}" />
+        <Style Selector="NumericUpDown">
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderBrush" Value="#C8D6C4" />
+            <Setter Property="Background" Value="#F8FBF6" />
+            <Setter Property="Foreground" Value="#17201C" />
+        </Style>
 
-        <TextBlock Text="Download" />
-        <ProgressBar Minimum="0"
-                        Maximum="100"
-                        Value="{Binding ByteProgressPercent}" />
-        </StackPanel>
+        <Style Selector="TextBox">
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderBrush" Value="#C8D6C4" />
+            <Setter Property="Background" Value="#F8FBF6" />
+            <Setter Property="Foreground" Value="#17201C" />
+        </Style>
+    </Window.Styles>
 
-        <Button Content="Entrar com Microsoft"
-                Command="{Binding LoginMicrosoftCommand}"
-                Width="220"
-                Height="40" />
+    <Grid RowDefinitions="Auto,*"
+          Margin="24"
+          RowSpacing="18">
 
-        <Button Content="Jogar Online"
-                Command="{Binding PlayOnlineCommand}"
-                Width="180"
-                Height="40" />
+        <Border Grid.Row="0"
+                Background="#121A16"
+                BorderBrush="#324237"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="18,14">
+            <Grid ColumnDefinitions="*,Auto"
+                  ColumnSpacing="18">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="Link Launcher"
+                               FontFamily="Consolas, Courier New"
+                               FontSize="32"
+                               FontWeight="Black"
+                               Foreground="#FFFFFF" />
 
-        <Button Content="Jogar Offline"
-                Command="{Binding PlayOfflineCommand}"
-                Width="180"
-                Height="40" />
+                    <TextBlock Text="{Binding StatusText}"
+                               Foreground="#CFE1D0"
+                               TextWrapping="Wrap" />
+                </StackPanel>
 
-        <TextBlock Text="Logs" FontWeight="SemiBold" Margin="0,12,0,0" />
+                <Border Grid.Column="1"
+                        Background="#91EB65"
+                        CornerRadius="8"
+                        Padding="12,8"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="BETA"
+                               FontFamily="Consolas, Courier New"
+                               FontWeight="Black"
+                               Foreground="#0F1B13" />
+                </Border>
+            </Grid>
+        </Border>
 
-        <ComboBox ItemsSource="{Binding Logs}"
-                SelectedItem="{Binding SelectedLogEntry}"
-                MinWidth="520" />
+        <Grid Grid.Row="1"
+              ColumnDefinitions="300,*"
+              ColumnSpacing="18">
 
-        <TextBox Text="{Binding SelectedLogDetails}"
-                AcceptsReturn="True"
-                IsReadOnly="True"
-                TextWrapping="Wrap"
-                MinHeight="120"
-                MaxHeight="220"
-                MinWidth="520" />
-    </StackPanel>
+            <Border Grid.Column="0"
+                    Background="#FFFFFF"
+                    BorderBrush="#D8E0D5"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="18">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Conta"
+                               FontFamily="Consolas, Courier New"
+                               FontSize="18"
+                               FontWeight="Black"
+                               Foreground="#17201C" />
+
+                    <Border Background="#EDF3E9"
+                            CornerRadius="8"
+                            Padding="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding AccountText}"
+                                       Foreground="#2F7A45"
+                                       FontWeight="Bold"
+                                       TextWrapping="Wrap" />
+
+                            <TextBlock Text="{Binding PlayerName, StringFormat=Player: {0}}"
+                                       Foreground="#5B675F" />
+                        </StackPanel>
+                    </Border>
+
+                    <Button Content="Entrar com Microsoft"
+                            Command="{Binding LoginMicrosoftCommand}"
+                            Background="#91EB65"
+                            Foreground="#0F1B13"
+                            HorizontalAlignment="Stretch" />
+
+                    <Button Content="Jogar Online"
+                            Command="{Binding PlayOnlineCommand}"
+                            Background="#58B957"
+                            Foreground="#0F1B13"
+                            HorizontalAlignment="Stretch" />
+
+                    <Button Content="Jogar Offline"
+                            Command="{Binding PlayOfflineCommand}"
+                            Background="#F8FBF6"
+                            BorderBrush="#C8D6C4"
+                            Foreground="#17201C"
+                            HorizontalAlignment="Stretch" />
+
+                    <Separator Margin="0,6" />
+
+                    <TextBlock Text="Pasta do jogo"
+                               FontWeight="Bold"
+                               Foreground="#17201C" />
+
+                    <TextBlock Text="{Binding GameDirectory}"
+                               Foreground="#5B675F"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Column="1"
+                  RowDefinitions="Auto,Auto,*"
+                  RowSpacing="18">
+
+                <Border Grid.Row="0"
+                        Background="#FFFFFF"
+                        BorderBrush="#D8E0D5"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="18">
+                    <Grid ColumnDefinitions="*,220"
+                          RowDefinitions="Auto,Auto,Auto"
+                          ColumnSpacing="18"
+                          RowSpacing="10">
+
+                        <StackPanel Grid.Row="0"
+                                    Grid.ColumnSpan="2"
+                                    Spacing="2">
+                            <TextBlock Text="Versoes e memoria"
+                                       FontFamily="Consolas, Courier New"
+                                       FontSize="18"
+                                       FontWeight="Black"
+                                       Foreground="#17201C" />
+
+                            <TextBlock Text="Escolhe a versao do Minecraft e a RAM para este arranque."
+                                       Foreground="#5B675F" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1"
+                                    Grid.Column="0"
+                                    Spacing="6">
+                            <TextBlock Text="Minecraft"
+                                       FontWeight="Bold"
+                                       Foreground="#17201C" />
+
+                            <ComboBox ItemsSource="{Binding Versions}"
+                                      SelectedItem="{Binding SelectedVersion}"
+                                      HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1"
+                                    Grid.Column="1"
+                                    Spacing="6">
+                            <TextBlock Text="{Binding MaximumRamMb, StringFormat=RAM: {0} MB}"
+                                       FontWeight="Bold"
+                                       Foreground="#17201C" />
+
+                            <NumericUpDown Minimum="{Binding MinimumRamMb}"
+                                           Maximum="{Binding MaximumAllowedRamMb}"
+                                           Increment="512"
+                                           Value="{Binding MaximumRamMbDecimal, Mode=TwoWay}"
+                                           HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <Slider Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Minimum="{Binding MinimumRamMb}"
+                                Maximum="{Binding MaximumAllowedRamMb}"
+                                TickFrequency="512"
+                                IsSnapToTickEnabled="True"
+                                Value="{Binding MaximumRamMb, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1"
+                        IsVisible="{Binding IsProgressVisible}"
+                        Background="#18241E"
+                        BorderBrush="#2F7A45"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="18">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Progresso"
+                                   FontFamily="Consolas, Courier New"
+                                   FontSize="18"
+                                   FontWeight="Black"
+                                   Foreground="#FFFFFF" />
+
+                        <TextBlock Text="Ficheiros"
+                                   Foreground="#CFE1D0" />
+
+                        <ProgressBar Minimum="0"
+                                     Maximum="100"
+                                     Value="{Binding FileProgressPercent}" />
+
+                        <TextBlock Text="Download"
+                                   Foreground="#CFE1D0" />
+
+                        <ProgressBar Minimum="0"
+                                     Maximum="100"
+                                     Value="{Binding ByteProgressPercent}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="2"
+                        Background="#FFFFFF"
+                        BorderBrush="#D8E0D5"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="18">
+                    <Grid RowDefinitions="Auto,Auto,*"
+                          RowSpacing="10">
+                        <StackPanel Grid.Row="0"
+                                    Spacing="2">
+                            <TextBlock Text="Logs"
+                                       FontFamily="Consolas, Courier New"
+                                       FontSize="18"
+                                       FontWeight="Black"
+                                       Foreground="#17201C" />
+
+                            <TextBlock Text="Seleciona um evento para ver detalhes tecnicos."
+                                       Foreground="#5B675F" />
+                        </StackPanel>
+
+                        <ComboBox Grid.Row="1"
+                                  ItemsSource="{Binding Logs}"
+                                  SelectedItem="{Binding SelectedLogEntry}"
+                                  HorizontalAlignment="Stretch" />
+
+                        <ScrollViewer Grid.Row="2"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Auto"
+                                      MinHeight="160">
+                            <TextBox Text="{Binding SelectedLogDetails}"
+                                     AcceptsReturn="True"
+                                     IsReadOnly="True"
+                                     TextWrapping="Wrap" />
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
 </Window>

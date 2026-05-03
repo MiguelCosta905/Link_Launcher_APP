@@ -12,17 +12,19 @@ public sealed class LauncherService
     private readonly MinecraftDirectoryService _directoryService;
     private readonly SettingsService _settingsService;
     private readonly JavaService _javaService;
+    private readonly ProcessMonitorService _processMonitorService;
     
     public LauncherService(
     MinecraftDirectoryService directoryService,
     SettingsService settingsService,
-    JavaService javaService)
-{
-    _directoryService = directoryService;
-    _settingsService = settingsService;
-    _javaService = javaService;
-}
-
+    JavaService javaService,
+    ProcessMonitorService processMonitorService)
+    {
+        _directoryService = directoryService;
+        _settingsService = settingsService;
+        _javaService = javaService;
+        _processMonitorService = processMonitorService;
+    }
 
     public Task<LauncherSettings> LoadSettingsAsync()
     {
@@ -118,8 +120,17 @@ var option = new MLaunchOption
 };
 
 
-            var process = await launcher.InstallAndBuildProcessAsync(request.VersionName, option);
-            process.Start();
+        var process = await launcher.InstallAndBuildProcessAsync(request.VersionName, option);
+
+        process.EnableRaisingEvents = true;
+        process.Start();
+
+    _ = Task.Run(async () =>
+    {
+        var exitResult = await _processMonitorService.WaitForExitAsync(process);
+        request.ReportProcessExited(exitResult);
+    });
+
 
             return new LaunchResult
             {
@@ -133,9 +144,10 @@ var option = new MLaunchOption
             return new LaunchResult
             {
                 Success = false,
-                Message = ex.Message,
+                Message = ErrorMessageService.ToUserMessage(ex),
                 Exception = ex
             };
+
         }
     }
     private static double GetPercent(long progressed, long total)

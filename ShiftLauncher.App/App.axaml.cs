@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -20,7 +21,7 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -28,9 +29,11 @@ public partial class App : Application
             _settingsService = new SettingsService(baseDirectory);
 
             _launcherService = new LauncherService(
-                new MinecraftDirectoryService(),
-                _settingsService,
-                new JavaService());
+            new MinecraftDirectoryService(),
+            _settingsService,
+            new JavaService(),
+            new ProcessMonitorService());
+
 
             _mainWindowViewModel = new MainWindowViewModel(
             _launcherService,
@@ -38,22 +41,29 @@ public partial class App : Application
 
             desktop.MainWindow = new MainWindow(_mainWindowViewModel);
             desktop.ShutdownRequested += OnShutdownRequested;
-
-            try
-            {
-                var settings = await _launcherService.LoadSettingsAsync();
-                _mainWindowViewModel.ApplySettings(settings);
-
-                var versions = await _launcherService.GetVersionsAsync(settings);
-                _mainWindowViewModel.ApplyVersions(versions);
-            }
-            catch (Exception ex)
-            {
-                _mainWindowViewModel.StatusText = $"Startup error: {ex.Message}";
-            }
+            _ = LoadStartupDataAsync();
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private async Task LoadStartupDataAsync()
+    {
+        if (_launcherService is null || _mainWindowViewModel is null)
+            return;
+
+        try
+        {
+            var settings = await _launcherService.LoadSettingsAsync();
+            _mainWindowViewModel.ApplySettings(settings);
+
+            var versions = await _launcherService.GetVersionsAsync(settings);
+            _mainWindowViewModel.ApplyVersions(versions);
+        }
+        catch (Exception ex)
+        {
+            _mainWindowViewModel.HandleStartupError(ex);
+        }
     }
 
     private async void OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)

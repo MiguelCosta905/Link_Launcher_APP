@@ -14,6 +14,8 @@ public sealed class LaunchRequest
     public string? JavaPath { get; set; }
     public MSession? Session { get; set; }
     public Action<LaunchProgress>? ProgressChanged { get; set; }
+    public Action<string>? ProcessLogReceived { get; set; }
+    public Action<ProcessExitResult>? ProcessExited { get; set; }
 
     public static LaunchRequest FromSettings(LauncherSettings settings)
     {
@@ -30,5 +32,15 @@ public sealed class LaunchRequest
     public void ReportProgress(LaunchProgress progress)
     {
         ProgressChanged?.Invoke(progress);
+    }
+
+    public void ReportProcessLog(string message)
+    {
+        ProcessLogReceived?.Invoke(message);
+    }
+
+    public void ReportProcessExited(ProcessExitResult result)
+    {
+        ProcessExited?.Invoke(result);
     }
 }

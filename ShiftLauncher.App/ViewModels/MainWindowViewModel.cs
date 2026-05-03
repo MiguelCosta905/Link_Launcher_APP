@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using CmlLib.Core.Auth;
 using ShiftLauncher.Core.Auth;
 using System.Text;
+using ShiftLauncher.Core.Utilities;
 
 namespace ShiftLauncher.App.ViewModels;
 public sealed class MainWindowViewModel : INotifyPropertyChanged
@@ -79,23 +80,42 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         var builder = new StringBuilder();
 
-        var current = ex;
-        var depth = 0;
-
-        while (current is not null)
+        if (ex is AggregateException aggregateException)
         {
-            builder.AppendLine($"Exception #{depth + 1}");
-            builder.AppendLine(current.GetType().FullName);
-            builder.AppendLine(current.Message);
-            builder.AppendLine(current.StackTrace);
+            builder.AppendLine("AggregateException");
+            builder.AppendLine(aggregateException.Message);
             builder.AppendLine();
 
-            current = current.InnerException;
-            depth++;
+            foreach (var inner in aggregateException.Flatten().InnerExceptions)
+            {
+                AppendException(builder, inner);
+            }
+
+            return builder.ToString();
         }
 
+        AppendException(builder, ex);
         return builder.ToString();
     }
+
+private static void AppendException(StringBuilder builder, Exception ex)
+{
+    var current = ex;
+    var depth = 1;
+
+    while (current is not null)
+    {
+        builder.AppendLine($"Exception #{depth}");
+        builder.AppendLine($"Type: {current.GetType().FullName}");
+        builder.AppendLine($"Message: {current.Message}");
+        builder.AppendLine("StackTrace:");
+        builder.AppendLine(current.StackTrace);
+        builder.AppendLine();
+
+        current = current.InnerException;
+        depth++;
+    }
+}
 
 
     public ICommand PlayOfflineCommand { get; }
@@ -184,6 +204,7 @@ private async Task PlayOfflineAsync()
     try
     {
         var request = _launcherService.CreateLaunchRequest(Settings);
+        AttachProcessMonitoring(request, "Offline");
         
         IsProgressVisible = true;
         FileProgressPercent = 0;
@@ -374,9 +395,9 @@ private async Task PlayOfflineAsync()
     }
     catch (Exception ex)
     {
-        StatusText = $"Microsoft login failed: {ex.Message}";
-        AddLog("Error", "Microsoft login failed.", BuildExceptionDetails(ex));
+        HandleError("Microsoft login", ex);
     }
+
     finally
     {
         IsBusy = false;
@@ -400,6 +421,7 @@ private async Task PlayOfflineAsync()
         try
         {
             var request = _launcherService.CreateLaunchRequest(Settings);
+            AttachProcessMonitoring(request, "Online");
             request.UseOfflineMode = false;
             request.Session = _microsoftSession;
             request.PlayerName = _microsoftSession.Username;
@@ -428,9 +450,18 @@ private async Task PlayOfflineAsync()
 
             var result = await _launcherService.LaunchOfflineAsync(request);
 
-            StatusText = result.Success
-                ? $"Minecraft launched online. Process ID: {result.ProcessId}"
-                : $"Online launch failed: {result.Message}";
+            if (!result.Success)
+            {
+                StatusText = $"Online launch failed: {result.Message}";
+
+                AddLog(
+                    "Error",
+                    "Online launch failed.",
+                    result.Exception is null ? result.Message : BuildExceptionDetails(result.Exception));
+
+                return;
+            }
+
 
             AddLog(
                 result.Success ? "Info" : "Error",
@@ -439,8 +470,7 @@ private async Task PlayOfflineAsync()
         }
         catch (Exception ex)
         {
-            StatusText = $"Online launch failed: {ex.Message}";
-            AddLog("Error", "Online launch failed.", BuildExceptionDetails(ex));
+            HandleError("Online launch", ex);
         }
         finally
         {
@@ -449,4 +479,40 @@ private async Task PlayOfflineAsync()
         }
     }
 
+   private void HandleError(string operation, Exception ex)
+    {
+        var message = ErrorMessageService.ToUserMessage(ex);
+
+        StatusText = $"{operation} failed: {message}";
+        AddLog("Error", $"{operation} failed.", BuildExceptionDetails(ex));
+    }
+
+    public void HandleStartupError(Exception ex)
+    {
+        HandleError("Startup", ex);
+    }
+
+    private void AttachProcessMonitoring(LaunchRequest request, string launchMode)
+    {
+        request.ProcessLogReceived = message =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                AddLog("Minecraft", message, message);
+            });
+        };
+
+        request.ProcessExited = result =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                StatusText = result.Message;
+
+                AddLog(
+                    result.Crashed ? "Error" : "Info",
+                    $"{launchMode} Minecraft process exited.",
+                    $"Exit code: {result.ExitCode}{Environment.NewLine}{result.Message}");
+            });
+        };
+    }
 }
