@@ -211,6 +211,211 @@
           "lib/netstandard2.0/XboxAuthNet.Game.Msal.dll": {}
         }
       }
+    },
+    "net10.0/win-x64": {
+      "CmlLib.Core/4.0.6": {
+        "type": "package",
+        "dependencies": {
+          "CmlLib.Core.Commons": "4.0.0",
+          "LZMA-SDK": "19.0.0",
+          "SharpZipLib": "1.4.2"
+        },
+        "compile": {
+          "lib/netstandard2.0/CmlLib.Core.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/CmlLib.Core.dll": {}
+        }
+      },
+      "CmlLib.Core.Auth.Microsoft/3.3.1": {
+        "type": "package",
+        "dependencies": {
+          "CmlLib.Core.Commons": "4.0.0",
+          "XboxAuthNet.Game": "1.4.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/CmlLib.Core.Auth.Microsoft.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/CmlLib.Core.Auth.Microsoft.dll": {}
+        }
+      },
+      "CmlLib.Core.Commons/4.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/CmlLib.Core.Commons.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/CmlLib.Core.Commons.dll": {}
+        }
+      },
+      "LZMA-SDK/19.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/SevenZip.dll": {
+            "related": ".deps.json;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/SevenZip.dll": {
+            "related": ".deps.json;.xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/8.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/8.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.1"
+        },
+        "compile": {
+          "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net6.0/Microsoft.Extensions.Logging.Abstractions.targets": {}
+        }
+      },
+      "Microsoft.Identity.Client/4.61.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Abstractions": "6.35.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.Identity.Client.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.Identity.Client.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Identity.Client.Extensions.Msal/4.61.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Identity.Client": "4.61.3",
+          "System.Security.Cryptography.ProtectedData": "4.5.0"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.Identity.Client.Extensions.Msal.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.Identity.Client.Extensions.Msal.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.IdentityModel.Abstractions/6.35.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Microsoft.IdentityModel.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.IdentityModel.Abstractions.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.4": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "SharpZipLib/1.4.2": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/ICSharpCode.SharpZipLib.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ICSharpCode.SharpZipLib.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "System.Security.Cryptography.ProtectedData/4.5.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {}
+        }
+      },
+      "XboxAuthNet/3.0.4": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/XboxAuthNet.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/XboxAuthNet.dll": {}
+        }
+      },
+      "XboxAuthNet.Game/1.4.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.1",
+          "XboxAuthNet": "3.0.4"
+        },
+        "compile": {
+          "lib/netstandard2.0/XboxAuthNet.Game.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/XboxAuthNet.Game.dll": {}
+        }
+      },
+      "XboxAuthNet.Game.Msal/0.1.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Identity.Client": "4.61.3",
+          "Microsoft.Identity.Client.Extensions.Msal": "4.61.3",
+          "XboxAuthNet.Game": "1.3.2"
+        },
+        "compile": {
+          "lib/netstandard2.0/XboxAuthNet.Game.Msal.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/XboxAuthNet.Game.Msal.dll": {}
+        }
+      }
     }
   },
   "libraries": {
@@ -651,6 +856,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+            "version": "[10.0.5, 10.0.5]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.win-x64",
+            "version": "[10.0.5, 10.0.5]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+            "version": "[10.0.5, 10.0.5]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
@@ -931,6 +1150,11 @@
           "System.Xml.XPath": "(,4.3.32767]",
           "System.Xml.XPath.XDocument": "(,5.0.32767]"
         }
+      }
+    },
+    "runtimes": {
+      "win-x64": {
+        "#import": []
       }
     }
   }

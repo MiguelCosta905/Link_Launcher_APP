@@ -33,6 +33,13 @@ public sealed class ModLoaderInstallService
         if (string.IsNullOrWhiteSpace(modLoader.LoaderVersion))
             return ModLoaderInstallResult.Fail($"Define a versao do {modLoader.LoaderType} antes de jogar.");
 
+        if (!IsSupportedLoaderMinecraftVersion(minecraftVersion))
+        {
+            return ModLoaderInstallResult.Fail(
+                $"'{minecraftVersion}' nao e uma versao valida de Minecraft para {modLoader.LoaderType}. " +
+                "Seleciona uma versao do jogo, por exemplo 1.21.1.");
+        }
+
         Directory.CreateDirectory(gameDirectory);
         EnsureLauncherProfilesFile(gameDirectory);
         onStatus?.Invoke($"A instalar {modLoader.LoaderType} {modLoader.LoaderVersion}...");
@@ -42,12 +49,14 @@ public sealed class ModLoaderInstallService
             LoaderType.Fabric => await InstallFabricLikeProfileZipAsync(
                 BuildFabricProfileZipUrl(minecraftVersion, modLoader.LoaderVersion),
                 gameDirectory,
-                versionName),
+                versionName,
+                onStatus),
 
             LoaderType.Quilt => await InstallFabricLikeProfileZipAsync(
                 BuildQuiltProfileZipUrl(minecraftVersion, modLoader.LoaderVersion),
                 gameDirectory,
-                versionName),
+                versionName,
+                onStatus),
 
             LoaderType.Forge => await InstallForgeInstallerAsync(
                 BuildForgeInstallerUrl(minecraftVersion, modLoader.LoaderVersion),
@@ -67,11 +76,39 @@ public sealed class ModLoaderInstallService
         };
     }
 
+    // -------------------------------------------------------------------------
+    // Verificacao
+    // -------------------------------------------------------------------------
+
     private static bool IsVersionInstalled(string gameDirectory, string versionName)
     {
         var versionJson = Path.Combine(gameDirectory, "versions", versionName, $"{versionName}.json");
         return File.Exists(versionJson);
     }
+
+    private static string? FindInstalledVersionName(string gameDirectory, string expectedVersionName)
+    {
+        var versionsDirectory = Path.Combine(gameDirectory, "versions");
+        if (!Directory.Exists(versionsDirectory))
+            return null;
+
+        var exactPath = Path.Combine(versionsDirectory, expectedVersionName, $"{expectedVersionName}.json");
+        if (File.Exists(exactPath))
+            return expectedVersionName;
+
+        foreach (var jsonPath in Directory.EnumerateFiles(versionsDirectory, "*.json", SearchOption.AllDirectories))
+        {
+            var name = Path.GetFileNameWithoutExtension(jsonPath);
+            if (string.Equals(name, expectedVersionName, StringComparison.OrdinalIgnoreCase))
+                return name;
+        }
+
+        return null;
+    }
+
+    // -------------------------------------------------------------------------
+    // launcher_profiles.json
+    // -------------------------------------------------------------------------
 
     private static void EnsureLauncherProfilesFile(string gameDirectory)
     {
@@ -90,47 +127,66 @@ public sealed class ModLoaderInstallService
             """);
     }
 
+    // -------------------------------------------------------------------------
+    // Fabric / Quilt (profile ZIP)
+    // -------------------------------------------------------------------------
+
     private async Task<ModLoaderInstallResult> InstallFabricLikeProfileZipAsync(
         string url,
         string gameDirectory,
-        string versionName)
+        string versionName,
+        Action<string>? onStatus)
     {
-        var tempZip = Path.Combine(Path.GetTempPath(), $"{versionName}.zip");
-        var tempDirectory = Path.Combine(Path.GetTempPath(), $"{versionName}-{Guid.NewGuid():N}");
+        var tempZip = Path.Combine(Path.GetTempPath(), $"fabricprofile-{Guid.NewGuid():N}.zip");
+        var tempDirectory = Path.Combine(Path.GetTempPath(), $"fabricprofile-{Guid.NewGuid():N}");
 
         try
         {
+            onStatus?.Invoke("A descarregar perfil do Fabric/Quilt...");
+
             await using (var input = await _httpClient.GetStreamAsync(url))
             await using (var output = File.Create(tempZip))
                 await input.CopyToAsync(output);
 
+            onStatus?.Invoke("A extrair perfil...");
             ZipFile.ExtractToDirectory(tempZip, tempDirectory, overwriteFiles: true);
-            CopyDirectory(tempDirectory, gameDirectory);
 
-            var installedVersion = FindInstalledVersionName(gameDirectory, versionName);
-            return installedVersion is not null
-                ? ModLoaderInstallResult.Success()
-                : ModLoaderInstallResult.Fail($"A instalacao terminou, mas o perfil {versionName} nao foi encontrado.");
+            onStatus?.Invoke("A copiar ficheiros do perfil...");
+            CopyFabricLikeProfile(tempDirectory, gameDirectory, versionName);
+
+            var installed = FindInstalledVersionName(gameDirectory, versionName);
+            if (installed is null)
+            {
+                var presentVersions = ListVersionsInstalled(gameDirectory);
+                return ModLoaderInstallResult.Fail(
+                    $"Perfil {versionName} nao encontrado apos instalacao. " +
+                    $"Versoes presentes: {string.Join(", ", presentVersions)}");
+            }
+
+            return ModLoaderInstallResult.Success();
         }
         catch (HttpRequestException ex)
         {
             return ModLoaderInstallResult.Fail(
-                $"Nao foi encontrado profile ZIP para {versionName}. Escolhe outra versao de Minecraft/loader ou instala o Quilt manualmente por enquanto.",
+                $"Nao foi possivel descarregar o perfil ZIP para {versionName}. " +
+                "Verifica a versao de Minecraft/loader selecionada.",
                 ex);
         }
         catch (Exception ex)
         {
-            return ModLoaderInstallResult.Fail($"Nao foi possivel instalar {versionName}: {ex.Message}", ex);
+            return ModLoaderInstallResult.Fail(
+                $"Nao foi possivel instalar {versionName}: {ex.Message}", ex);
         }
         finally
         {
-            if (File.Exists(tempZip))
-                File.Delete(tempZip);
-
-            if (Directory.Exists(tempDirectory))
-                Directory.Delete(tempDirectory, recursive: true);
+            TryDelete(tempZip);
+            TryDeleteDirectory(tempDirectory);
         }
     }
+
+    // -------------------------------------------------------------------------
+    // Forge / NeoForge (installer JAR)
+    // -------------------------------------------------------------------------
 
     private async Task<ModLoaderInstallResult> InstallForgeInstallerAsync(
         string installerUrl,
@@ -141,9 +197,11 @@ public sealed class ModLoaderInstallService
     {
         var java = await _javaService.FindBestJavaAsync(minecraftVersion);
         if (java is null)
-            return ModLoaderInstallResult.Fail($"Nao foi encontrado Java compativel com Minecraft {minecraftVersion}.");
+            return ModLoaderInstallResult.Fail(
+                $"Nao foi encontrado Java compativel com Minecraft {minecraftVersion}.");
 
-        var installerPath = Path.Combine(Path.GetTempPath(), Path.GetFileName(installerUrl));
+        var installerFileName = Path.GetFileName(new Uri(installerUrl).LocalPath);
+        var installerPath = Path.Combine(Path.GetTempPath(), installerFileName);
 
         try
         {
@@ -152,32 +210,46 @@ public sealed class ModLoaderInstallService
             if (!vanillaResult.IsSuccess)
                 return vanillaResult;
 
+            onStatus?.Invoke("A descarregar installer do loader...");
             await using (var input = await _httpClient.GetStreamAsync(installerUrl))
             await using (var output = File.Create(installerPath))
                 await input.CopyToAsync(output);
 
-            onStatus?.Invoke("A executar installer do loader...");
+            onStatus?.Invoke("A executar installer do loader (isto pode demorar alguns minutos)...");
             var result = await RunInstallerAsync(java.JavaPath, installerPath, gameDirectory);
+
             if (result.ExitCode != 0)
             {
                 return ModLoaderInstallResult.Fail(
-                    $"O installer terminou com codigo {result.ExitCode}.{Environment.NewLine}{result.Output}");
+                    $"O installer terminou com codigo {result.ExitCode}." +
+                    Environment.NewLine + result.Output);
             }
 
-            return IsVersionInstalled(gameDirectory, versionName) || FindInstalledVersionName(gameDirectory, versionName) is not null
-                ? ModLoaderInstallResult.Success()
-                : ModLoaderInstallResult.Fail($"O installer terminou sem erro, mas o perfil {versionName} nao foi encontrado.");
+            var installed = FindInstalledVersionName(gameDirectory, versionName);
+            if (installed is null)
+            {
+                var presentVersions = ListVersionsInstalled(gameDirectory);
+                return ModLoaderInstallResult.Fail(
+                    $"O installer terminou sem erro, mas o perfil {versionName} nao foi encontrado. " +
+                    $"Versoes presentes: {string.Join(", ", presentVersions)}");
+            }
+
+            return ModLoaderInstallResult.Success();
         }
         catch (Exception ex)
         {
-            return ModLoaderInstallResult.Fail($"Nao foi possivel instalar o loader: {ex.Message}", ex);
+            return ModLoaderInstallResult.Fail(
+                $"Nao foi possivel instalar o loader: {ex.Message}", ex);
         }
         finally
         {
-            if (File.Exists(installerPath))
-                File.Delete(installerPath);
+            TryDelete(installerPath);
         }
     }
+
+    // -------------------------------------------------------------------------
+    // Vanilla (pre-requisito do Forge)
+    // -------------------------------------------------------------------------
 
     private static async Task<ModLoaderInstallResult> EnsureVanillaInstalledAsync(
         string gameDirectory,
@@ -200,58 +272,106 @@ public sealed class ModLoaderInstallService
 
             var process = await launcher.InstallAndBuildProcessAsync(minecraftVersion, option);
 
-            try
-            {
-                process.Dispose();
-            }
-            catch
-            {
-                // Nothing to clean if CmlLib returns an unstarted process that is already disposed.
-            }
+            try { process.Dispose(); }
+            catch { /* processo ainda nao iniciado */ }
 
             return IsVersionInstalled(gameDirectory, minecraftVersion)
                 ? ModLoaderInstallResult.Success()
-                : ModLoaderInstallResult.Fail($"Nao foi possivel preparar Minecraft {minecraftVersion} para instalar o loader.");
+                : ModLoaderInstallResult.Fail(
+                    $"Nao foi possivel preparar Minecraft {minecraftVersion} para instalar o loader.");
         }
         catch (Exception ex)
         {
-            return ModLoaderInstallResult.Fail($"Nao foi possivel preparar Minecraft {minecraftVersion}: {ex.Message}", ex);
+            return ModLoaderInstallResult.Fail(
+                $"Nao foi possivel preparar Minecraft {minecraftVersion}: {ex.Message}", ex);
         }
     }
 
-    private static string? FindInstalledVersionName(string gameDirectory, string expectedVersionName)
+    // -------------------------------------------------------------------------
+    // Utilidades
+    // -------------------------------------------------------------------------
+
+    private static IReadOnlyList<string> ListVersionsInstalled(string gameDirectory)
     {
         var versionsDirectory = Path.Combine(gameDirectory, "versions");
         if (!Directory.Exists(versionsDirectory))
-            return null;
+            return [];
 
-        foreach (var jsonPath in Directory.EnumerateFiles(versionsDirectory, "*.json", SearchOption.AllDirectories))
-        {
-            var name = Path.GetFileNameWithoutExtension(jsonPath);
-            if (string.Equals(name, expectedVersionName, StringComparison.OrdinalIgnoreCase))
-                return name;
-        }
-
-        return null;
+        return Directory
+            .EnumerateDirectories(versionsDirectory)
+            .Select(Path.GetFileName)
+            .Where(n => n is not null)
+            .ToList()!;
     }
 
     private static void CopyDirectory(string sourceDirectory, string targetDirectory)
     {
         Directory.CreateDirectory(targetDirectory);
 
-        foreach (var directory in Directory.EnumerateDirectories(sourceDirectory, "*", SearchOption.AllDirectories))
+        foreach (var dir in Directory.EnumerateDirectories(
+                     sourceDirectory, "*", SearchOption.AllDirectories))
         {
-            var relativePath = Path.GetRelativePath(sourceDirectory, directory);
-            Directory.CreateDirectory(Path.Combine(targetDirectory, relativePath));
+            var rel = Path.GetRelativePath(sourceDirectory, dir);
+            Directory.CreateDirectory(Path.Combine(targetDirectory, rel));
         }
 
-        foreach (var file in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
+        foreach (var file in Directory.EnumerateFiles(
+                     sourceDirectory, "*", SearchOption.AllDirectories))
         {
-            var relativePath = Path.GetRelativePath(sourceDirectory, file);
-            var targetPath = Path.Combine(targetDirectory, relativePath);
-            Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
-            File.Copy(file, targetPath, overwrite: true);
+            var rel = Path.GetRelativePath(sourceDirectory, file);
+            var dest = Path.Combine(targetDirectory, rel);
+            Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+            File.Copy(file, dest, overwrite: true);
         }
+    }
+
+    private static void CopyFabricLikeProfile(
+        string extractedDirectory,
+        string gameDirectory,
+        string versionName)
+    {
+        var versionsInTemp = Path.Combine(extractedDirectory, "versions");
+        if (Directory.Exists(versionsInTemp))
+        {
+            CopyDirectory(extractedDirectory, gameDirectory);
+            return;
+        }
+
+        var nestedRoot = Directory.GetDirectories(extractedDirectory)
+            .FirstOrDefault(d => Directory.Exists(Path.Combine(d, "versions")));
+
+        if (nestedRoot is not null)
+        {
+            CopyDirectory(nestedRoot, gameDirectory);
+            return;
+        }
+
+        var profileDirectory = Directory.GetDirectories(extractedDirectory)
+            .FirstOrDefault(d =>
+                File.Exists(Path.Combine(d, $"{Path.GetFileName(d)}.json")) ||
+                File.Exists(Path.Combine(d, $"{versionName}.json")));
+
+        if (profileDirectory is null &&
+            File.Exists(Path.Combine(extractedDirectory, $"{versionName}.json")))
+        {
+            profileDirectory = extractedDirectory;
+        }
+
+        if (profileDirectory is null)
+        {
+            CopyDirectory(extractedDirectory, gameDirectory);
+            return;
+        }
+
+        var targetVersionDirectory = Path.Combine(gameDirectory, "versions", versionName);
+        CopyDirectory(profileDirectory, targetVersionDirectory);
+    }
+
+    private static bool IsSupportedLoaderMinecraftVersion(string minecraftVersion)
+    {
+        return minecraftVersion.Length >= 3 &&
+               minecraftVersion.StartsWith("1.", StringComparison.Ordinal) &&
+               minecraftVersion[2..].All(c => c == '.' || char.IsDigit(c));
     }
 
     private static async Task<(int ExitCode, string Output)> RunInstallerAsync(
@@ -262,33 +382,50 @@ public sealed class ModLoaderInstallService
         var startInfo = new ProcessStartInfo
         {
             FileName = javaPath,
-            Arguments = $"-jar \"{installerPath}\" --installClient \"{gameDirectory}\"",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            CreateNoWindow = true
+            CreateNoWindow = true,
+            WorkingDirectory = gameDirectory
         };
+
+        startInfo.ArgumentList.Add("-jar");
+        startInfo.ArgumentList.Add(installerPath);
+        startInfo.ArgumentList.Add("--installClient");
+        startInfo.ArgumentList.Add(gameDirectory);
 
         using var process = Process.Start(startInfo);
         if (process is null)
             return (-1, "Nao foi possivel iniciar o installer.");
 
         var outputTask = process.StandardOutput.ReadToEndAsync();
-        var errorTask = process.StandardError.ReadToEndAsync();
+        var errorTask  = process.StandardError.ReadToEndAsync();
         await process.WaitForExitAsync();
 
         return (process.ExitCode, await outputTask + Environment.NewLine + await errorTask);
     }
 
-    private static string BuildFabricProfileZipUrl(string minecraftVersion, string loaderVersion)
+    private static void TryDelete(string path)
     {
-        return $"https://meta.fabricmc.net/v2/versions/loader/{Uri.EscapeDataString(minecraftVersion)}/{Uri.EscapeDataString(loaderVersion)}/profile/zip";
+        try { if (File.Exists(path)) File.Delete(path); }
+        catch { /* ignora */ }
     }
 
-    private static string BuildQuiltProfileZipUrl(string minecraftVersion, string loaderVersion)
+    private static void TryDeleteDirectory(string path)
     {
-        return $"https://meta.quiltmc.org/v3/versions/loader/{Uri.EscapeDataString(minecraftVersion)}/{Uri.EscapeDataString(loaderVersion)}/profile/zip";
+        try { if (Directory.Exists(path)) Directory.Delete(path, recursive: true); }
+        catch { /* ignora */ }
     }
+
+    // -------------------------------------------------------------------------
+    // URLs
+    // -------------------------------------------------------------------------
+
+    private static string BuildFabricProfileZipUrl(string minecraftVersion, string loaderVersion) =>
+        $"https://meta.fabricmc.net/v2/versions/loader/{Uri.EscapeDataString(minecraftVersion)}/{Uri.EscapeDataString(loaderVersion)}/profile/zip";
+
+    private static string BuildQuiltProfileZipUrl(string minecraftVersion, string loaderVersion) =>
+        $"https://meta.quiltmc.org/v3/versions/loader/{Uri.EscapeDataString(minecraftVersion)}/{Uri.EscapeDataString(loaderVersion)}/profile/zip";
 
     private static string BuildForgeInstallerUrl(string minecraftVersion, string loaderVersion)
     {
@@ -296,10 +433,8 @@ public sealed class ModLoaderInstallService
         return $"https://maven.minecraftforge.net/net/minecraftforge/forge/{fullVersion}/forge-{fullVersion}-installer.jar";
     }
 
-    private static string BuildNeoForgeInstallerUrl(string loaderVersion)
-    {
-        return $"https://maven.neoforged.net/releases/net/neoforged/neoforge/{loaderVersion}/neoforge-{loaderVersion}-installer.jar";
-    }
+    private static string BuildNeoForgeInstallerUrl(string loaderVersion) =>
+        $"https://maven.neoforged.net/releases/net/neoforged/neoforge/{loaderVersion}/neoforge-{loaderVersion}-installer.jar";
 }
 
 public sealed class ModLoaderInstallResult
@@ -308,18 +443,9 @@ public sealed class ModLoaderInstallResult
     public string Message { get; private init; } = string.Empty;
     public Exception? Exception { get; private init; }
 
-    public static ModLoaderInstallResult Success()
-    {
-        return new ModLoaderInstallResult { IsSuccess = true };
-    }
+    public static ModLoaderInstallResult Success() =>
+        new() { IsSuccess = true };
 
-    public static ModLoaderInstallResult Fail(string message, Exception? exception = null)
-    {
-        return new ModLoaderInstallResult
-        {
-            IsSuccess = false,
-            Message = message,
-            Exception = exception
-        };
-    }
+    public static ModLoaderInstallResult Fail(string message, Exception? exception = null) =>
+        new() { IsSuccess = false, Message = message, Exception = exception };
 }

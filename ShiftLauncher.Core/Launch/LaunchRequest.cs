@@ -1,4 +1,3 @@
-using System;
 using CmlLib.Core.Auth;
 using ShiftLauncher.Core.Models;
 using ShiftLauncher.Core.ModLoaders;
@@ -10,9 +9,10 @@ public sealed class LaunchRequest
     public string MinecraftVersion { get; set; } = "latest-release";
     public string VersionName { get; set; } = "latest-release";
     public string PlayerName { get; set; } = "Player";
-    public int MaximumRamMb { get; set; } = 4096;
+    public int MaximumRamMb { get; set; } = 2048;
     public bool UseOfflineMode { get; set; } = true;
-    public string GameDirectory { get; set; } = string.Empty;
+    public string SharedDirectory { get; set; } = string.Empty;
+    public string InstanceDirectory { get; set; } = string.Empty;
     public ModLoaderProfile ModLoader { get; set; } = new();
     public string? JavaPath { get; set; }
     public MSession? Session { get; set; }
@@ -22,15 +22,19 @@ public sealed class LaunchRequest
 
     public static LaunchRequest FromSettings(LauncherSettings settings)
     {
+        var profile = settings.GetSelectedProfile();
+        var instanceDirectory = Path.Combine(settings.SettingsDirectory, "Instances", profile.Id);
+
         return new LaunchRequest
         {
-            MinecraftVersion = settings.LastProfile.MinecraftVersion,
-            VersionName = BuildVersionName(settings.LastProfile),
-            PlayerName = settings.LastProfile.PlayerName,
-            MaximumRamMb = settings.LastProfile.MaximumRamMb,
-            GameDirectory = settings.GameDirectory,
+            MinecraftVersion = profile.MinecraftVersion,
+            VersionName = BuildVersionName(profile),
+            PlayerName = profile.PlayerName,
+            MaximumRamMb = profile.MaximumRamMb,
+            SharedDirectory = settings.SharedGameDirectory,
+            InstanceDirectory = instanceDirectory,
             UseOfflineMode = true,
-            ModLoader = settings.LastProfile.ModLoader
+            ModLoader = profile.ModLoader
         };
     }
 
@@ -52,18 +56,9 @@ public sealed class LaunchRequest
         };
     }
 
-    public void ReportProgress(LaunchProgress progress)
-    {
-        ProgressChanged?.Invoke(progress);
-    }
+    public void ReportProgress(LaunchProgress progress) => ProgressChanged?.Invoke(progress);
 
-    public void ReportProcessLog(string message)
-    {
-        ProcessLogReceived?.Invoke(message);
-    }
+    public void ReportProcessLog(string message) => ProcessLogReceived?.Invoke(message);
 
-    public void ReportProcessExited(ProcessExitResult result)
-    {
-        ProcessExited?.Invoke(result);
-    }
+    public void ReportProcessExited(ProcessExitResult result) => ProcessExited?.Invoke(result);
 }

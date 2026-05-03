@@ -9,6 +9,7 @@
         x:Class="ShiftLauncher.App.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
         Title="Link Launcher"
+        Icon="avares://ShiftLauncher.App/Assets/app.ico"
         Width="1180"
         Height="780"
         MinWidth="980"
@@ -148,6 +149,51 @@
 
                     <Separator Margin="0,6" />
 
+                    <TextBlock Text="Instalações"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#17201C" />
+
+                    <ComboBox ItemsSource="{Binding Installations}"
+                              SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" />
+
+                    <Grid ColumnDefinitions="*,*,*"
+                          ColumnSpacing="8">
+                        <Button Grid.Column="0"
+                                Content="+"
+                                Command="{Binding NewInstallationCommand}"
+                                Background="#F8FBF6"
+                                BorderBrush="#C8D6C4"
+                                Foreground="#17201C"
+                                HorizontalAlignment="Stretch" />
+
+                        <Button Grid.Column="1"
+                                Content="⧉"
+                                Command="{Binding DuplicateInstallationCommand}"
+                                Background="#F8FBF6"
+                                BorderBrush="#C8D6C4"
+                                Foreground="#17201C"
+                                HorizontalAlignment="Stretch" />
+
+                        <Button Grid.Column="2"
+                                Content="×"
+                                Command="{Binding DeleteInstallationCommand}"
+                                Background="#F8FBF6"
+                                BorderBrush="#C8D6C4"
+                                Foreground="#17201C"
+                                HorizontalAlignment="Stretch" />
+                    </Grid>
+
+                    <Button Content="Abrir pasta da instalação"
+                            Command="{Binding OpenInstallationFolderCommand}"
+                            Background="#F8FBF6"
+                            BorderBrush="#C8D6C4"
+                            Foreground="#17201C"
+                            HorizontalAlignment="Stretch" />
+
+                    <Separator Margin="0,6" />
+
                     <TextBlock Text="Pasta do jogo"
                                FontSize="16"
                                FontWeight="Bold"
@@ -176,25 +222,36 @@
                         BorderThickness="2"
                         CornerRadius="0"
                         Padding="18">
-                    <!-- BLOCO: Versoes, filtros, modloader e RAM -->
+                    <!-- BLOCO: editor da instalacao selecionada -->
                     <Grid ColumnDefinitions="*,220"
-                          RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
                           ColumnSpacing="18"
                           RowSpacing="10">
 
                         <StackPanel Grid.Row="0"
                                     Grid.ColumnSpan="2"
                                     Spacing="2">
-                            <TextBlock Text="Versões e memória"
+                            <TextBlock Text="Instalacao atual"
                                        FontSize="20"
                                        FontWeight="Bold"
                                        Foreground="#17201C" />
 
-                            <TextBlock Text="Escolhe a versão do Minecraft e a RAM para este arranque."
+                            <TextBlock Text="{Binding InstallationSummary}"
                                        Foreground="#5B675F" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1"
+                                    Grid.ColumnSpan="2"
+                                    Spacing="6">
+                            <TextBlock Text="Nome"
+                                       FontWeight="Bold"
+                                       Foreground="#17201C" />
+
+                            <TextBox Text="{Binding InstallationName, Mode=TwoWay}"
+                                     HorizontalAlignment="Stretch" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2"
                                     Grid.Column="0"
                                     Spacing="6">
                             <TextBlock Text="Minecraft"
@@ -207,27 +264,20 @@
                                       HorizontalAlignment="Stretch" />
                         </StackPanel>
 
-                        <StackPanel Grid.Row="1"
+                        <StackPanel Grid.Row="2"
                                     Grid.Column="1"
                                     Spacing="6">
-                            <TextBlock Text="RAM"
+                            <TextBlock Text="RAM da instancia"
                                        FontWeight="Bold"
                                        Foreground="#17201C" />
 
-                            <Border Background="#EDF3E9"
-                                    BorderBrush="#C8D6C4"
-                                    BorderThickness="2"
-                                    CornerRadius="0"
-                                    Padding="10,8">
-                                <TextBlock Text="{Binding SelectedRamLabel}"
-                                           HorizontalAlignment="Center"
-                                           FontSize="16"
-                                           Foreground="#17201C" />
-                            </Border>
+                            <ComboBox ItemsSource="{Binding RamOptions}"
+                                      SelectedItem="{Binding MaximumRamMb, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" />
                         </StackPanel>
 
                         <!-- FILTROS: So aparecem quando o loader e Vanilla -->
-                        <StackPanel Grid.Row="2"
+                        <StackPanel Grid.Row="3"
                                     Grid.ColumnSpan="2"
                                     Orientation="Horizontal"
                                     Spacing="12"
@@ -246,7 +296,7 @@
                         </StackPanel>
 
                         <!-- CONTROLOS: Loader e versao do loader -->
-                        <Grid Grid.Row="3"
+                        <Grid Grid.Row="4"
                               Grid.ColumnSpan="2"
                               ColumnDefinitions="220,*"
                               ColumnSpacing="18">
@@ -292,7 +342,7 @@
                         </Grid>
 
                         <!-- SLIDER: RAM -->
-                        <Slider Grid.Row="4"
+                        <Slider Grid.Row="5"
                                 Grid.ColumnSpan="2"
                                 Minimum="0"
                                 Maximum="{Binding MaximumRamIndex}"

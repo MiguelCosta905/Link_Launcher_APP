@@ -64,6 +64,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         LoginMicrosoftCommand = new AsyncRelayCommand(LoginMicrosoftAsync, () => !IsBusy);
         PlayOnlineCommand = new AsyncRelayCommand(PlayOnlineAsync, () => !IsBusy && _microsoftSession is not null);
         OpenGameFolderCommand = new AsyncRelayCommand(OpenGameFolderAsync);
+        OpenInstallationFolderCommand = new AsyncRelayCommand(OpenInstallationFolderAsync);
+        NewInstallationCommand = new AsyncRelayCommand(NewInstallationAsync, () => !IsBusy);
+        DuplicateInstallationCommand = new AsyncRelayCommand(DuplicateInstallationAsync, () => !IsBusy);
+        DeleteInstallationCommand = new AsyncRelayCommand(DeleteInstallationAsync, () => !IsBusy && Settings.Profiles.Count > 1);
 
         LoadRamOptions();
         ApplyTheme(SelectedThemeMode);
@@ -75,6 +79,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand LoginMicrosoftCommand { get; }
     public ICommand PlayOnlineCommand { get; }
     public ICommand OpenGameFolderCommand { get; }
+    public ICommand OpenInstallationFolderCommand { get; }
+    public ICommand NewInstallationCommand { get; }
+    public ICommand DuplicateInstallationCommand { get; }
+    public ICommand DeleteInstallationCommand { get; }
 
     public ObservableCollection<MinecraftVersionItem> Versions { get; } = new();
     public ObservableCollection<AppLogEntry> Logs { get; } = new();
@@ -83,6 +91,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<LoaderType> LoaderTypes { get; } = new(Enum.GetValues<LoaderType>());
     public ObservableCollection<MinecraftVersionItem> FilteredVersions { get; } = new();
     public ObservableCollection<string> LoaderVersions { get; } = new();
+    public ObservableCollection<LauncherProfile> Installations { get; } = new();
 
     public bool ShowReleases
     {
@@ -143,6 +152,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             _settings = value;
             OnPropertyChanged();
+            RefreshInstallations();
+            OnPropertyChanged(nameof(SelectedInstallation));
+            OnPropertyChanged(nameof(InstallationName));
+            OnPropertyChanged(nameof(InstallationDirectory));
+            OnPropertyChanged(nameof(InstallationSummary));
             OnPropertyChanged(nameof(GameDirectory));
             OnPropertyChanged(nameof(MinecraftVersion));
             OnPropertyChanged(nameof(MaximumRamMb));
@@ -152,6 +166,44 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(ModLoaderSummary));
             OnPropertyChanged(nameof(IsVanillaSelected));
             OnPropertyChanged(nameof(IsLoaderSelected));
+        }
+    }
+
+    public LauncherProfile SelectedProfile => Settings.GetSelectedProfile();
+
+    public string InstallationName
+    {
+        get => SelectedProfile.Name;
+        set
+        {
+            var normalized = string.IsNullOrWhiteSpace(value) ? "Instancia" : value.Trim();
+            if (SelectedProfile.Name == normalized)
+                return;
+
+            SelectedProfile.Name = normalized;
+            RefreshInstallations();
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedInstallation));
+            OnPropertyChanged(nameof(InstallationSummary));
+        }
+    }
+
+    public string InstallationDirectory => Path.Combine(Settings.SettingsDirectory, "Instances", SelectedProfile.Id);
+
+    public string InstallationSummary =>
+        $"{InstallationName} - {MinecraftVersion} - {SelectedRamLabel} - {ModLoaderSummary}";
+
+    public LauncherProfile? SelectedInstallation
+    {
+        get => SelectedProfile;
+        set
+        {
+            if (value is null || Settings.SelectedProfileId == value.Id)
+                return;
+
+            Settings.SelectedProfileId = value.Id;
+            OnSelectedProfileChanged();
+            _ = RefreshLoaderDataAsync();
         }
     }
 
@@ -209,18 +261,19 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     }
 
     public string SelectedLogDetails => SelectedLogEntry?.Details ?? string.Empty;
-    public string GameDirectory => Settings.GameDirectory;
+    public string GameDirectory => Settings.SharedGameDirectory;
 
     public string MinecraftVersion
     {
-        get => Settings.LastProfile.MinecraftVersion;
+        get => SelectedProfile.MinecraftVersion;
         set
         {
-            if (Settings.LastProfile.MinecraftVersion == value)
+            if (SelectedProfile.MinecraftVersion == value)
                 return;
 
-            Settings.LastProfile.MinecraftVersion = value;
+            SelectedProfile.MinecraftVersion = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(InstallationSummary));
         }
     }
 
@@ -246,15 +299,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public int MaximumRamMb
     {
-        get => Settings.LastProfile.MaximumRamMb;
+        get => SelectedProfile.MaximumRamMb;
         set
         {
-            if (Settings.LastProfile.MaximumRamMb == value)
+            if (SelectedProfile.MaximumRamMb == value)
                 return;
 
-            Settings.LastProfile.MaximumRamMb = value;
+            SelectedProfile.MaximumRamMb = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(SelectedRamLabel));
+            OnPropertyChanged(nameof(InstallationSummary));
 
             if (!_isUpdatingRam)
                 SelectClosestRamOption(value);
@@ -303,33 +357,34 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string PlayerName
     {
-        get => Settings.LastProfile.PlayerName;
+        get => SelectedProfile.PlayerName;
         set
         {
-            if (Settings.LastProfile.PlayerName == value)
+            if (SelectedProfile.PlayerName == value)
                 return;
 
-            Settings.LastProfile.PlayerName = value;
+            SelectedProfile.PlayerName = value;
             OnPropertyChanged();
         }
     }
 
     public LoaderType SelectedLoaderType
     {
-        get => Settings.LastProfile.ModLoader.LoaderType;
+        get => SelectedProfile.ModLoader.LoaderType;
         set
         {
-            if (Settings.LastProfile.ModLoader.LoaderType == value)
+            if (SelectedProfile.ModLoader.LoaderType == value)
                 return;
 
-            Settings.LastProfile.ModLoader.LoaderType = value;
+            SelectedProfile.ModLoader.LoaderType = value;
 
             if (value == LoaderType.Vanilla)
-                Settings.LastProfile.ModLoader.LoaderVersion = null;
+                SelectedProfile.ModLoader.LoaderVersion = null;
 
             OnPropertyChanged();
             OnPropertyChanged(nameof(LoaderVersion));
             OnPropertyChanged(nameof(ModLoaderSummary));
+            OnPropertyChanged(nameof(InstallationSummary));
             OnPropertyChanged(nameof(IsVanillaSelected));
             OnPropertyChanged(nameof(IsLoaderSelected));
             _ = RefreshLoaderDataAsync();
@@ -338,16 +393,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string LoaderVersion
     {
-        get => Settings.LastProfile.ModLoader.LoaderVersion ?? string.Empty;
+        get => SelectedProfile.ModLoader.LoaderVersion ?? string.Empty;
         set
         {
             var normalized = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-            if (Settings.LastProfile.ModLoader.LoaderVersion == normalized)
+            if (SelectedProfile.ModLoader.LoaderVersion == normalized)
                 return;
 
-            Settings.LastProfile.ModLoader.LoaderVersion = normalized;
+            SelectedProfile.ModLoader.LoaderVersion = normalized;
             OnPropertyChanged();
             OnPropertyChanged(nameof(ModLoaderSummary));
+            OnPropertyChanged(nameof(InstallationSummary));
         }
     }
 
@@ -423,6 +479,86 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         LoadRamOptions();
         SelectedThemeMode = string.IsNullOrWhiteSpace(settings.ThemeMode) ? "Sistema" : settings.ThemeMode;
         SetStatus("Configuração carregada.");
+
+        if (SelectedLoaderType != LoaderType.Vanilla)
+            _ = RefreshLoaderDataAsync();
+    }
+
+    private void RefreshInstallations()
+    {
+        Installations.Clear();
+
+        foreach (var profile in Settings.Profiles)
+            Installations.Add(profile);
+    }
+
+    private void OnSelectedProfileChanged()
+    {
+        OnPropertyChanged(nameof(SelectedInstallation));
+        OnPropertyChanged(nameof(InstallationName));
+        OnPropertyChanged(nameof(InstallationDirectory));
+        OnPropertyChanged(nameof(InstallationSummary));
+        OnPropertyChanged(nameof(GameDirectory));
+        OnPropertyChanged(nameof(MinecraftVersion));
+        OnPropertyChanged(nameof(MaximumRamMb));
+        OnPropertyChanged(nameof(PlayerName));
+        OnPropertyChanged(nameof(SelectedLoaderType));
+        OnPropertyChanged(nameof(LoaderVersion));
+        OnPropertyChanged(nameof(ModLoaderSummary));
+        OnPropertyChanged(nameof(IsVanillaSelected));
+        OnPropertyChanged(nameof(IsLoaderSelected));
+        SelectClosestRamOption(MaximumRamMb);
+        ApplyMinecraftVersionFilters();
+        RaiseCommandStates();
+    }
+
+    private Task NewInstallationAsync()
+    {
+        var profile = new LauncherProfile
+        {
+            Name = $"Instancia {Settings.Profiles.Count + 1}",
+            PlayerName = PlayerName,
+            MinecraftVersion = string.IsNullOrWhiteSpace(MinecraftVersion) ? "latest-release" : MinecraftVersion,
+            MaximumRamMb = MaximumRamMb
+        };
+
+        Settings.Profiles.Add(profile);
+        Settings.SelectedProfileId = profile.Id;
+        RefreshInstallations();
+        OnSelectedProfileChanged();
+        SetStatus($"Instalacao criada: {profile.Name}.");
+        AddLog("Info", "Instalacao criada.", profile.Name);
+        return Task.CompletedTask;
+    }
+
+    private Task DuplicateInstallationAsync()
+    {
+        var profile = SelectedProfile.Clone($"{SelectedProfile.Name} copia");
+        Settings.Profiles.Add(profile);
+        Settings.SelectedProfileId = profile.Id;
+        RefreshInstallations();
+        OnSelectedProfileChanged();
+        SetStatus($"Instalacao duplicada: {profile.Name}.");
+        AddLog("Info", "Instalacao duplicada.", profile.Name);
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteInstallationAsync()
+    {
+        if (Settings.Profiles.Count <= 1)
+        {
+            SetStatus("Mantem pelo menos uma instalacao.");
+            return Task.CompletedTask;
+        }
+
+        var profile = SelectedProfile;
+        Settings.Profiles.Remove(profile);
+        Settings.SelectedProfileId = Settings.Profiles[0].Id;
+        RefreshInstallations();
+        OnSelectedProfileChanged();
+        SetStatus($"Instalacao removida: {profile.Name}.");
+        AddLog("Info", "Instalacao removida.", profile.Name);
+        return Task.CompletedTask;
     }
 
     public void ApplyVersions(IEnumerable<MinecraftVersionItem> versions)
@@ -439,11 +575,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
 private async Task RefreshLoaderDataAsync()
 {
-    LoaderVersions.Clear();
-    LoaderVersion = string.Empty;
-
     if (SelectedLoaderType == LoaderType.Vanilla)
     {
+        LoaderVersions.Clear();
+        LoaderVersion = string.Empty;
         _supportedMinecraftVersions = new HashSet<string>();
         ApplyMinecraftVersionFilters();
         return;
@@ -466,11 +601,14 @@ private async Task RefreshLoaderDataAsync()
 
     private async Task RefreshLoaderVersionsAsync()
     {
+        var currentLoaderVersion = LoaderVersion;
         LoaderVersions.Clear();
-        LoaderVersion = string.Empty;
 
         if (SelectedLoaderType == LoaderType.Vanilla || string.IsNullOrWhiteSpace(MinecraftVersion))
+        {
+            LoaderVersion = string.Empty;
             return;
+        }
 
         try
         {
@@ -481,7 +619,9 @@ private async Task RefreshLoaderDataAsync()
             foreach (var version in versions)
                 LoaderVersions.Add(version);
 
-            LoaderVersion = LoaderVersions.FirstOrDefault() ?? string.Empty;
+            LoaderVersion = LoaderVersions.Contains(currentLoaderVersion)
+                ? currentLoaderVersion
+                : LoaderVersions.FirstOrDefault() ?? string.Empty;
 
             SetStatus(LoaderVersions.Count > 0
                 ? $"{LoaderVersions.Count} versões de {SelectedLoaderType} encontradas."
@@ -502,7 +642,7 @@ private async Task RefreshLoaderDataAsync()
         if (SelectedLoaderType == LoaderType.Vanilla)
         {
             query = query.Where(version =>
-                (ShowReleases && IsVersionType(version, "release")) ||
+                (ShowReleases && IsVersionType(version, "release") && IsReleaseMinecraftVersion(version.Name)) ||
                 (ShowSnapshots && IsVersionType(version, "snapshot")) ||
                 (ShowOldBeta && IsVersionType(version, "old_beta")) ||
                 (ShowOldAlpha && IsVersionType(version, "old_alpha")));
@@ -511,6 +651,7 @@ private async Task RefreshLoaderDataAsync()
         {
             query = query.Where(version =>
                 IsVersionType(version, "release") &&
+                IsReleaseMinecraftVersion(version.Name) &&
                 _supportedMinecraftVersions.Contains(version.Name));
         }
 
@@ -524,6 +665,13 @@ private async Task RefreshLoaderDataAsync()
     private static bool IsVersionType(MinecraftVersionItem version, string type)
     {
         return string.Equals(version.Type, type, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsReleaseMinecraftVersion(string version)
+    {
+        return version.Length >= 3 &&
+               version.StartsWith("1.", StringComparison.Ordinal) &&
+               version[2..].All(c => c == '.' || char.IsDigit(c));
     }
 
     public void HandleStartupError(Exception ex)
@@ -647,15 +795,29 @@ private async Task RefreshLoaderDataAsync()
 
     private Task OpenGameFolderAsync()
     {
-        Directory.CreateDirectory(Settings.GameDirectory);
+        Directory.CreateDirectory(GameDirectory);
 
         Process.Start(new ProcessStartInfo
         {
-            FileName = Settings.GameDirectory,
+            FileName = GameDirectory,
             UseShellExecute = true
         });
 
-        AddLog("Info", "Pasta do jogo aberta.", Settings.GameDirectory);
+        AddLog("Info", "Pasta do jogo aberta.", GameDirectory);
+        return Task.CompletedTask;
+    }
+
+    private Task OpenInstallationFolderAsync()
+    {
+        Directory.CreateDirectory(InstallationDirectory);
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = InstallationDirectory,
+            UseShellExecute = true
+        });
+
+        AddLog("Info", "Pasta da instalacao aberta.", InstallationDirectory);
         return Task.CompletedTask;
     }
 
@@ -740,6 +902,7 @@ private async Task RefreshLoaderDataAsync()
 
         OnPropertyChanged(nameof(SelectedRamIndexValue));
         OnPropertyChanged(nameof(SelectedRamLabel));
+        OnPropertyChanged(nameof(InstallationSummary));
     }
 
     private static int GetAvailableMemoryMb()
@@ -857,6 +1020,18 @@ private async Task RefreshLoaderDataAsync()
 
         if (PlayOnlineCommand is AsyncRelayCommand onlineCommand)
             onlineCommand.RaiseCanExecuteChanged();
+
+        if (OpenInstallationFolderCommand is AsyncRelayCommand openInstallationFolderCommand)
+            openInstallationFolderCommand.RaiseCanExecuteChanged();
+
+        if (NewInstallationCommand is AsyncRelayCommand newInstallationCommand)
+            newInstallationCommand.RaiseCanExecuteChanged();
+
+        if (DuplicateInstallationCommand is AsyncRelayCommand duplicateInstallationCommand)
+            duplicateInstallationCommand.RaiseCanExecuteChanged();
+
+        if (DeleteInstallationCommand is AsyncRelayCommand deleteInstallationCommand)
+            deleteInstallationCommand.RaiseCanExecuteChanged();
     }
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)

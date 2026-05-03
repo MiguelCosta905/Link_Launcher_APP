@@ -15,13 +15,13 @@ public sealed class LauncherService
     private readonly JavaService _javaService;
     private readonly ProcessMonitorService _processMonitorService;
     private readonly ModLoaderInstallService _modLoaderInstallService;
-    
+
     public LauncherService(
-    MinecraftDirectoryService directoryService,
-    SettingsService settingsService,
-    JavaService javaService,
-    ProcessMonitorService processMonitorService,
-    ModLoaderInstallService modLoaderInstallService)
+        MinecraftDirectoryService directoryService,
+        SettingsService settingsService,
+        JavaService javaService,
+        ProcessMonitorService processMonitorService,
+        ModLoaderInstallService modLoaderInstallService)
     {
         _directoryService = directoryService;
         _settingsService = settingsService;
@@ -42,9 +42,9 @@ public sealed class LauncherService
 
     public MinecraftLauncher CreateLauncher(LauncherSettings settings)
     {
-        Guard.AgainstNullOrWhiteSpace(settings.GameDirectory, nameof(settings.GameDirectory));
+        Guard.AgainstNullOrWhiteSpace(settings.SharedGameDirectory, nameof(settings.SharedGameDirectory));
 
-        var path = _directoryService.CreatePath(settings.GameDirectory);
+        var path = _directoryService.CreatePath(settings.SharedGameDirectory);
         return new MinecraftLauncher(path);
     }
 
@@ -71,95 +71,105 @@ public sealed class LauncherService
     {
         try
         {
-            Guard.AgainstNullOrWhiteSpace(request.VersionName, nameof(request.VersionName));
-            Guard.AgainstNullOrWhiteSpace(request.PlayerName, nameof(request.PlayerName));
-            Guard.AgainstNullOrWhiteSpace(request.GameDirectory, nameof(request.GameDirectory));
+            Guard.AgainstNullOrWhiteSpace(request.SharedDirectory, nameof(request.SharedDirectory));
+            Guard.AgainstNullOrWhiteSpace(request.InstanceDirectory, nameof(request.InstanceDirectory));
 
-            var path = _directoryService.CreatePath(request.GameDirectory);
-var launcher = new MinecraftLauncher(path);
+            Directory.CreateDirectory(request.SharedDirectory);
+            Directory.CreateDirectory(request.InstanceDirectory);
 
-var installResult = await _modLoaderInstallService.EnsureInstalledAsync(
-    request.GameDirectory,
-    request.MinecraftVersion,
-    request.VersionName,
-    request.ModLoader,
-    status => request.ReportProgress(new LaunchProgress { StatusText = status }));
+            var java = string.IsNullOrWhiteSpace(request.JavaPath)
+                ? await _javaService.FindBestJavaAsync(request.MinecraftVersion)
+                : new JavaInstallation { JavaPath = request.JavaPath, MajorVersion = 0 };
 
-if (!installResult.IsSuccess)
-{
-    return new LaunchResult
-    {
-        Success = false,
-        Message = installResult.Message,
-        Exception = installResult.Exception
-    };
-}
+            if (java is null)
+            {
+                return new LaunchResult
+                {
+                    Success = false,
+                    Message = $"Nao foi encontrado Java compativel com Minecraft {request.MinecraftVersion}."
+                };
+            }
 
-// Recreate the launcher after installing modloader profiles so CmlLib reloads local version metadata.
-launcher = new MinecraftLauncher(path);
+            var loaderResult = await _modLoaderInstallService.EnsureInstalledAsync(
+                request.SharedDirectory,
+                request.MinecraftVersion,
+                request.VersionName,
+                request.ModLoader,
+                status =>
+                {
+                    request.ReportProcessLog($"[Loader] {status}");
+                    request.ReportProgress(new LaunchProgress { StatusText = status });
+                });
 
-launcher.FileProgressChanged += (_, e) =>
-{
-    request.ReportProgress(new LaunchProgress
-    {
-        StatusText = $"{e.EventType}: {e.Name}",
-        CurrentFile = e.Name,
-        FileProgressPercent = GetPercent(e.ProgressedTasks, e.TotalTasks)
-    });
-};
+            if (!loaderResult.IsSuccess)
+            {
+                return new LaunchResult
+                {
+                    Success = false,
+                    Message = loaderResult.Message,
+                    Exception = loaderResult.Exception
+                };
+            }
 
-launcher.ByteProgressChanged += (_, e) =>
-{
-    request.ReportProgress(new LaunchProgress
-    {
-        StatusText = "Downloading files...",
-        ByteProgressPercent = GetPercent(e.ProgressedBytes, e.TotalBytes)
-    });
-};
+            var sharedPath = _directoryService.CreatePath(request.SharedDirectory);
+            var instancePath = CreateInstancePath(request.InstanceDirectory, sharedPath);
+            var launcher = new MinecraftLauncher(sharedPath);
 
-var java = await _javaService.FindBestJavaAsync(request.MinecraftVersion);
+            launcher.FileProgressChanged += (_, e) =>
+            {
+                request.ReportProgress(new LaunchProgress
+                {
+                    StatusText = $"A preparar {e.Name}...",
+                    CurrentFile = e.Name,
+                    FileProgressPercent = GetPercent(e.ProgressedTasks, e.TotalTasks)
+                });
+            };
 
-if (java is null)
-{
-    return new LaunchResult
-    {
-        Success = false,
-        Message = $"No compatible Java installation found for Minecraft {request.MinecraftVersion}."
-    };
-}
+            launcher.ByteProgressChanged += (_, e) =>
+            {
+                request.ReportProgress(new LaunchProgress
+                {
+                    StatusText = "A descarregar ficheiros...",
+                    ByteProgressPercent = e.ToRatio() * 100
+                });
+            };
 
-request.JavaPath = java.JavaPath;
-request.ReportProgress(new LaunchProgress
-{
-    StatusText = $"Using Java {java.MajorVersion}: {java.JavaPath}"
-});
+            var option = new MLaunchOption
+            {
+                Path = instancePath,
+                JavaPath = java.JavaPath,
+                Session = request.Session ?? MSession.CreateOfflineSession(request.PlayerName),
+                MaximumRamMb = request.MaximumRamMb,
+                GameLauncherName = "ShiftLauncher",
+                GameLauncherVersion = "1.0"
+            };
 
-var session = request.Session ?? MSession.CreateOfflineSession(request.PlayerName);
+            request.ReportProgress(new LaunchProgress
+            {
+                StatusText = $"A instalar/verificar {request.VersionName}...",
+                FileProgressPercent = 0,
+                ByteProgressPercent = 0
+            });
 
-var option = new MLaunchOption
-{
-    MaximumRamMb = request.MaximumRamMb,
-    JavaPath = request.JavaPath,
-    Session = session
-};
+            var process = await launcher.InstallAndBuildProcessAsync(request.VersionName, option);
+            _processMonitorService.AttachOutputLogging(process, request.ReportProcessLog);
 
+            if (!process.Start())
+            {
+                return new LaunchResult
+                {
+                    Success = false,
+                    Message = "Nao foi possivel iniciar o processo do Minecraft."
+                };
+            }
 
-        var process = await launcher.InstallAndBuildProcessAsync(request.VersionName, option);
-
-        process.EnableRaisingEvents = true;
-        process.Start();
-
-    _ = Task.Run(async () =>
-    {
-        var exitResult = await _processMonitorService.WaitForExitAsync(process);
-        request.ReportProcessExited(exitResult);
-    });
-
+            _processMonitorService.BeginReadingOutput(process);
+            _ = MonitorExitAsync(process, request);
 
             return new LaunchResult
             {
                 Success = true,
-                Message = "Minecraft launched successfully.",
+                Message = "Minecraft iniciado.",
                 ProcessId = process.Id
             };
         }
@@ -168,12 +178,34 @@ var option = new MLaunchOption
             return new LaunchResult
             {
                 Success = false,
-                Message = ErrorMessageService.ToUserMessage(ex),
+                Message = ex.Message,
                 Exception = ex
             };
-
         }
     }
+
+    private async Task MonitorExitAsync(System.Diagnostics.Process process, LaunchRequest request)
+    {
+        var result = await _processMonitorService.WaitForExitAsync(process);
+        request.ReportProcessExited(result);
+        process.Dispose();
+    }
+
+    private static MinecraftPath CreateInstancePath(string instanceDirectory, MinecraftPath sharedPath)
+    {
+        var instancePath = new MinecraftPath(instanceDirectory)
+        {
+            Library = sharedPath.Library,
+            Versions = sharedPath.Versions,
+            Resource = sharedPath.Resource,
+            Assets = sharedPath.Assets,
+            Runtime = sharedPath.Runtime
+        };
+
+        instancePath.CreateDirs();
+        return instancePath;
+    }
+
     private static double GetPercent(long progressed, long total)
     {
         if (total <= 0)

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "3coKa5nOsSo=",
+  "dgSpecHash": "e36/lRmr2ew=",
   "success": true,
   "projectFilePath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
   "expectedPackageFiles": [
@@ -45,7 +45,10 @@
     "C:\\Users\\linkl\\.nuget\\packages\\tmds.dbus.protocol\\0.21.2\\tmds.dbus.protocol.0.21.2.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet\\3.0.4\\xboxauthnet.3.0.4.nupkg.sha512",
     "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet.game\\1.4.1\\xboxauthnet.game.1.4.1.nupkg.sha512",
-    "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet.game.msal\\0.1.2\\xboxauthnet.game.msal.0.1.2.nupkg.sha512"
+    "C:\\Users\\linkl\\.nuget\\packages\\xboxauthnet.game.msal\\0.1.2\\xboxauthnet.game.msal.0.1.2.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\10.0.5\\microsoft.netcore.app.runtime.win-x64.10.0.5.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\10.0.5\\microsoft.windowsdesktop.app.runtime.win-x64.10.0.5.nupkg.sha512",
+    "C:\\Users\\linkl\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\10.0.5\\microsoft.aspnetcore.app.runtime.win-x64.10.0.5.nupkg.sha512"
   ],
   "logs": [
     {
@@ -57,7 +60,8 @@
       "filePath": "C:\\Users\\linkl\\Desktop\\Shift Launcher\\Shift_Launcher_APP\\ShiftLauncher.App\\ShiftLauncher.App.csproj",
       "libraryId": "Tmds.DBus.Protocol",
       "targetGraphs": [
-        "net10.0"
+        "net10.0",
+        "net10.0/win-x64"
       ]
     }
   ]

@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ShiftLauncher.Core.Models;
 using ShiftLauncher.Core.ModLoaders;
 
@@ -23,7 +24,7 @@ public sealed class SettingsService
 
         var json = await File.ReadAllTextAsync(_settingsPath);
         var settings = JsonConvert.DeserializeObject<LauncherSettings>(json);
-        return Normalize(settings);
+        return Normalize(MigrateLegacySettings(json, settings));
     }
 
     public async Task SaveAsync(LauncherSettings settings)
@@ -40,6 +41,39 @@ public sealed class SettingsService
             FilePaths.GetGameDirectory());
     }
 
+    private LauncherSettings MigrateLegacySettings(string json, LauncherSettings? settings)
+    {
+        settings ??= CreateDefaultSettings();
+
+        try
+        {
+            var root = JObject.Parse(json);
+
+            if (string.IsNullOrWhiteSpace(settings.SharedGameDirectory))
+            {
+                var legacyGameDirectory = root.Value<string>("GameDirectory");
+                if (!string.IsNullOrWhiteSpace(legacyGameDirectory))
+                    settings.SharedGameDirectory = legacyGameDirectory;
+            }
+
+            if (settings.Profiles.Count == 0 && root["LastProfile"] is JObject lastProfile)
+            {
+                var profile = lastProfile.ToObject<LauncherProfile>() ?? new LauncherProfile();
+                if (string.IsNullOrWhiteSpace(profile.Name))
+                    profile.Name = "Instancia Principal";
+
+                settings.Profiles.Add(profile);
+                settings.SelectedProfileId = profile.Id;
+            }
+        }
+        catch (JsonException)
+        {
+            // A normalizacao abaixo cria valores seguros se o ficheiro estiver incompleto.
+        }
+
+        return settings;
+    }
+
     private LauncherSettings Normalize(LauncherSettings? settings)
     {
         settings ??= CreateDefaultSettings();
@@ -48,22 +82,81 @@ public sealed class SettingsService
             ? _baseDirectory
             : settings.SettingsDirectory;
 
-        settings.GameDirectory = string.IsNullOrWhiteSpace(settings.GameDirectory)
+        settings.SharedGameDirectory = string.IsNullOrWhiteSpace(settings.SharedGameDirectory)
             ? FilePaths.GetGameDirectory()
-            : settings.GameDirectory;
+            : settings.SharedGameDirectory;
 
-        settings.LastProfile ??= new LauncherProfile();
-        settings.LastProfile.ModLoader ??= new ModLoaderProfile();
+        if (settings.Profiles.Count == 0)
+        {
+            settings.Profiles.Add(new LauncherProfile { Name = "Instancia Principal" });
+            settings.SelectedProfileId = settings.Profiles[0].Id;
+        }
 
-        if (string.IsNullOrWhiteSpace(settings.LastProfile.MinecraftVersion))
-            settings.LastProfile.MinecraftVersion = "latest-release";
+        foreach (var profile in settings.Profiles)
+            NormalizeProfile(profile);
 
-        if (settings.LastProfile.MaximumRamMb <= 0)
-            settings.LastProfile.MaximumRamMb = 4096;
-
-        if (string.IsNullOrWhiteSpace(settings.LastProfile.PlayerName))
-            settings.LastProfile.PlayerName = "Player";
+        if (settings.Profiles.All(profile => profile.Id != settings.SelectedProfileId))
+            settings.SelectedProfileId = settings.Profiles[0].Id;
 
         return settings;
+    }
+
+    private static void NormalizeProfile(LauncherProfile profile)
+    {
+        if (string.IsNullOrWhiteSpace(profile.Id))
+            profile.Id = Guid.NewGuid().ToString("N");
+
+        if (string.IsNullOrWhiteSpace(profile.Name))
+            profile.Name = "Instancia";
+
+        profile.ModLoader ??= new ModLoaderProfile();
+        profile.MinecraftVersion = ExtractVanillaVersion(profile.MinecraftVersion);
+
+        if (string.IsNullOrWhiteSpace(profile.MinecraftVersion))
+            profile.MinecraftVersion = "latest-release";
+
+        if (profile.MaximumRamMb <= 0)
+            profile.MaximumRamMb = 2048;
+
+        if (string.IsNullOrWhiteSpace(profile.PlayerName))
+            profile.PlayerName = "Player";
+    }
+
+    private static string ExtractVanillaVersion(string? version)
+    {
+        if (string.IsNullOrWhiteSpace(version))
+            return string.Empty;
+
+        if (version.StartsWith("fabric-loader-", StringComparison.OrdinalIgnoreCase) ||
+            version.StartsWith("quilt-loader-", StringComparison.OrdinalIgnoreCase))
+        {
+            var parts = version.Split('-');
+            var last = parts[^1];
+            if (IsVanillaVersion(last))
+                return last;
+        }
+
+        var forgeIdx = version.IndexOf("-forge-", StringComparison.OrdinalIgnoreCase);
+        if (forgeIdx > 0)
+        {
+            var candidate = version[..forgeIdx];
+            if (IsVanillaVersion(candidate))
+                return candidate;
+        }
+
+        if (version.StartsWith("neoforge-", StringComparison.OrdinalIgnoreCase))
+            return string.Empty;
+
+        if (IsVanillaVersion(version) || version.StartsWith("latest-", StringComparison.OrdinalIgnoreCase))
+            return version;
+
+        return string.Empty;
+    }
+
+    private static bool IsVanillaVersion(string version)
+    {
+        return version.Length >= 3 &&
+               version.StartsWith("1.", StringComparison.Ordinal) &&
+               version[2..].All(c => c == '.' || char.IsDigit(c));
     }
 }
