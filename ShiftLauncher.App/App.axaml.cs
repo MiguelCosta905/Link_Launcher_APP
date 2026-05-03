@@ -5,6 +5,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ShiftLauncher.App.ViewModels;
 using ShiftLauncher.Core.Launch;
+using ShiftLauncher.Core.ModLoaders;
 using ShiftLauncher.Core.Storage;
 using ShiftLauncher.Core.Auth;
 
@@ -32,7 +33,8 @@ public partial class App : Application
             new MinecraftDirectoryService(),
             _settingsService,
             new JavaService(),
-            new ProcessMonitorService());
+            new ProcessMonitorService(),
+            new ModLoaderInstallService(new JavaService()));
 
 
             _mainWindowViewModel = new MainWindowViewModel(

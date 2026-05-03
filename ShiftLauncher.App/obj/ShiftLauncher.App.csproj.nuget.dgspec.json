@@ -54,6 +54,11 @@
               "target": "Package",
               "version": "[11.3.12, )"
             },
+            "Avalonia.BuildServices": {
+              "include": "None",
+              "target": "Package",
+              "version": "[11.3.2, )"
+            },
             "Avalonia.Desktop": {
               "target": "Package",
               "version": "[11.3.12, )"

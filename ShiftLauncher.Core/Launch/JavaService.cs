@@ -65,6 +65,9 @@ public sealed class JavaService
         if (minor == 20 && patch >= 5)
             return 21;
 
+        if (minor == 21 && patch >= 9)
+            return 25;
+
         if (minor >= 21)
             return 21;
 

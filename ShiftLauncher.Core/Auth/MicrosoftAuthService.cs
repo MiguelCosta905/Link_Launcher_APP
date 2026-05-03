@@ -34,7 +34,7 @@ public sealed class MicrosoftAuthService
         return Task.FromResult(new AuthSession
         {
             IsOffline = true,
-            Username = session.Username,
+            Username = session.Username ?? username,
             Uuid = session.UUID,
             AccessToken = session.AccessToken
         });

@@ -2,6 +2,7 @@ using CmlLib.Core;
 using CmlLib.Core.Auth;
 using CmlLib.Core.ProcessBuilder;
 using ShiftLauncher.Core.Models;
+using ShiftLauncher.Core.ModLoaders;
 using ShiftLauncher.Core.Storage;
 using ShiftLauncher.Core.Utilities;
 
@@ -13,17 +14,20 @@ public sealed class LauncherService
     private readonly SettingsService _settingsService;
     private readonly JavaService _javaService;
     private readonly ProcessMonitorService _processMonitorService;
+    private readonly ModLoaderInstallService _modLoaderInstallService;
     
     public LauncherService(
     MinecraftDirectoryService directoryService,
     SettingsService settingsService,
     JavaService javaService,
-    ProcessMonitorService processMonitorService)
+    ProcessMonitorService processMonitorService,
+    ModLoaderInstallService modLoaderInstallService)
     {
         _directoryService = directoryService;
         _settingsService = settingsService;
         _javaService = javaService;
         _processMonitorService = processMonitorService;
+        _modLoaderInstallService = modLoaderInstallService;
     }
 
     public Task<LauncherSettings> LoadSettingsAsync()
@@ -58,7 +62,7 @@ public sealed class LauncherService
             .Select(version => new MinecraftVersionItem
             {
                 Name = version.Name,
-                Type = version.Type.ToString()
+                Type = version.Type?.ToString() ?? "Unknown"
             })
             .ToList();
     }
@@ -73,6 +77,26 @@ public sealed class LauncherService
 
             var path = _directoryService.CreatePath(request.GameDirectory);
 var launcher = new MinecraftLauncher(path);
+
+var installResult = await _modLoaderInstallService.EnsureInstalledAsync(
+    request.GameDirectory,
+    request.MinecraftVersion,
+    request.VersionName,
+    request.ModLoader,
+    status => request.ReportProgress(new LaunchProgress { StatusText = status }));
+
+if (!installResult.IsSuccess)
+{
+    return new LaunchResult
+    {
+        Success = false,
+        Message = installResult.Message,
+        Exception = installResult.Exception
+    };
+}
+
+// Recreate the launcher after installing modloader profiles so CmlLib reloads local version metadata.
+launcher = new MinecraftLauncher(path);
 
 launcher.FileProgressChanged += (_, e) =>
 {
@@ -93,14 +117,14 @@ launcher.ByteProgressChanged += (_, e) =>
     });
 };
 
-var java = await _javaService.FindBestJavaAsync(request.VersionName);
+var java = await _javaService.FindBestJavaAsync(request.MinecraftVersion);
 
 if (java is null)
 {
     return new LaunchResult
     {
         Success = false,
-        Message = $"No compatible Java installation found for Minecraft {request.VersionName}."
+        Message = $"No compatible Java installation found for Minecraft {request.MinecraftVersion}."
     };
 }
 
@@ -135,7 +159,7 @@ var option = new MLaunchOption
             return new LaunchResult
             {
                 Success = true,
-                Message = "Minecraft launcLaunchOfflineAsynched successfully.",
+                Message = "Minecraft launched successfully.",
                 ProcessId = process.Id
             };
         }

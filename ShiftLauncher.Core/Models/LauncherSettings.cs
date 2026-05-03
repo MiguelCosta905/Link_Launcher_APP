@@ -6,6 +6,7 @@ public sealed class LauncherSettings
     public string SettingsDirectory { get; set; } = string.Empty;
     public LauncherProfile LastProfile { get; set; } = new();
     public string GameDirectory { get; set; } = string.Empty;
+    public string ThemeMode { get; set; } = "Sistema";
 
     public static LauncherSettings CreateDefault(string settingsDirectory, string gameDirectory)
     {

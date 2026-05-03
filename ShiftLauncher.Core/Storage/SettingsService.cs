@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using ShiftLauncher.Core.Models;
+using ShiftLauncher.Core.ModLoaders;
 
 namespace ShiftLauncher.Core.Storage;
 
@@ -52,6 +53,7 @@ public sealed class SettingsService
             : settings.GameDirectory;
 
         settings.LastProfile ??= new LauncherProfile();
+        settings.LastProfile.ModLoader ??= new ModLoaderProfile();
 
         if (string.IsNullOrWhiteSpace(settings.LastProfile.MinecraftVersion))
             settings.LastProfile.MinecraftVersion = "latest-release";

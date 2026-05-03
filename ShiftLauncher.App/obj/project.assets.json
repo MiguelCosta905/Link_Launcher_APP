@@ -104,7 +104,7 @@
       "Avalonia.BuildServices/11.3.2": {
         "type": "package",
         "build": {
-          "buildTransitive/Avalonia.BuildServices.targets": {}
+          "buildTransitive/_._": {}
         }
       },
       "Avalonia.Controls.ColorPicker/11.3.12": {
@@ -1947,6 +1947,7 @@
   "projectFileDependencyGroups": {
     "net10.0": [
       "Avalonia >= 11.3.12",
+      "Avalonia.BuildServices >= 11.3.2",
       "Avalonia.Desktop >= 11.3.12",
       "Avalonia.Diagnostics >= 11.3.12",
       "Avalonia.Fonts.Inter >= 11.3.12",
@@ -2007,6 +2008,11 @@
           "Avalonia": {
             "target": "Package",
             "version": "[11.3.12, )"
+          },
+          "Avalonia.BuildServices": {
+            "include": "None",
+            "target": "Package",
+            "version": "[11.3.2, )"
           },
           "Avalonia.Desktop": {
             "target": "Package",
