@@ -1,0 +1,13 @@
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\bin\Debug\net10.0\LinkLauncher.Core.deps.json
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\bin\Debug\net10.0\LinkLauncher.Core.dll
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\bin\Debug\net10.0\LinkLauncher.Core.pdb
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.csproj.AssemblyReference.cache
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.AssemblyInfoInputs.cache
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.AssemblyInfo.cs
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.csproj.CoreCompileInputs.cache
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.sourcelink.json
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.dll
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\refint\LinkLauncher.Core.dll
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\LinkLauncher.Core.pdb
+C:\Users\linkl\Desktop\Shift Launcher\Shift_Launcher_APP\LinkLauncher.Core\obj\Debug\net10.0\ref\LinkLauncher.Core.dll
