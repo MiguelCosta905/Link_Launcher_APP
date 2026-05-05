@@ -5,7 +5,8 @@ public sealed class LauncherSettings
     public string LauncherName { get; set; } = "Link Launcher";
     public string SettingsDirectory { get; set; } = string.Empty;
     public string SharedGameDirectory { get; set; } = string.Empty;
-    public string ThemeMode { get; set; } = "Sistema";
+    public string ThemeMode { get; set; } = "System";
+    public string LanguageCode { get; set; } = "pt-PT";
     public List<LauncherProfile> Profiles { get; set; } = new();
     public string? SelectedProfileId { get; set; }
 
@@ -13,7 +14,7 @@ public sealed class LauncherSettings
     {
         if (Profiles.Count == 0)
         {
-            var defaultProfile = new LauncherProfile { Name = "Instancia Principal" };
+            var defaultProfile = new LauncherProfile { Name = "Instância Principal" };
             Profiles.Add(defaultProfile);
             SelectedProfileId = defaultProfile.Id;
         }

@@ -60,7 +60,7 @@ public sealed class SettingsService
             {
                 var profile = lastProfile.ToObject<LauncherProfile>() ?? new LauncherProfile();
                 if (string.IsNullOrWhiteSpace(profile.Name))
-                    profile.Name = "Instancia Principal";
+                    profile.Name = "Instância Principal";
 
                 settings.Profiles.Add(profile);
                 settings.SelectedProfileId = profile.Id;
@@ -86,9 +86,12 @@ public sealed class SettingsService
             ? FilePaths.GetGameDirectory()
             : settings.SharedGameDirectory;
 
+        settings.ThemeMode = NormalizeThemeMode(settings.ThemeMode);
+        settings.LanguageCode = NormalizeLanguageCode(settings.LanguageCode);
+
         if (settings.Profiles.Count == 0)
         {
-            settings.Profiles.Add(new LauncherProfile { Name = "Instancia Principal" });
+            settings.Profiles.Add(new LauncherProfile { Name = "Instância Principal" });
             settings.SelectedProfileId = settings.Profiles[0].Id;
         }
 
@@ -107,7 +110,7 @@ public sealed class SettingsService
             profile.Id = Guid.NewGuid().ToString("N");
 
         if (string.IsNullOrWhiteSpace(profile.Name))
-            profile.Name = "Instancia";
+            profile.Name = "Instância";
 
         profile.ModLoader ??= new ModLoaderProfile();
         profile.MinecraftVersion = ExtractVanillaVersion(profile.MinecraftVersion);
@@ -158,5 +161,25 @@ public sealed class SettingsService
         return version.Length >= 3 &&
                version.StartsWith("1.", StringComparison.Ordinal) &&
                version[2..].All(c => c == '.' || char.IsDigit(c));
+    }
+
+    private static string NormalizeThemeMode(string? themeMode)
+    {
+        return themeMode switch
+        {
+            "Light" or "Claro" => "Light",
+            "Dark" or "Escuro" => "Dark",
+            _ => "System"
+        };
+    }
+
+    private static string NormalizeLanguageCode(string? languageCode)
+    {
+        return languageCode switch
+        {
+            "en" => "en",
+            "pt-PT" => "pt-PT",
+            _ => "pt-PT"
+        };
     }
 }

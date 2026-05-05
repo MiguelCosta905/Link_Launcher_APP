@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,12 +14,12 @@ using Avalonia;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using CmlLib.Core.Auth;
+using LinkLauncher.App.Localization;
 using LinkLauncher.Core.Auth;
 using LinkLauncher.Core.Launch;
 using LinkLauncher.Core.Models;
 using LinkLauncher.Core.ModLoaders;
 using LinkLauncher.Core.Utilities;
-
 
 namespace LinkLauncher.App.ViewModels;
 
@@ -27,15 +28,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private const int MaxConsoleTextLength = 24_000;
     private const int MaxLogEntries = 200;
     private static readonly TimeSpan ProgressUpdateInterval = TimeSpan.FromMilliseconds(150);
+
     private readonly ModLoaderVersionService _modLoaderVersionService = new();
     private readonly List<MinecraftVersionItem> _allVersions = new();
     private readonly LauncherService _launcherService;
     private readonly MicrosoftAuthService _authService;
+
     private LauncherSettings _settings = new();
-    private string _statusText = "Launcher pronto.";
-    private string _accountText = "Sem sessão Microsoft";
+    private string _statusText = UiText.Get("pt-PT", "status_ready");
+    private string _accountText = UiText.Get("pt-PT", "account_no_session");
     private string _minecraftConsoleText = string.Empty;
-    private string _selectedThemeMode = "Sistema";
+    private string _selectedThemeKey = "System";
+    private string _selectedLanguageCode = "pt-PT";
     private MinecraftVersionItem? _selectedVersion;
     private MSession? _microsoftSession;
     private bool _isBusy;
@@ -51,7 +55,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _showSnapshots;
     private bool _showOldBeta;
     private bool _showOldAlpha;
-    
 
     public MainWindowViewModel(
         LauncherService launcherService,
@@ -69,8 +72,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         DuplicateInstallationCommand = new AsyncRelayCommand(DuplicateInstallationAsync, () => !IsBusy);
         DeleteInstallationCommand = new AsyncRelayCommand(DeleteInstallationAsync, () => !IsBusy && Settings.Profiles.Count > 1);
 
+        RebuildLanguageOptions();
+        RebuildThemeOptions();
         LoadRamOptions();
-        ApplyTheme(SelectedThemeMode);
+        ApplyTheme(_selectedThemeKey);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -87,11 +92,69 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<MinecraftVersionItem> Versions { get; } = new();
     public ObservableCollection<AppLogEntry> Logs { get; } = new();
     public ObservableCollection<int> RamOptions { get; } = new();
-    public ObservableCollection<string> ThemeModes { get; } = new() { "Sistema", "Claro", "Escuro" };
+    public ObservableCollection<UiOption> ThemeOptions { get; } = new();
+    public ObservableCollection<UiOption> LanguageOptions { get; } = new();
     public ObservableCollection<LoaderType> LoaderTypes { get; } = new(Enum.GetValues<LoaderType>());
     public ObservableCollection<MinecraftVersionItem> FilteredVersions { get; } = new();
     public ObservableCollection<string> LoaderVersions { get; } = new();
     public ObservableCollection<LauncherProfile> Installations { get; } = new();
+
+    public string TaglineText => T("tagline");
+    public string ThemeLabelText => T("theme_label");
+    public string LanguageLabelText => T("language_label");
+    public string AccountTitleText => T("account_title");
+    public string PlayerLabelText => TF("player_label", PlayerName);
+    public string LoginMicrosoftButtonText => T("login_microsoft");
+    public string PlayOnlineButtonText => T("play_online");
+    public string PlayOfflineButtonText => T("play_offline");
+    public string InstallationsTitleText => T("installations_title");
+    public string NewInstallationButtonText => T("new_installation");
+    public string CopyInstallationButtonText => T("copy_installation");
+    public string DeleteInstallationButtonText => T("delete_installation");
+    public string OpenInstallationFolderButtonText => T("open_installation_folder");
+    public string GameFolderTitleText => T("game_folder_title");
+    public string OpenGameFolderButtonText => T("open_game_folder");
+    public string CurrentInstallationTitleText => T("current_installation");
+    public string NameLabelText => T("name_label");
+    public string MinecraftLabelText => T("minecraft_label");
+    public string InstanceRamLabelText => T("instance_ram_label");
+    public string ReleasesText => T("releases");
+    public string SnapshotsText => T("snapshots");
+    public string OldBetaText => T("old_beta");
+    public string OldAlphaText => T("old_alpha");
+    public string LoaderLabelText => T("loader_label");
+    public string LoaderVersionLabelText => T("loader_version_label");
+    public string VanillaLoaderMessageText => T("vanilla_loader_message");
+    public string ProgressTitleText => T("progress_title");
+    public string FilesLabelText => T("files_label");
+    public string DownloadLabelText => T("download_label");
+    public string MissionControlTitleText => T("mission_control_title");
+    public string EventsTitleText => T("events_title");
+    public string EventsSubtitleText => T("events_subtitle");
+
+    public UiOption? SelectedThemeOption
+    {
+        get => ThemeOptions.FirstOrDefault(option => option.Key == _selectedThemeKey);
+        set
+        {
+            if (value is null)
+                return;
+
+            SetTheme(value.Key);
+        }
+    }
+
+    public UiOption? SelectedLanguageOption
+    {
+        get => LanguageOptions.FirstOrDefault(option => option.Key == _selectedLanguageCode);
+        set
+        {
+            if (value is null)
+                return;
+
+            SetLanguage(value.Key, announceChange: true);
+        }
+    }
 
     public bool ShowReleases
     {
@@ -144,7 +207,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public bool IsVanillaSelected => SelectedLoaderType == LoaderType.Vanilla;
     public bool IsLoaderSelected => SelectedLoaderType != LoaderType.Vanilla;
 
-
     public LauncherSettings Settings
     {
         get => _settings;
@@ -161,6 +223,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(MinecraftVersion));
             OnPropertyChanged(nameof(MaximumRamMb));
             OnPropertyChanged(nameof(PlayerName));
+            OnPropertyChanged(nameof(PlayerLabelText));
             OnPropertyChanged(nameof(SelectedLoaderType));
             OnPropertyChanged(nameof(LoaderVersion));
             OnPropertyChanged(nameof(ModLoaderSummary));
@@ -176,7 +239,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         get => SelectedProfile.Name;
         set
         {
-            var normalized = string.IsNullOrWhiteSpace(value) ? "Instancia" : value.Trim();
+            var normalized = string.IsNullOrWhiteSpace(value) ? T("instance_default_name") : value.Trim();
             if (SelectedProfile.Name == normalized)
                 return;
 
@@ -340,21 +403,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public int MaximumRamIndex => Math.Max(0, RamOptions.Count - 1);
     public string SelectedRamLabel => $"{MaximumRamMb} MB";
 
-    public string SelectedThemeMode
-    {
-        get => _selectedThemeMode;
-        set
-        {
-            if (_selectedThemeMode == value)
-                return;
-
-            _selectedThemeMode = value;
-            Settings.ThemeMode = value;
-            ApplyTheme(value);
-            OnPropertyChanged();
-        }
-    }
-
     public string PlayerName
     {
         get => SelectedProfile.PlayerName;
@@ -365,6 +413,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
             SelectedProfile.PlayerName = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(PlayerLabelText));
         }
     }
 
@@ -412,10 +461,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         get
         {
             if (SelectedLoaderType == LoaderType.Vanilla)
-                return "Vanilla";
+                return T("modloader_vanilla");
 
             return string.IsNullOrWhiteSpace(LoaderVersion)
-                ? $"{SelectedLoaderType} sem versão definida"
+                ? TF("modloader_no_version", SelectedLoaderType)
                 : $"{SelectedLoaderType} {LoaderVersion}";
         }
     }
@@ -477,8 +526,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         Settings = settings;
         LoadRamOptions();
-        SelectedThemeMode = string.IsNullOrWhiteSpace(settings.ThemeMode) ? "Sistema" : settings.ThemeMode;
-        SetStatus("Configuração carregada.");
+        SetLanguage(settings.LanguageCode, announceChange: false);
+        SetTheme(settings.ThemeMode);
+        UpdateAccountText();
+        SetStatus(T("status_settings_loaded"));
 
         if (SelectedLoaderType != LoaderType.Vanilla)
             _ = RefreshLoaderDataAsync();
@@ -502,6 +553,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(MinecraftVersion));
         OnPropertyChanged(nameof(MaximumRamMb));
         OnPropertyChanged(nameof(PlayerName));
+        OnPropertyChanged(nameof(PlayerLabelText));
         OnPropertyChanged(nameof(SelectedLoaderType));
         OnPropertyChanged(nameof(LoaderVersion));
         OnPropertyChanged(nameof(ModLoaderSummary));
@@ -516,7 +568,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         var profile = new LauncherProfile
         {
-            Name = $"Instancia {Settings.Profiles.Count + 1}",
+            Name = TF("instance_numbered", Settings.Profiles.Count + 1),
             PlayerName = PlayerName,
             MinecraftVersion = string.IsNullOrWhiteSpace(MinecraftVersion) ? "latest-release" : MinecraftVersion,
             MaximumRamMb = MaximumRamMb
@@ -526,20 +578,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Settings.SelectedProfileId = profile.Id;
         RefreshInstallations();
         OnSelectedProfileChanged();
-        SetStatus($"Instalacao criada: {profile.Name}.");
-        AddLog("Info", "Instalacao criada.", profile.Name);
+        SetStatus(TF("status_installation_created", profile.Name));
+        AddLog("Info", T("log_installation_created"), profile.Name);
         return Task.CompletedTask;
     }
 
     private Task DuplicateInstallationAsync()
     {
-        var profile = SelectedProfile.Clone($"{SelectedProfile.Name} copia");
+        var profile = SelectedProfile.Clone($"{SelectedProfile.Name} {T("copy_suffix")}");
         Settings.Profiles.Add(profile);
         Settings.SelectedProfileId = profile.Id;
         RefreshInstallations();
         OnSelectedProfileChanged();
-        SetStatus($"Instalacao duplicada: {profile.Name}.");
-        AddLog("Info", "Instalacao duplicada.", profile.Name);
+        SetStatus(TF("status_installation_copied", profile.Name));
+        AddLog("Info", T("log_installation_copied"), profile.Name);
         return Task.CompletedTask;
     }
 
@@ -547,7 +599,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         if (Settings.Profiles.Count <= 1)
         {
-            SetStatus("Mantem pelo menos uma instalacao.");
+            SetStatus(T("status_keep_one_installation"));
             return Task.CompletedTask;
         }
 
@@ -556,8 +608,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         Settings.SelectedProfileId = Settings.Profiles[0].Id;
         RefreshInstallations();
         OnSelectedProfileChanged();
-        SetStatus($"Instalacao removida: {profile.Name}.");
-        AddLog("Info", "Instalacao removida.", profile.Name);
+        SetStatus(TF("status_installation_removed", profile.Name));
+        AddLog("Info", T("log_installation_removed"), profile.Name);
         return Task.CompletedTask;
     }
 
@@ -569,35 +621,35 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ApplyMinecraftVersionFilters();
 
         SetStatus(FilteredVersions.Count > 0
-            ? $"{FilteredVersions.Count} versões carregadas."
-            : "Nenhuma versão encontrada.");
+            ? TF("status_versions_loaded", FilteredVersions.Count)
+            : T("status_no_versions_found"));
     }
 
-private async Task RefreshLoaderDataAsync()
-{
-    if (SelectedLoaderType == LoaderType.Vanilla)
+    private async Task RefreshLoaderDataAsync()
     {
-        LoaderVersions.Clear();
-        LoaderVersion = string.Empty;
-        _supportedMinecraftVersions = new HashSet<string>();
-        ApplyMinecraftVersionFilters();
-        return;
-    }
+        if (SelectedLoaderType == LoaderType.Vanilla)
+        {
+            LoaderVersions.Clear();
+            LoaderVersion = string.Empty;
+            _supportedMinecraftVersions = new HashSet<string>();
+            ApplyMinecraftVersionFilters();
+            return;
+        }
 
-    try
-    {
-        SetStatus($"A carregar versões compatíveis com {SelectedLoaderType}...");
-        _supportedMinecraftVersions =
-            await _modLoaderVersionService.GetSupportedMinecraftVersionsAsync(SelectedLoaderType);
+        try
+        {
+            SetStatus(TF("status_loading_loader_versions", SelectedLoaderType));
+            _supportedMinecraftVersions =
+                await _modLoaderVersionService.GetSupportedMinecraftVersionsAsync(SelectedLoaderType);
 
-        ApplyMinecraftVersionFilters();
-        await RefreshLoaderVersionsAsync();
+            ApplyMinecraftVersionFilters();
+            await RefreshLoaderVersionsAsync();
+        }
+        catch (Exception ex)
+        {
+            HandleError($"Load {SelectedLoaderType} versions", ex);
+        }
     }
-    catch (Exception ex)
-    {
-        HandleError($"Carregar versões {SelectedLoaderType}", ex);
-    }
-}
 
     private async Task RefreshLoaderVersionsAsync()
     {
@@ -624,12 +676,12 @@ private async Task RefreshLoaderDataAsync()
                 : LoaderVersions.FirstOrDefault() ?? string.Empty;
 
             SetStatus(LoaderVersions.Count > 0
-                ? $"{LoaderVersions.Count} versões de {SelectedLoaderType} encontradas."
-                : $"Sem versões de {SelectedLoaderType} para Minecraft {MinecraftVersion}.");
+                ? TF("status_loader_versions_found", LoaderVersions.Count, SelectedLoaderType)
+                : TF("status_no_loader_versions_found", SelectedLoaderType, MinecraftVersion));
         }
         catch (Exception ex)
         {
-            HandleError($"Carregar versões {SelectedLoaderType}", ex);
+            HandleError($"Load {SelectedLoaderType} versions", ex);
         }
     }
 
@@ -676,14 +728,14 @@ private async Task RefreshLoaderDataAsync()
 
     public void HandleStartupError(Exception ex)
     {
-        HandleError("Arranque", ex);
+        HandleError(T("operation_startup"), ex);
     }
 
     private async Task LoginMicrosoftAsync()
     {
         IsBusy = true;
-        SetStatus("A abrir login Microsoft por código...");
-        AddLog("Info", "Login Microsoft iniciado.");
+        SetStatus(T("status_opening_microsoft_login"));
+        AddLog("Info", T("log_microsoft_login_started"));
 
         try
         {
@@ -692,24 +744,24 @@ private async Task RefreshLoaderDataAsync()
                 Dispatcher.UIThread.Post(() =>
                 {
                     SetStatus(message);
-                    AddLog("Info", "Código Microsoft recebido.", message);
+                    AddLog("Info", T("log_microsoft_code_received"), message);
                 });
 
                 return Task.CompletedTask;
             });
 
-            AccountText = $"Sessão: {_microsoftSession.Username}";
             PlayerName = _microsoftSession.Username ?? "Player";
-            SetStatus("Login Microsoft concluído.");
+            UpdateAccountText();
+            SetStatus(T("status_microsoft_login_done"));
 
             AddLog(
                 "Info",
-                $"Sessão iniciada como {_microsoftSession.Username}",
+                TF("log_signed_in_as", _microsoftSession.Username ?? "Player"),
                 $"Username: {_microsoftSession.Username}{Environment.NewLine}UUID: {_microsoftSession.UUID}");
         }
         catch (Exception ex)
         {
-            HandleError("Login Microsoft", ex);
+            HandleError("Microsoft login", ex);
         }
         finally
         {
@@ -727,8 +779,8 @@ private async Task RefreshLoaderDataAsync()
     {
         if (_microsoftSession is null)
         {
-            SetStatus("Faz login com a Microsoft antes de jogar online.");
-            AddLog("Aviso", "Arranque online bloqueado.", "Não existe sessão Microsoft ativa.");
+            SetStatus(T("warning_login_before_online"));
+            AddLog("Warning", T("warning_online_blocked"), T("warning_no_active_session"));
             return;
         }
 
@@ -742,14 +794,14 @@ private async Task RefreshLoaderDataAsync()
         FileProgressPercent = 0;
         ByteProgressPercent = 0;
         MinecraftConsoleText = string.Empty;
-        SetStatus($"A preparar arranque {launchMode.ToLowerInvariant()}...");
+        SetStatus(TF("status_preparing_launch", launchMode.ToLowerInvariant()));
 
         try
         {
             if (SelectedLoaderType != LoaderType.Vanilla && string.IsNullOrWhiteSpace(LoaderVersion))
             {
-                SetStatus($"Define a versão do {SelectedLoaderType} antes de iniciar.");
-                AddLog("Aviso", "Loader sem versão.", $"Loader selecionado: {SelectedLoaderType}");
+                SetStatus(TF("warning_set_loader_version", SelectedLoaderType));
+                AddLog("Warning", T("warning_loader_without_version"), $"Loader selected: {SelectedLoaderType}");
                 return;
             }
 
@@ -764,27 +816,28 @@ private async Task RefreshLoaderDataAsync()
                 request.PlayerName = session.Username ?? "Player";
             }
 
-            SetStatus($"A verificar Java para {request.VersionName}...");
-            AddLog("Info", $"Arranque {launchMode} iniciado.", $"Versão: {request.VersionName}");
+            SetStatus(TF("status_checking_java", request.VersionName));
+            AddLog("Info", TF("log_launch_started", launchMode), $"Version: {request.VersionName}");
 
             var result = await _launcherService.LaunchOfflineAsync(request);
 
             if (!result.Success)
             {
-                SetStatus($"{launchMode} falhou: {result.Message}");
+                SetStatus(TF("status_launch_failed", launchMode, result.Message));
                 AddLog(
-                    "Erro",
-                    $"{launchMode} falhou.",
+                    "Error",
+                    TF("log_launch_failed", launchMode),
                     result.Exception is null ? result.Message : BuildExceptionDetails(result.Exception));
                 return;
             }
 
-            SetStatus($"Minecraft iniciado. Processo: {result.ProcessId}");
-            AddLog("Info", $"{launchMode} iniciado.", $"Process ID: {result.ProcessId}");
+            var processIdText = result.ProcessId?.ToString(CultureInfo.InvariantCulture) ?? "-";
+            SetStatus(TF("status_minecraft_started", processIdText));
+            AddLog("Info", TF("log_launch_success", launchMode), $"Process ID: {processIdText}");
         }
         catch (Exception ex)
         {
-            HandleError($"Arranque {launchMode}", ex);
+            HandleError($"{launchMode} launch", ex);
         }
         finally
         {
@@ -803,7 +856,7 @@ private async Task RefreshLoaderDataAsync()
             UseShellExecute = true
         });
 
-        AddLog("Info", "Pasta do jogo aberta.", GameDirectory);
+        AddLog("Info", T("log_game_folder_opened"), GameDirectory);
         return Task.CompletedTask;
     }
 
@@ -817,7 +870,7 @@ private async Task RefreshLoaderDataAsync()
             UseShellExecute = true
         });
 
-        AddLog("Info", "Pasta da instalacao aberta.", InstallationDirectory);
+        AddLog("Info", T("log_installation_folder_opened"), InstallationDirectory);
         return Task.CompletedTask;
     }
 
@@ -863,8 +916,8 @@ private async Task RefreshLoaderDataAsync()
                 SetStatus(result.Message);
 
                 AddLog(
-                    result.Crashed ? "Erro" : "Info",
-                    $"Processo Minecraft {launchMode} terminou.",
+                    result.Crashed ? "Error" : "Info",
+                    TF("log_process_ended", launchMode),
                     $"Exit code: {result.ExitCode}{Environment.NewLine}{result.Message}");
             });
         };
@@ -912,17 +965,115 @@ private async Task RefreshLoaderDataAsync()
         return Math.Clamp(mb, 1024, 65536);
     }
 
-    private static void ApplyTheme(string theme)
+    private static void ApplyTheme(string themeKey)
     {
         if (Application.Current is null)
             return;
 
-        Application.Current.RequestedThemeVariant = theme switch
+        Application.Current.RequestedThemeVariant = themeKey switch
         {
-            "Claro" => ThemeVariant.Light,
-            "Escuro" => ThemeVariant.Dark,
+            "Light" => ThemeVariant.Light,
+            "Dark" => ThemeVariant.Dark,
             _ => ThemeVariant.Default
         };
+    }
+
+    private void SetTheme(string themeKey)
+    {
+        var normalized = themeKey switch
+        {
+            "Light" => "Light",
+            "Dark" => "Dark",
+            _ => "System"
+        };
+
+        if (_selectedThemeKey == normalized && ThemeOptions.Count > 0)
+            return;
+
+        _selectedThemeKey = normalized;
+        Settings.ThemeMode = normalized;
+        ApplyTheme(normalized);
+        RebuildThemeOptions();
+        OnPropertyChanged(nameof(SelectedThemeOption));
+    }
+
+    private void SetLanguage(string languageCode, bool announceChange)
+    {
+        var normalized = UiText.NormalizeLanguageCode(languageCode);
+        if (_selectedLanguageCode == normalized && LanguageOptions.Count > 0)
+            return;
+
+        _selectedLanguageCode = normalized;
+        Settings.LanguageCode = normalized;
+        RebuildLanguageOptions();
+        RebuildThemeOptions();
+        RefreshLocalizedProperties();
+        UpdateAccountText();
+
+        if (announceChange)
+            SetStatus(T("status_language_changed"));
+    }
+
+    private void RebuildThemeOptions()
+    {
+        ThemeOptions.Clear();
+        ThemeOptions.Add(new UiOption("System", T("theme_system")));
+        ThemeOptions.Add(new UiOption("Light", T("theme_light")));
+        ThemeOptions.Add(new UiOption("Dark", T("theme_dark")));
+    }
+
+    private void RebuildLanguageOptions()
+    {
+        LanguageOptions.Clear();
+        LanguageOptions.Add(new UiOption("en", T("language_english")));
+        LanguageOptions.Add(new UiOption("pt-PT", T("language_portuguese")));
+    }
+
+    private void RefreshLocalizedProperties()
+    {
+        OnPropertyChanged(nameof(TaglineText));
+        OnPropertyChanged(nameof(ThemeLabelText));
+        OnPropertyChanged(nameof(LanguageLabelText));
+        OnPropertyChanged(nameof(AccountTitleText));
+        OnPropertyChanged(nameof(PlayerLabelText));
+        OnPropertyChanged(nameof(LoginMicrosoftButtonText));
+        OnPropertyChanged(nameof(PlayOnlineButtonText));
+        OnPropertyChanged(nameof(PlayOfflineButtonText));
+        OnPropertyChanged(nameof(InstallationsTitleText));
+        OnPropertyChanged(nameof(NewInstallationButtonText));
+        OnPropertyChanged(nameof(CopyInstallationButtonText));
+        OnPropertyChanged(nameof(DeleteInstallationButtonText));
+        OnPropertyChanged(nameof(OpenInstallationFolderButtonText));
+        OnPropertyChanged(nameof(GameFolderTitleText));
+        OnPropertyChanged(nameof(OpenGameFolderButtonText));
+        OnPropertyChanged(nameof(CurrentInstallationTitleText));
+        OnPropertyChanged(nameof(NameLabelText));
+        OnPropertyChanged(nameof(MinecraftLabelText));
+        OnPropertyChanged(nameof(InstanceRamLabelText));
+        OnPropertyChanged(nameof(ReleasesText));
+        OnPropertyChanged(nameof(SnapshotsText));
+        OnPropertyChanged(nameof(OldBetaText));
+        OnPropertyChanged(nameof(OldAlphaText));
+        OnPropertyChanged(nameof(LoaderLabelText));
+        OnPropertyChanged(nameof(LoaderVersionLabelText));
+        OnPropertyChanged(nameof(VanillaLoaderMessageText));
+        OnPropertyChanged(nameof(ProgressTitleText));
+        OnPropertyChanged(nameof(FilesLabelText));
+        OnPropertyChanged(nameof(DownloadLabelText));
+        OnPropertyChanged(nameof(MissionControlTitleText));
+        OnPropertyChanged(nameof(EventsTitleText));
+        OnPropertyChanged(nameof(EventsSubtitleText));
+        OnPropertyChanged(nameof(SelectedLanguageOption));
+        OnPropertyChanged(nameof(SelectedThemeOption));
+        OnPropertyChanged(nameof(ModLoaderSummary));
+        OnPropertyChanged(nameof(InstallationSummary));
+    }
+
+    private void UpdateAccountText()
+    {
+        AccountText = _microsoftSession is null
+            ? T("account_no_session")
+            : TF("account_session", _microsoftSession.Username ?? "Player");
     }
 
     private void SetStatus(string message)
@@ -967,8 +1118,8 @@ private async Task RefreshLoaderDataAsync()
     private void HandleError(string operation, Exception ex)
     {
         var message = ErrorMessageService.ToUserMessage(ex);
-        SetStatus($"{operation} falhou: {message}");
-        AddLog("Erro", $"{operation} falhou.", BuildExceptionDetails(ex));
+        SetStatus(TF("status_operation_failed", operation, message));
+        AddLog("Error", TF("log_operation_failed", operation), BuildExceptionDetails(ex));
     }
 
     private static string BuildExceptionDetails(Exception ex)
@@ -1033,6 +1184,10 @@ private async Task RefreshLoaderDataAsync()
         if (DeleteInstallationCommand is AsyncRelayCommand deleteInstallationCommand)
             deleteInstallationCommand.RaiseCanExecuteChanged();
     }
+
+    private string T(string key) => UiText.Get(_selectedLanguageCode, key);
+
+    private string TF(string key, params object[] args) => UiText.Format(_selectedLanguageCode, key, args);
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

@@ -63,7 +63,7 @@
                                    FontSize="34"
                                    Foreground="#FFFFFF" />
 
-                        <TextBlock Text="Minecraft, perfis e mods num só lugar"
+                        <TextBlock Text="{Binding TaglineText}"
                                    Foreground="#CFE1D0" />
                     </StackPanel>
                 </StackPanel>
@@ -72,13 +72,22 @@
                             Orientation="Horizontal"
                             Spacing="10"
                             VerticalAlignment="Center">
-                    <TextBlock Text="Tema"
+                    <TextBlock Text="{Binding LanguageLabelText}"
                                Foreground="#CFE1D0"
                                VerticalAlignment="Center"
                                FontWeight="Bold" />
 
-                    <ComboBox ItemsSource="{Binding ThemeModes}"
-                              SelectedItem="{Binding SelectedThemeMode}"
+                    <ComboBox ItemsSource="{Binding LanguageOptions}"
+                              SelectedItem="{Binding SelectedLanguageOption}"
+                              Width="170" />
+
+                    <TextBlock Text="{Binding ThemeLabelText}"
+                               Foreground="#CFE1D0"
+                               VerticalAlignment="Center"
+                               FontWeight="Bold" />
+
+                    <ComboBox ItemsSource="{Binding ThemeOptions}"
+                              SelectedItem="{Binding SelectedThemeOption}"
                               Width="130" />
 
                     <Border Background="#91EB65"
@@ -105,7 +114,7 @@
                     CornerRadius="0"
                     Padding="18">
                 <StackPanel Spacing="14">
-                    <TextBlock Text="Conta"
+                    <TextBlock Text="{Binding AccountTitleText}"
                                FontSize="20"
                                FontWeight="Bold"
                                Foreground="#17201C" />
@@ -121,26 +130,26 @@
                                        FontWeight="Bold"
                                        TextWrapping="Wrap" />
 
-                            <TextBlock Text="{Binding PlayerName, StringFormat=Jogador: {0}}"
+                            <TextBlock Text="{Binding PlayerLabelText}"
                                        Foreground="#5B675F" />
                         </StackPanel>
                     </Border>
 
-                    <Button Content="Entrar com Microsoft"
+                    <Button Content="{Binding LoginMicrosoftButtonText}"
                             Command="{Binding LoginMicrosoftCommand}"
                             Background="#91EB65"
                             Foreground="#0F1B13"
                             BorderBrush="#5BB848"
                             HorizontalAlignment="Stretch" />
 
-                    <Button Content="Jogar Online"
+                    <Button Content="{Binding PlayOnlineButtonText}"
                             Command="{Binding PlayOnlineCommand}"
                             Background="#58B957"
                             Foreground="#0F1B13"
                             BorderBrush="#3C8F3B"
                             HorizontalAlignment="Stretch" />
 
-                    <Button Content="Jogar Offline"
+                    <Button Content="{Binding PlayOfflineButtonText}"
                             Command="{Binding PlayOfflineCommand}"
                             Background="#F8FBF6"
                             BorderBrush="#C8D6C4"
@@ -149,7 +158,7 @@
 
                     <Separator Margin="0,6" />
 
-                    <TextBlock Text="Instalações"
+                    <TextBlock Text="{Binding InstallationsTitleText}"
                                FontSize="16"
                                FontWeight="Bold"
                                Foreground="#17201C" />
@@ -161,7 +170,7 @@
                     <Grid ColumnDefinitions="*,*,*"
                           ColumnSpacing="8">
                         <Button Grid.Column="0"
-                                Content="+"
+                                Content="{Binding NewInstallationButtonText}"
                                 Command="{Binding NewInstallationCommand}"
                                 Background="#F8FBF6"
                                 BorderBrush="#C8D6C4"
@@ -169,7 +178,7 @@
                                 HorizontalAlignment="Stretch" />
 
                         <Button Grid.Column="1"
-                                Content="⧉"
+                                Content="{Binding CopyInstallationButtonText}"
                                 Command="{Binding DuplicateInstallationCommand}"
                                 Background="#F8FBF6"
                                 BorderBrush="#C8D6C4"
@@ -177,7 +186,7 @@
                                 HorizontalAlignment="Stretch" />
 
                         <Button Grid.Column="2"
-                                Content="×"
+                                Content="{Binding DeleteInstallationButtonText}"
                                 Command="{Binding DeleteInstallationCommand}"
                                 Background="#F8FBF6"
                                 BorderBrush="#C8D6C4"
@@ -185,7 +194,7 @@
                                 HorizontalAlignment="Stretch" />
                     </Grid>
 
-                    <Button Content="Abrir pasta da instalação"
+                    <Button Content="{Binding OpenInstallationFolderButtonText}"
                             Command="{Binding OpenInstallationFolderCommand}"
                             Background="#F8FBF6"
                             BorderBrush="#C8D6C4"
@@ -194,7 +203,7 @@
 
                     <Separator Margin="0,6" />
 
-                    <TextBlock Text="Pasta do jogo"
+                    <TextBlock Text="{Binding GameFolderTitleText}"
                                FontSize="16"
                                FontWeight="Bold"
                                Foreground="#17201C" />
@@ -203,7 +212,7 @@
                                Foreground="#5B675F"
                                TextWrapping="Wrap" />
 
-                    <Button Content="Abrir pasta do jogo"
+                    <Button Content="{Binding OpenGameFolderButtonText}"
                             Command="{Binding OpenGameFolderCommand}"
                             Background="#F8FBF6"
                             BorderBrush="#C8D6C4"
@@ -222,7 +231,6 @@
                         BorderThickness="2"
                         CornerRadius="0"
                         Padding="18">
-                    <!-- BLOCO: editor da instalacao selecionada -->
                     <Grid ColumnDefinitions="*,220"
                           RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
                           ColumnSpacing="18"
@@ -231,7 +239,7 @@
                         <StackPanel Grid.Row="0"
                                     Grid.ColumnSpan="2"
                                     Spacing="2">
-                            <TextBlock Text="Instalacao atual"
+                            <TextBlock Text="{Binding CurrentInstallationTitleText}"
                                        FontSize="20"
                                        FontWeight="Bold"
                                        Foreground="#17201C" />
@@ -243,7 +251,7 @@
                         <StackPanel Grid.Row="1"
                                     Grid.ColumnSpan="2"
                                     Spacing="6">
-                            <TextBlock Text="Nome"
+                            <TextBlock Text="{Binding NameLabelText}"
                                        FontWeight="Bold"
                                        Foreground="#17201C" />
 
@@ -254,11 +262,10 @@
                         <StackPanel Grid.Row="2"
                                     Grid.Column="0"
                                     Spacing="6">
-                            <TextBlock Text="Minecraft"
+                            <TextBlock Text="{Binding MinecraftLabelText}"
                                        FontWeight="Bold"
                                        Foreground="#17201C" />
 
-                            <!-- Usa FilteredVersions para mudar a lista conforme filtros Vanilla ou loader selecionado. -->
                             <ComboBox ItemsSource="{Binding FilteredVersions}"
                                       SelectedItem="{Binding SelectedVersion}"
                                       HorizontalAlignment="Stretch" />
@@ -267,7 +274,7 @@
                         <StackPanel Grid.Row="2"
                                     Grid.Column="1"
                                     Spacing="6">
-                            <TextBlock Text="RAM da instancia"
+                            <TextBlock Text="{Binding InstanceRamLabelText}"
                                        FontWeight="Bold"
                                        Foreground="#17201C" />
 
@@ -276,33 +283,31 @@
                                       HorizontalAlignment="Stretch" />
                         </StackPanel>
 
-                        <!-- FILTROS: So aparecem quando o loader e Vanilla -->
                         <StackPanel Grid.Row="3"
                                     Grid.ColumnSpan="2"
                                     Orientation="Horizontal"
                                     Spacing="12"
                                     IsVisible="{Binding IsVanillaSelected}">
-                            <CheckBox Content="Releases"
+                            <CheckBox Content="{Binding ReleasesText}"
                                       IsChecked="{Binding ShowReleases}" />
 
-                            <CheckBox Content="Snapshots"
+                            <CheckBox Content="{Binding SnapshotsText}"
                                       IsChecked="{Binding ShowSnapshots}" />
 
-                            <CheckBox Content="Old Beta"
+                            <CheckBox Content="{Binding OldBetaText}"
                                       IsChecked="{Binding ShowOldBeta}" />
 
-                            <CheckBox Content="Old Alpha"
+                            <CheckBox Content="{Binding OldAlphaText}"
                                       IsChecked="{Binding ShowOldAlpha}" />
                         </StackPanel>
 
-                        <!-- CONTROLOS: Loader e versao do loader -->
                         <Grid Grid.Row="4"
                               Grid.ColumnSpan="2"
                               ColumnDefinitions="220,*"
                               ColumnSpacing="18">
                             <StackPanel Grid.Column="0"
                                         Spacing="6">
-                                <TextBlock Text="Loader"
+                                <TextBlock Text="{Binding LoaderLabelText}"
                                            FontWeight="Bold"
                                            Foreground="#17201C" />
 
@@ -314,7 +319,7 @@
                             <StackPanel Grid.Column="1"
                                         Spacing="6"
                                         IsVisible="{Binding IsLoaderSelected}">
-                                <TextBlock Text="Versão do loader"
+                                <TextBlock Text="{Binding LoaderVersionLabelText}"
                                            FontWeight="Bold"
                                            Foreground="#17201C" />
 
@@ -326,7 +331,7 @@
                             <StackPanel Grid.Column="1"
                                         Spacing="6"
                                         IsVisible="{Binding IsVanillaSelected}">
-                                <TextBlock Text="VersÃ£o do loader"
+                                <TextBlock Text="{Binding LoaderVersionLabelText}"
                                            FontWeight="Bold"
                                            Foreground="#17201C" />
 
@@ -335,13 +340,12 @@
                                         BorderThickness="2"
                                         CornerRadius="0"
                                         Padding="10,8">
-                                    <TextBlock Text="Vanilla nÃ£o usa loader"
+                                    <TextBlock Text="{Binding VanillaLoaderMessageText}"
                                                Foreground="#5B675F" />
                                 </Border>
                             </StackPanel>
                         </Grid>
 
-                        <!-- SLIDER: RAM -->
                         <Slider Grid.Row="5"
                                 Grid.ColumnSpan="2"
                                 Minimum="0"
@@ -360,19 +364,19 @@
                         CornerRadius="0"
                         Padding="18">
                     <StackPanel Spacing="8">
-                        <TextBlock Text="Progresso"
+                        <TextBlock Text="{Binding ProgressTitleText}"
                                    FontSize="20"
                                    FontWeight="Bold"
                                    Foreground="#FFFFFF" />
 
-                        <TextBlock Text="Ficheiros"
+                        <TextBlock Text="{Binding FilesLabelText}"
                                    Foreground="#CFE1D0" />
 
                         <ProgressBar Minimum="0"
                                      Maximum="100"
                                      Value="{Binding FileProgressPercent}" />
 
-                        <TextBlock Text="Download"
+                        <TextBlock Text="{Binding DownloadLabelText}"
                                    Foreground="#CFE1D0" />
 
                         <ProgressBar Minimum="0"
@@ -394,7 +398,7 @@
                               RowSpacing="10">
                             <StackPanel Grid.Row="0"
                                         Spacing="2">
-                                <TextBlock Text="Mission Control"
+                                <TextBlock Text="{Binding MissionControlTitleText}"
                                            FontSize="20"
                                            FontWeight="Bold"
                                            Foreground="#FFFFFF" />
@@ -433,12 +437,12 @@
                               RowSpacing="10">
                             <StackPanel Grid.Row="0"
                                         Spacing="2">
-                                <TextBlock Text="Erros e eventos"
+                                <TextBlock Text="{Binding EventsTitleText}"
                                            FontSize="20"
                                            FontWeight="Bold"
                                            Foreground="#17201C" />
 
-                                <TextBlock Text="Seleciona um evento para ver detalhes técnicos."
+                                <TextBlock Text="{Binding EventsSubtitleText}"
                                            Foreground="#5B675F"
                                            TextWrapping="Wrap" />
                             </StackPanel>
