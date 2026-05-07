@@ -1,7 +1,7 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using LinkLauncher.Core.Models;
 using LinkLauncher.Core.ModLoaders;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LinkLauncher.Core.Storage;
 
@@ -68,7 +68,7 @@ public sealed class SettingsService
         }
         catch (JsonException)
         {
-            // A normalizacao abaixo cria valores seguros se o ficheiro estiver incompleto.
+            // The normalization below creates safe defaults if the file is incomplete.
         }
 
         return settings;
@@ -118,8 +118,7 @@ public sealed class SettingsService
         if (string.IsNullOrWhiteSpace(profile.MinecraftVersion))
             profile.MinecraftVersion = "latest-release";
 
-        if (profile.MaximumRamMb <= 0)
-            profile.MaximumRamMb = 2048;
+        profile.MaximumRamMb = NormalizeRam(profile.MaximumRamMb);
 
         if (string.IsNullOrWhiteSpace(profile.PlayerName))
             profile.PlayerName = "Player";
@@ -181,5 +180,19 @@ public sealed class SettingsService
             "pt-PT" => "pt-PT",
             _ => "pt-PT"
         };
+    }
+
+    private static int NormalizeRam(int maximumRamMb)
+    {
+        const int minRamMb = 1024;
+        const int maxRamMb = 16384;
+        const int stepMb = 1024;
+
+        if (maximumRamMb <= 0)
+            return 2048;
+
+        var clamped = Math.Clamp(maximumRamMb, minRamMb, maxRamMb);
+        var rounded = (int)Math.Round((double)clamped / stepMb, MidpointRounding.AwayFromZero);
+        return rounded * stepMb;
     }
 }

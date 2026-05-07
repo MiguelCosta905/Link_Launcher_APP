@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="using:LinkLauncher.App.ViewModels"
+        xmlns:views="using:LinkLauncher.App.Views"
         mc:Ignorable="d"
         d:DesignWidth="1180"
         d:DesignHeight="780"
@@ -14,457 +15,206 @@
         Height="780"
         MinWidth="980"
         MinHeight="660"
-        Background="#F5F8F0">
+        Background="#5C4030">
 
     <Window.Styles>
         <Style Selector="Button">
-            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="MinHeight" Value="42" />
             <Setter Property="Padding" Value="16,10" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <Style Selector="Button.nav">
+            <Setter Property="Background" Value="#C59A71" />
+            <Setter Property="Foreground" Value="#2A1A10" />
+            <Setter Property="BorderBrush" Value="#6F4A2D" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
         </Style>
 
         <Style Selector="ComboBox">
-            <Setter Property="CornerRadius" Value="0" />
-            <Setter Property="BorderBrush" Value="#C8D6C4" />
-            <Setter Property="Background" Value="#F8FBF6" />
-            <Setter Property="Foreground" Value="#17201C" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="BorderBrush" Value="#4A2D1B" />
+            <Setter Property="Background" Value="#E2C39B" />
+            <Setter Property="Foreground" Value="#2A1A10" />
         </Style>
 
         <Style Selector="TextBox">
-            <Setter Property="CornerRadius" Value="0" />
-            <Setter Property="BorderBrush" Value="#C8D6C4" />
-            <Setter Property="Background" Value="#F8FBF6" />
-            <Setter Property="Foreground" Value="#17201C" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="BorderBrush" Value="#4A2D1B" />
+            <Setter Property="Background" Value="#E2C39B" />
+            <Setter Property="Foreground" Value="#2A1A10" />
         </Style>
     </Window.Styles>
 
-    <Grid RowDefinitions="Auto,*"
-          Margin="24"
-          RowSpacing="18">
+    <Border Margin="20"
+            Background="#6B4A34"
+            BorderBrush="#3D2417"
+            BorderThickness="3"
+            CornerRadius="8">
+        <Grid RowDefinitions="Auto,*">
+            <Border Grid.Row="0"
+                    BorderBrush="#3B6927"
+                    BorderThickness="0,0,0,3"
+                    CornerRadius="6,6,0,0">
+                <Grid RowDefinitions="Auto,14">
+                    <Border Grid.Row="0"
+                            Padding="18,16">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#91EB65" Offset="0" />
+                                <GradientStop Color="#5DA13F" Offset="0.55" />
+                                <GradientStop Color="#3F742F" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
 
-        <Border Grid.Row="0"
-                Background="#121A16"
-                BorderBrush="#324237"
-                BorderThickness="2"
-                CornerRadius="0"
-                Padding="18,14">
-            <Grid ColumnDefinitions="*,Auto"
-                  ColumnSpacing="18">
-                <StackPanel Orientation="Horizontal"
-                            Spacing="14"
-                            VerticalAlignment="Center">
-                    <Image Source="avares://LinkLauncher.App/Assets/logo.png"
-                           Width="52"
-                           Height="52" />
-
-                    <StackPanel Spacing="2">
-                        <TextBlock Text="Link Launcher"
-                                   FontSize="34"
-                                   Foreground="#FFFFFF" />
-
-                        <TextBlock Text="{Binding TaglineText}"
-                                   Foreground="#CFE1D0" />
-                    </StackPanel>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="10"
-                            VerticalAlignment="Center">
-                    <TextBlock Text="{Binding LanguageLabelText}"
-                               Foreground="#CFE1D0"
-                               VerticalAlignment="Center"
-                               FontWeight="Bold" />
-
-                    <ComboBox ItemsSource="{Binding LanguageOptions}"
-                              SelectedItem="{Binding SelectedLanguageOption}"
-                              Width="170" />
-
-                    <TextBlock Text="{Binding ThemeLabelText}"
-                               Foreground="#CFE1D0"
-                               VerticalAlignment="Center"
-                               FontWeight="Bold" />
-
-                    <ComboBox ItemsSource="{Binding ThemeOptions}"
-                              SelectedItem="{Binding SelectedThemeOption}"
-                              Width="130" />
-
-                    <Border Background="#91EB65"
-                            BorderBrush="#5BB848"
-                            BorderThickness="2"
-                            CornerRadius="0"
-                            Padding="12,8">
-                        <TextBlock Text="BETA"
-                                   FontWeight="Bold"
-                                   Foreground="#0F1B13" />
-                    </Border>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <Grid Grid.Row="1"
-              ColumnDefinitions="310,*"
-              ColumnSpacing="18">
-
-            <Border Grid.Column="0"
-                    Background="#FFFFFF"
-                    BorderBrush="#D8E0D5"
-                    BorderThickness="2"
-                    CornerRadius="0"
-                    Padding="18">
-                <StackPanel Spacing="14">
-                    <TextBlock Text="{Binding AccountTitleText}"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               Foreground="#17201C" />
-
-                    <Border Background="#EDF3E9"
-                            BorderBrush="#C8D6C4"
-                            BorderThickness="2"
-                            CornerRadius="0"
-                            Padding="12">
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="{Binding AccountText}"
-                                       Foreground="#2F7A45"
-                                       FontWeight="Bold"
-                                       TextWrapping="Wrap" />
-
-                            <TextBlock Text="{Binding PlayerLabelText}"
-                                       Foreground="#5B675F" />
-                        </StackPanel>
-                    </Border>
-
-                    <Button Content="{Binding LoginMicrosoftButtonText}"
-                            Command="{Binding LoginMicrosoftCommand}"
-                            Background="#91EB65"
-                            Foreground="#0F1B13"
-                            BorderBrush="#5BB848"
-                            HorizontalAlignment="Stretch" />
-
-                    <Button Content="{Binding PlayOnlineButtonText}"
-                            Command="{Binding PlayOnlineCommand}"
-                            Background="#58B957"
-                            Foreground="#0F1B13"
-                            BorderBrush="#3C8F3B"
-                            HorizontalAlignment="Stretch" />
-
-                    <Button Content="{Binding PlayOfflineButtonText}"
-                            Command="{Binding PlayOfflineCommand}"
-                            Background="#F8FBF6"
-                            BorderBrush="#C8D6C4"
-                            Foreground="#17201C"
-                            HorizontalAlignment="Stretch" />
-
-                    <Separator Margin="0,6" />
-
-                    <TextBlock Text="{Binding InstallationsTitleText}"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#17201C" />
-
-                    <ComboBox ItemsSource="{Binding Installations}"
-                              SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
-                              HorizontalAlignment="Stretch" />
-
-                    <Grid ColumnDefinitions="*,*,*"
-                          ColumnSpacing="8">
-                        <Button Grid.Column="0"
-                                Content="{Binding NewInstallationButtonText}"
-                                Command="{Binding NewInstallationCommand}"
-                                Background="#F8FBF6"
-                                BorderBrush="#C8D6C4"
-                                Foreground="#17201C"
-                                HorizontalAlignment="Stretch" />
-
-                        <Button Grid.Column="1"
-                                Content="{Binding CopyInstallationButtonText}"
-                                Command="{Binding DuplicateInstallationCommand}"
-                                Background="#F8FBF6"
-                                BorderBrush="#C8D6C4"
-                                Foreground="#17201C"
-                                HorizontalAlignment="Stretch" />
-
-                        <Button Grid.Column="2"
-                                Content="{Binding DeleteInstallationButtonText}"
-                                Command="{Binding DeleteInstallationCommand}"
-                                Background="#F8FBF6"
-                                BorderBrush="#C8D6C4"
-                                Foreground="#17201C"
-                                HorizontalAlignment="Stretch" />
-                    </Grid>
-
-                    <Button Content="{Binding OpenInstallationFolderButtonText}"
-                            Command="{Binding OpenInstallationFolderCommand}"
-                            Background="#F8FBF6"
-                            BorderBrush="#C8D6C4"
-                            Foreground="#17201C"
-                            HorizontalAlignment="Stretch" />
-
-                    <Separator Margin="0,6" />
-
-                    <TextBlock Text="{Binding GameFolderTitleText}"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#17201C" />
-
-                    <TextBlock Text="{Binding GameDirectory}"
-                               Foreground="#5B675F"
-                               TextWrapping="Wrap" />
-
-                    <Button Content="{Binding OpenGameFolderButtonText}"
-                            Command="{Binding OpenGameFolderCommand}"
-                            Background="#F8FBF6"
-                            BorderBrush="#C8D6C4"
-                            Foreground="#17201C"
-                            HorizontalAlignment="Stretch" />
-                </StackPanel>
-            </Border>
-
-            <Grid Grid.Column="1"
-                  RowDefinitions="Auto,Auto,*"
-                  RowSpacing="18">
-
-                <Border Grid.Row="0"
-                        Background="#FFFFFF"
-                        BorderBrush="#D8E0D5"
-                        BorderThickness="2"
-                        CornerRadius="0"
-                        Padding="18">
-                    <Grid ColumnDefinitions="*,220"
-                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-                          ColumnSpacing="18"
-                          RowSpacing="10">
-
-                        <StackPanel Grid.Row="0"
-                                    Grid.ColumnSpan="2"
-                                    Spacing="2">
-                            <TextBlock Text="{Binding CurrentInstallationTitleText}"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#17201C" />
-
-                            <TextBlock Text="{Binding InstallationSummary}"
-                                       Foreground="#5B675F" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="1"
-                                    Grid.ColumnSpan="2"
-                                    Spacing="6">
-                            <TextBlock Text="{Binding NameLabelText}"
-                                       FontWeight="Bold"
-                                       Foreground="#17201C" />
-
-                            <TextBox Text="{Binding InstallationName, Mode=TwoWay}"
-                                     HorizontalAlignment="Stretch" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2"
-                                    Grid.Column="0"
-                                    Spacing="6">
-                            <TextBlock Text="{Binding MinecraftLabelText}"
-                                       FontWeight="Bold"
-                                       Foreground="#17201C" />
-
-                            <ComboBox ItemsSource="{Binding FilteredVersions}"
-                                      SelectedItem="{Binding SelectedVersion}"
-                                      HorizontalAlignment="Stretch" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2"
-                                    Grid.Column="1"
-                                    Spacing="6">
-                            <TextBlock Text="{Binding InstanceRamLabelText}"
-                                       FontWeight="Bold"
-                                       Foreground="#17201C" />
-
-                            <ComboBox ItemsSource="{Binding RamOptions}"
-                                      SelectedItem="{Binding MaximumRamMb, Mode=TwoWay}"
-                                      HorizontalAlignment="Stretch" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="3"
-                                    Grid.ColumnSpan="2"
-                                    Orientation="Horizontal"
-                                    Spacing="12"
-                                    IsVisible="{Binding IsVanillaSelected}">
-                            <CheckBox Content="{Binding ReleasesText}"
-                                      IsChecked="{Binding ShowReleases}" />
-
-                            <CheckBox Content="{Binding SnapshotsText}"
-                                      IsChecked="{Binding ShowSnapshots}" />
-
-                            <CheckBox Content="{Binding OldBetaText}"
-                                      IsChecked="{Binding ShowOldBeta}" />
-
-                            <CheckBox Content="{Binding OldAlphaText}"
-                                      IsChecked="{Binding ShowOldAlpha}" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="4"
-                              Grid.ColumnSpan="2"
-                              ColumnDefinitions="220,*"
+                        <Grid ColumnDefinitions="*,Auto"
                               ColumnSpacing="18">
-                            <StackPanel Grid.Column="0"
-                                        Spacing="6">
-                                <TextBlock Text="{Binding LoaderLabelText}"
-                                           FontWeight="Bold"
-                                           Foreground="#17201C" />
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="14"
+                                        VerticalAlignment="Center">
+                                <Image Source="avares://LinkLauncher.App/Assets/logo.png"
+                                       Width="52"
+                                       Height="52" />
 
-                                <ComboBox ItemsSource="{Binding LoaderTypes}"
-                                          SelectedItem="{Binding SelectedLoaderType}"
-                                          HorizontalAlignment="Stretch" />
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="Link Launcher"
+                                               FontSize="34"
+                                               FontWeight="Bold"
+                                               Foreground="#F7FFEF" />
+
+                                    <TextBlock Text="{Binding TaglineText}"
+                                               Foreground="#E4F5D6" />
+                                </StackPanel>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1"
-                                        Spacing="6"
-                                        IsVisible="{Binding IsLoaderSelected}">
-                                <TextBlock Text="{Binding LoaderVersionLabelText}"
-                                           FontWeight="Bold"
-                                           Foreground="#17201C" />
+                                        Orientation="Horizontal"
+                                        Spacing="10"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="{Binding LanguageLabelText}"
+                                           Foreground="#E4F5D6"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Bold" />
 
-                                <ComboBox ItemsSource="{Binding LoaderVersions}"
-                                          SelectedItem="{Binding LoaderVersion, Mode=TwoWay}"
-                                          HorizontalAlignment="Stretch" />
-                            </StackPanel>
+                                <ComboBox ItemsSource="{Binding LanguageOptions}"
+                                          SelectedItem="{Binding SelectedLanguageOption}"
+                                          Width="170" />
 
-                            <StackPanel Grid.Column="1"
-                                        Spacing="6"
-                                        IsVisible="{Binding IsVanillaSelected}">
-                                <TextBlock Text="{Binding LoaderVersionLabelText}"
-                                           FontWeight="Bold"
-                                           Foreground="#17201C" />
+                                <TextBlock Text="{Binding ThemeLabelText}"
+                                           Foreground="#E4F5D6"
+                                           VerticalAlignment="Center"
+                                           FontWeight="Bold" />
 
-                                <Border Background="#EDF3E9"
-                                        BorderBrush="#C8D6C4"
+                                <ComboBox ItemsSource="{Binding ThemeOptions}"
+                                          SelectedItem="{Binding SelectedThemeOption}"
+                                          Width="130" />
+
+                                <Border Background="#E4C35B"
+                                        BorderBrush="#8C6A22"
                                         BorderThickness="2"
-                                        CornerRadius="0"
-                                        Padding="10,8">
-                                    <TextBlock Text="{Binding VanillaLoaderMessageText}"
-                                               Foreground="#5B675F" />
+                                        CornerRadius="4"
+                                        Padding="12,8">
+                                    <TextBlock Text="BETA"
+                                               FontWeight="Bold"
+                                               Foreground="#3D2A06" />
                                 </Border>
                             </StackPanel>
                         </Grid>
+                    </Border>
 
-                        <Slider Grid.Row="5"
-                                Grid.ColumnSpan="2"
-                                Minimum="0"
-                                Maximum="{Binding MaximumRamIndex}"
-                                TickFrequency="1"
-                                IsSnapToTickEnabled="True"
-                                Value="{Binding SelectedRamIndexValue, Mode=TwoWay}" />
+                    <Grid Grid.Row="1"
+                          ColumnDefinitions="3*,2*,2*,3*,2*,1*,2*,3*">
+                        <Border Grid.Column="0" Background="#4A2D1B" />
+                        <Border Grid.Column="1" Background="#6A4128" />
+                        <Border Grid.Column="2" Background="#4E301D" />
+                        <Border Grid.Column="3" Background="#7A4D2E" />
+                        <Border Grid.Column="4" Background="#5B3922" />
+                        <Border Grid.Column="5" Background="#3C2416" />
+                        <Border Grid.Column="6" Background="#6D452C" />
+                        <Border Grid.Column="7" Background="#4A2D1B" />
                     </Grid>
-                </Border>
+                </Grid>
+            </Border>
 
-                <Border Grid.Row="1"
-                        IsVisible="{Binding IsProgressVisible}"
-                        Background="#18241E"
-                        BorderBrush="#2F7A45"
-                        BorderThickness="2"
-                        CornerRadius="0"
-                        Padding="18">
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="{Binding ProgressTitleText}"
-                                   FontSize="20"
-                                   FontWeight="Bold"
-                                   Foreground="#FFFFFF" />
+            <Border Grid.Row="1"
+                    Padding="22">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#7A563B" Offset="0" />
+                        <GradientStop Color="#68472F" Offset="0.45" />
+                        <GradientStop Color="#5C4030" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
 
-                        <TextBlock Text="{Binding FilesLabelText}"
-                                   Foreground="#CFE1D0" />
-
-                        <ProgressBar Minimum="0"
-                                     Maximum="100"
-                                     Value="{Binding FileProgressPercent}" />
-
-                        <TextBlock Text="{Binding DownloadLabelText}"
-                                   Foreground="#CFE1D0" />
-
-                        <ProgressBar Minimum="0"
-                                     Maximum="100"
-                                     Value="{Binding ByteProgressPercent}" />
-                    </StackPanel>
-                </Border>
-
-                <Grid Grid.Row="2"
-                      ColumnDefinitions="*,310"
+                <Grid ColumnDefinitions="220,*"
                       ColumnSpacing="18">
                     <Border Grid.Column="0"
-                            Background="#101713"
-                            BorderBrush="#2F7A45"
+                            Background="#8B6144"
+                            BorderBrush="#4A2D1B"
                             BorderThickness="2"
-                            CornerRadius="0"
-                            Padding="18">
-                        <Grid RowDefinitions="Auto,Auto,*"
-                              RowSpacing="10">
-                            <StackPanel Grid.Row="0"
-                                        Spacing="2">
-                                <TextBlock Text="{Binding MissionControlTitleText}"
-                                           FontSize="20"
-                                           FontWeight="Bold"
-                                           Foreground="#FFFFFF" />
+                            CornerRadius="6"
+                            Padding="14">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Navegacao"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       Foreground="#FFF4E8" />
 
-                                <TextBlock Text="{Binding StatusText}"
-                                           Foreground="#CFE1D0"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                                  RowSpacing="8">
+                                <Grid Grid.Row="0"
+                                      ColumnDefinitions="4,*">
+                                    <Border Background="#91EB65"
+                                            IsVisible="{Binding IsHomeSelected}" />
+                                    <Button Grid.Column="1"
+                                            Classes="nav"
+                                            Content="Home"
+                                            Command="{Binding ShowHomeCommand}" />
+                                </Grid>
 
-                            <Separator Grid.Row="1"
-                                       Background="#2F7A45" />
+                                <Grid Grid.Row="1"
+                                      ColumnDefinitions="4,*">
+                                    <Border Background="#91EB65"
+                                            IsVisible="{Binding IsSkinsSelected}" />
+                                    <Button Grid.Column="1"
+                                            Classes="nav"
+                                            Content="Skins"
+                                            Command="{Binding ShowSkinsCommand}" />
+                                </Grid>
 
-                            <ScrollViewer Grid.Row="2"
-                                          VerticalScrollBarVisibility="Auto"
-                                          HorizontalScrollBarVisibility="Auto">
-                                <TextBox Text="{Binding MinecraftConsoleText}"
-                                         AcceptsReturn="True"
-                                         IsReadOnly="True"
-                                         TextWrapping="NoWrap"
-                                         FontFamily="Consolas"
-                                         Background="#101713"
-                                         Foreground="#91EB65"
-                                         BorderThickness="0"
-                                         MinHeight="220" />
-                            </ScrollViewer>
-                        </Grid>
+                                <Grid Grid.Row="2"
+                                      ColumnDefinitions="4,*">
+                                    <Border Background="#91EB65"
+                                            IsVisible="{Binding IsLibrarySelected}" />
+                                    <Button Grid.Column="1"
+                                            Classes="nav"
+                                            Content="Biblioteca"
+                                            Command="{Binding ShowLibraryCommand}" />
+                                </Grid>
+
+                                <Grid Grid.Row="3"
+                                      ColumnDefinitions="4,*">
+                                    <Border Background="#91EB65"
+                                            IsVisible="{Binding IsCreateSelected}" />
+                                    <Button Grid.Column="1"
+                                            Classes="nav"
+                                            Content="Criar"
+                                            Command="{Binding ShowCreateCommand}" />
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="1"
-                            Background="#FFFFFF"
-                            BorderBrush="#D8E0D5"
-                            BorderThickness="2"
-                            CornerRadius="0"
-                            Padding="18">
-                        <Grid RowDefinitions="Auto,Auto,*"
-                              RowSpacing="10">
-                            <StackPanel Grid.Row="0"
-                                        Spacing="2">
-                                <TextBlock Text="{Binding EventsTitleText}"
-                                           FontSize="20"
-                                           FontWeight="Bold"
-                                           Foreground="#17201C" />
-
-                                <TextBlock Text="{Binding EventsSubtitleText}"
-                                           Foreground="#5B675F"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-
-                            <ComboBox Grid.Row="1"
-                                      ItemsSource="{Binding Logs}"
-                                      SelectedItem="{Binding SelectedLogEntry}"
-                                      HorizontalAlignment="Stretch" />
-
-                            <ScrollViewer Grid.Row="2"
-                                          VerticalScrollBarVisibility="Auto"
-                                          HorizontalScrollBarVisibility="Auto">
-                                <TextBox Text="{Binding SelectedLogDetails}"
-                                         AcceptsReturn="True"
-                                         IsReadOnly="True"
-                                         TextWrapping="Wrap"
-                                         MinHeight="220" />
-                            </ScrollViewer>
-                        </Grid>
-                    </Border>
+                    <Grid Grid.Column="1">
+                        <views:HomeView IsVisible="{Binding IsHomeSelected}" />
+                        <views:SkinsView IsVisible="{Binding IsSkinsSelected}" />
+                        <views:LibraryView IsVisible="{Binding IsLibrarySelected}" />
+                        <views:CreateView IsVisible="{Binding IsCreateSelected}" />
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Border>
         </Grid>
-    </Grid>
+    </Border>
 </Window>

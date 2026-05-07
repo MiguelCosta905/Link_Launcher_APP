@@ -1,0 +1,276 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="using:LinkLauncher.App.ViewModels"
+             mc:Ignorable="d"
+             x:Class="LinkLauncher.App.Views.HomeView"
+             x:DataType="viewModels:MainWindowViewModel">
+
+    <Grid RowDefinitions="Auto,*"
+          RowSpacing="18">
+
+        <Border Grid.Row="0"
+                Background="#C59A71"
+                BorderBrush="#4A2D1B"
+                BorderThickness="2"
+                CornerRadius="6"
+                Padding="22">
+            <Grid ColumnDefinitions="*,260"
+                  ColumnSpacing="18">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Home"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               Foreground="#2A1A10" />
+
+                    <TextBlock Text="O teu painel principal do launcher: instancias, atualizacoes e novidades."
+                               TextWrapping="Wrap"
+                               Foreground="#5B3922" />
+
+                    <Border Background="#E7C9A2"
+                            BorderBrush="#6F4A2D"
+                            BorderThickness="2"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Estado atual"
+                                       FontWeight="Bold"
+                                       Foreground="#2A1A10" />
+
+                            <TextBlock Text="{Binding StatusText}"
+                                       TextWrapping="Wrap"
+                                       Foreground="#6A4B37" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Background="#2F2218"
+                        BorderBrush="#6FC546"
+                        BorderThickness="2"
+                        CornerRadius="6"
+                        Padding="16">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Conta"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#F7FFEF" />
+
+                        <TextBlock Text="{Binding AccountText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#DCECCB" />
+
+                        <TextBlock Text="{Binding PlayerLabelText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#8ED85E" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1"
+              ColumnDefinitions="1.2*,1.2*,0.9*"
+              ColumnSpacing="18">
+
+            <Border Grid.Column="0"
+                    Background="#D1A57D"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Instancias recentes"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Por agora esta lista usa as instancias disponiveis no launcher."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <Border Grid.Row="1"
+                            Background="#E7C9A2"
+                            BorderBrush="#6F4A2D"
+                            BorderThickness="2"
+                            CornerRadius="4"
+                            Padding="10">
+                        <TextBlock Text="{Binding InstallationSummary}"
+                                   FontWeight="Bold"
+                                   TextWrapping="Wrap"
+                                   Foreground="#2A1A10" />
+                    </Border>
+
+                    <ScrollViewer Grid.Row="2"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Installations}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#E7C9A2"
+                                            BorderBrush="#6F4A2D"
+                                            BorderThickness="2"
+                                            CornerRadius="4"
+                                            Padding="12"
+                                            Margin="0,0,0,10">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="16"
+                                                       FontWeight="Bold"
+                                                       Foreground="#2A1A10" />
+
+                                            <TextBlock Text="{Binding MinecraftVersion}"
+                                                       Foreground="#6A4B37" />
+
+                                            <TextBlock Text="{Binding PlayerName}"
+                                                       Foreground="#5B3922" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Background="#D1A57D"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Noticias do jogo"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Bloco pronto para ligares noticias reais mais tarde."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1"
+                                Spacing="12">
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="14">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Nova snapshot disponivel"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Reserva esta area para noticias curtas do Minecraft, snapshots, updates de Java ou eventos de servidores."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="14">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Estado dos loaders"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Aqui podes mostrar avisos como suporte novo para Fabric, Forge, NeoForge ou incompatibilidades temporarias."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="14">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Destaque da comunidade"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Tambem podes usar esta zona para mods populares, packs recomendados ou avisos do teu proprio launcher."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Background="#C59A71"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Changelog"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Resumo rapido do que mudou no launcher."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1"
+                                Spacing="10">
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="v0.1.0"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="- Nova navegacao com Home, Skins, Biblioteca e Criar"
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                                <TextBlock Text="- Biblioteca separada da janela principal"
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Proximo"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="- Importacao de skins"
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                                <TextBlock Text="- Criacao e importacao de instancias"
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Grid>
+</UserControl>

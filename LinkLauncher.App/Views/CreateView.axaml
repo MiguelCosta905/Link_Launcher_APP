@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LinkLauncher.App.Views.CreateView">
+    <Border Background="#C59A71"
+            BorderBrush="#4A2D1B"
+            BorderThickness="2"
+            CornerRadius="6"
+            Padding="24">
+        <StackPanel Spacing="14">
+            <TextBlock Text="Criar"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#2A1A10" />
+            <TextBlock Text="Aqui vao entrar os fluxos para criar instancias novas e importar modpacks ou instancias externas."
+                       TextWrapping="Wrap"
+                       Foreground="#5B3922" />
+        </StackPanel>
+    </Border>
+</UserControl>

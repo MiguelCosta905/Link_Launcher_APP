@@ -5,7 +5,7 @@ namespace LinkLauncher.Core.Models;
 public sealed class LauncherProfile
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
-    public string Name { get; set; } = "Nova Instancia";
+    public string Name { get; set; } = "Nova Instância";
     public string MinecraftVersion { get; set; } = "latest-release";
     public int MaximumRamMb { get; set; } = 2048;
     public string PlayerName { get; set; } = "Player";

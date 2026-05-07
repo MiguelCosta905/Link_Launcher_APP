@@ -55,6 +55,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _showSnapshots;
     private bool _showOldBeta;
     private bool _showOldAlpha;
+    private LauncherSection _currentSection = LauncherSection.Library;
 
     public MainWindowViewModel(
         LauncherService launcherService,
@@ -71,6 +72,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         NewInstallationCommand = new AsyncRelayCommand(NewInstallationAsync, () => !IsBusy);
         DuplicateInstallationCommand = new AsyncRelayCommand(DuplicateInstallationAsync, () => !IsBusy);
         DeleteInstallationCommand = new AsyncRelayCommand(DeleteInstallationAsync, () => !IsBusy && Settings.Profiles.Count > 1);
+        ShowHomeCommand = new RelayCommand(() => SetSection(LauncherSection.Home));
+        ShowSkinsCommand = new RelayCommand(() => SetSection(LauncherSection.Skins));
+        ShowLibraryCommand = new RelayCommand(() => SetSection(LauncherSection.Library));
+        ShowCreateCommand = new RelayCommand(() => SetSection(LauncherSection.Create));
 
         RebuildLanguageOptions();
         RebuildThemeOptions();
@@ -88,6 +93,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ICommand NewInstallationCommand { get; }
     public ICommand DuplicateInstallationCommand { get; }
     public ICommand DeleteInstallationCommand { get; }
+    public ICommand ShowHomeCommand { get; }
+    public ICommand ShowSkinsCommand { get; }
+    public ICommand ShowLibraryCommand { get; }
+    public ICommand ShowCreateCommand { get; }
 
     public ObservableCollection<MinecraftVersionItem> Versions { get; } = new();
     public ObservableCollection<AppLogEntry> Logs { get; } = new();
@@ -98,6 +107,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public ObservableCollection<MinecraftVersionItem> FilteredVersions { get; } = new();
     public ObservableCollection<string> LoaderVersions { get; } = new();
     public ObservableCollection<LauncherProfile> Installations { get; } = new();
+
+    public LauncherSection CurrentSection
+    {
+        get => _currentSection;
+        private set
+        {
+            if (_currentSection == value)
+                return;
+
+            _currentSection = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsHomeSelected));
+            OnPropertyChanged(nameof(IsSkinsSelected));
+            OnPropertyChanged(nameof(IsLibrarySelected));
+            OnPropertyChanged(nameof(IsCreateSelected));
+        }
+    }
 
     public string TaglineText => T("tagline");
     public string ThemeLabelText => T("theme_label");
@@ -131,6 +157,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public string MissionControlTitleText => T("mission_control_title");
     public string EventsTitleText => T("events_title");
     public string EventsSubtitleText => T("events_subtitle");
+    public bool IsHomeSelected => CurrentSection == LauncherSection.Home;
+    public bool IsSkinsSelected => CurrentSection == LauncherSection.Skins;
+    public bool IsLibrarySelected => CurrentSection == LauncherSection.Library;
+    public bool IsCreateSelected => CurrentSection == LauncherSection.Create;
 
     public UiOption? SelectedThemeOption
     {
@@ -378,6 +408,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public int? SelectedRamOption
+    {
+        get => MaximumRamMb;
+        set
+        {
+            if (!value.HasValue)
+                return;
+
+            MaximumRamMb = value.Value;
+        }
+    }
+
     public double SelectedRamIndexValue
     {
         get => _selectedRamIndex;
@@ -552,6 +594,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(GameDirectory));
         OnPropertyChanged(nameof(MinecraftVersion));
         OnPropertyChanged(nameof(MaximumRamMb));
+        OnPropertyChanged(nameof(SelectedRamOption));
         OnPropertyChanged(nameof(PlayerName));
         OnPropertyChanged(nameof(PlayerLabelText));
         OnPropertyChanged(nameof(SelectedLoaderType));
@@ -927,12 +970,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     {
         RamOptions.Clear();
 
-        var availableMb = GetAvailableMemoryMb();
-        for (var ram = 1024; ram <= availableMb; ram *= 2)
+        for (var ram = 1024; ram <= 16384; ram += 1024)
             RamOptions.Add(ram);
-
-        if (RamOptions.Count == 0)
-            RamOptions.Add(1024);
 
         OnPropertyChanged(nameof(MaximumRamIndex));
         SelectClosestRamOption(MaximumRamMb);
@@ -955,14 +994,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         OnPropertyChanged(nameof(SelectedRamIndexValue));
         OnPropertyChanged(nameof(SelectedRamLabel));
+        OnPropertyChanged(nameof(SelectedRamOption));
         OnPropertyChanged(nameof(InstallationSummary));
-    }
-
-    private static int GetAvailableMemoryMb()
-    {
-        var bytes = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
-        var mb = bytes <= 0 ? 8192 : (int)(bytes / 1024 / 1024);
-        return Math.Clamp(mb, 1024, 65536);
     }
 
     private static void ApplyTheme(string themeKey)
@@ -1183,6 +1216,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         if (DeleteInstallationCommand is AsyncRelayCommand deleteInstallationCommand)
             deleteInstallationCommand.RaiseCanExecuteChanged();
+    }
+
+    private void SetSection(LauncherSection section)
+    {
+        CurrentSection = section;
     }
 
     private string T(string key) => UiText.Get(_selectedLanguageCode, key);
