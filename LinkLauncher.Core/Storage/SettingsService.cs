@@ -124,7 +124,8 @@ public sealed class SettingsService
             profile.PlayerName = "Player";
 
         if (string.IsNullOrWhiteSpace(profile.CoverImagePath))
-        profile.CoverImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+            profile.CoverImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+
 
     }
 

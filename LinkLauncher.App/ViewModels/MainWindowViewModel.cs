@@ -908,7 +908,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
         await LaunchAsync("Online", _microsoftSession);
     }
-
     private async Task LaunchAsync(string launchMode, MSession? session)
     {
         IsBusy = true;
