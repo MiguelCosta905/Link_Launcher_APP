@@ -6,46 +6,46 @@
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.LibraryView"
              x:DataType="viewModels:LibraryViewModel">
-        <UserControl.Styles>
+
+    <UserControl.Styles>
         <Style Selector="ListBox.instance-list">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <Style Selector="ListBox.instance-list ListBoxItem">
-                <Setter Property="Padding" Value="6" />
-                <Setter Property="Margin" Value="0,0,0,8" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
 
         <Style Selector="ListBox.instance-list ListBoxItem:pointerover">
-                <Setter Property="Background" Value="#BE8D64" />
+            <Setter Property="Background" Value="#BE8D64" />
         </Style>
 
         <Style Selector="ListBox.instance-list ListBoxItem:selected">
-                <Setter Property="Background" Value="#7A4D2E" />
-                <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="#7A4D2E" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <Style Selector="ListBox.instance-list ListBoxItem /template/ ContentPresenter">
-                <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Background" Value="Transparent" />
         </Style>
 
         <Style Selector="ListBox.instance-list ListBoxItem:selected /template/ ContentPresenter">
-                <Setter Property="Background" Value="#7A4D2E" />
+            <Setter Property="Background" Value="#7A4D2E" />
         </Style>
 
         <Style Selector="ListBox.instance-list ListBoxItem:pointerover /template/ ContentPresenter">
-                <Setter Property="Background" Value="#BE8D64" />
+            <Setter Property="Background" Value="#BE8D64" />
         </Style>
 
         <Style Selector="ListBox.instance-list ListBoxItem /template/ Rectangle#FocusVisual">
-                <Setter Property="IsVisible" Value="False" />
+            <Setter Property="IsVisible" Value="False" />
         </Style>
-        </UserControl.Styles>
-
+    </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*"
           RowSpacing="18">
@@ -132,11 +132,10 @@
                     <ScrollViewer Grid.Row="1"
                                   VerticalScrollBarVisibility="Auto">
                         <ListBox Classes="instance-list"
-                                ItemsSource="{Binding Installations}"
-                                SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
-                                Background="Transparent"
-                                BorderThickness="0">
-
+                                 ItemsSource="{Binding Installations}"
+                                 SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
+                                 Background="Transparent"
+                                 BorderThickness="0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="#E7C9A2"
@@ -152,13 +151,14 @@
                                                     Background="#8B6144"
                                                     BorderBrush="#4A2D1B"
                                                     BorderThickness="2"
-                                                    CornerRadius="4">
+                                                    CornerRadius="4"
+                                                    ClipToBounds="True">
                                                 <Grid>
-                                                    <TextBlock Text="IMG"
-                                                               HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"
-                                                               FontWeight="Bold"
-                                                               Foreground="#F7E7D2" />
+                                                    <Image Source="avares://LinkLauncher.App/Assets/logo.png"
+                                                           Stretch="UniformToFill" />
+
+                                                    <Image Source="{Binding CoverImagePath}"
+                                                           Stretch="UniformToFill" />
                                                 </Grid>
                                             </Border>
 
@@ -314,21 +314,21 @@
                                 Command="{Binding LoginMicrosoftCommand}" />
 
                         <Grid ColumnDefinitions="*,*"
-                                ColumnSpacing="8"
-                                Margin="0,4,0,0">
-                                <Button Grid.Column="0"
-                                        Background="#E2C39B"
-                                        BorderBrush="#6F4A2D"
-                                        Foreground="#2A1A10"
-                                        Content="{Binding CopyInstallationButtonText}"
-                                        Command="{Binding DuplicateInstallationCommand}" />
+                              ColumnSpacing="8"
+                              Margin="0,4,0,0">
+                            <Button Grid.Column="0"
+                                    Background="#E2C39B"
+                                    BorderBrush="#6F4A2D"
+                                    Foreground="#2A1A10"
+                                    Content="{Binding CopyInstallationButtonText}"
+                                    Command="{Binding DuplicateInstallationCommand}" />
 
-                                <Button Grid.Column="1"
-                                        Background="#D88E7C"
-                                        BorderBrush="#8F473C"
-                                        Foreground="#2A1A10"
-                                        Content="{Binding DeleteInstallationButtonText}"
-                                        Command="{Binding DeleteInstallationCommand}" />
+                            <Button Grid.Column="1"
+                                    Background="#D88E7C"
+                                    BorderBrush="#8F473C"
+                                    Foreground="#2A1A10"
+                                    Content="{Binding DeleteInstallationButtonText}"
+                                    Command="{Binding DeleteInstallationCommand}" />
                         </Grid>
 
                         <Border Background="#E7C9A2"
@@ -337,17 +337,16 @@
                                 CornerRadius="4"
                                 Padding="12"
                                 Margin="0,8,0,0">
-                                <StackPanel Spacing="4">
+                            <StackPanel Spacing="4">
                                 <TextBlock Text="Estado atual"
-                                        FontWeight="Bold"
-                                        Foreground="#2A1A10" />
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
                                 <TextBlock Text="{Binding StatusText}"
-                                        TextWrapping="Wrap"
-                                        Foreground="#6A4B37" />
-                                </StackPanel>
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
                         </Border>
-                        </StackPanel>
-
+                    </StackPanel>
                 </Grid>
             </Border>
         </Grid>

@@ -616,14 +616,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ApplyMinecraftVersionFilters();
         RaiseCommandStates();
     }
-    public void CreateInstallationFromDraft(string name, string minecraftVersion, LoaderType loaderType)
+    public void CreateInstallationFromDraft(string name, string minecraftVersion, LoaderType loaderType, string? coverImagePath = null)
     {
         var profile = new LauncherProfile
         {
             Name = string.IsNullOrWhiteSpace(name) ? TF("instance_numbered", Settings.Profiles.Count + 1) : name.Trim(),
             PlayerName = PlayerName,
             MinecraftVersion = string.IsNullOrWhiteSpace(minecraftVersion) ? "latest-release" : minecraftVersion,
-            MaximumRamMb = MaximumRamMb
+            MaximumRamMb = MaximumRamMb,
+            CoverImagePath = string.IsNullOrWhiteSpace(coverImagePath)
+                ? "avares://LinkLauncher.App/Assets/logo.png"
+                : coverImagePath
         };
 
         profile.ModLoader.LoaderType = loaderType;

@@ -10,8 +10,10 @@ namespace LinkLauncher.App.ViewModels;
 public sealed class CreateViewModel : INotifyPropertyChanged
 {
     private string _newInstanceName = string.Empty;
+    private string _selectedImagePath = "avares://LinkLauncher.App/Assets/logo.png";
     private MinecraftVersionItem? _selectedVersion;
     private LoaderType _selectedLoaderType = LoaderType.Vanilla;
+
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -30,6 +32,18 @@ public sealed class CreateViewModel : INotifyPropertyChanged
     public string InstallationSummary => App.InstallationSummary;
     public ObservableCollection<MinecraftVersionItem> FilteredVersions => App.FilteredVersions;
     public ObservableCollection<LoaderType> LoaderTypes => App.LoaderTypes;
+    public string SelectedImagePath
+    {
+        get => _selectedImagePath;
+        set
+        {
+            if (_selectedImagePath == value)
+                return;
+
+            _selectedImagePath = value;
+            OnPropertyChanged();
+        }
+    }
 
     public string NewInstanceName
     {
@@ -71,21 +85,28 @@ public sealed class CreateViewModel : INotifyPropertyChanged
     }
 
     public ICommand CreateInstanceCommand { get; }
+    public ICommand UseDefaultImageCommand => new RelayCommand(() =>
+    {
+        SelectedImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+    });
 
     private void CreateInstance()
     {
         App.CreateInstallationFromDraft(
             string.IsNullOrWhiteSpace(NewInstanceName) ? "Nova Instancia" : NewInstanceName.Trim(),
             SelectedVersion?.Name ?? "latest-release",
-            SelectedLoaderType);
+            SelectedLoaderType,
+            SelectedImagePath);
 
         NewInstanceName = string.Empty;
+        SelectedImagePath = "avares://LinkLauncher.App/Assets/logo.png";
 
         if (FilteredVersions.Count > 0)
             SelectedVersion = FilteredVersions[0];
 
         SelectedLoaderType = LoaderType.Vanilla;
     }
+
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {

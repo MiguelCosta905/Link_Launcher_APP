@@ -76,8 +76,8 @@
                     BorderThickness="2"
                     CornerRadius="6"
                     Padding="18">
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto,*"
-                      RowSpacing="12">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*"
+                    RowSpacing="12">
                     <StackPanel Grid.Row="0"
                                 Spacing="2">
                         <TextBlock Text="Criar nova instancia"
@@ -119,8 +119,32 @@
                                     SelectedItem="{Binding SelectedLoaderType}" />
 
                     </StackPanel>
-
                     <StackPanel Grid.Row="4"
+                                Spacing="6">
+                        <TextBlock Text="Imagem da instancia"
+                                FontWeight="Bold"
+                                Foreground="#2A1A10" />
+
+                        <Border Width="96"
+                                Height="96"
+                                Background="#8B6144"
+                                BorderBrush="#4A2D1B"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                ClipToBounds="True">
+                            <Image Source="{Binding SelectedImagePath}"
+                                Stretch="UniformToFill" />
+                        </Border>
+
+                        <Button Background="#E2C39B"
+                                BorderBrush="#6F4A2D"
+                                Foreground="#2A1A10"
+                                Content="Usar logo default"
+                                Command="{Binding UseDefaultImageCommand}" />
+                    </StackPanel>
+
+
+                    <StackPanel Grid.Row="5"
                                 Spacing="10"
                                 VerticalAlignment="Bottom">
                         <Border Background="#E7C9A2"

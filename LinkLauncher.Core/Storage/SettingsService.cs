@@ -122,6 +122,10 @@ public sealed class SettingsService
 
         if (string.IsNullOrWhiteSpace(profile.PlayerName))
             profile.PlayerName = "Player";
+            
+        if (string.IsNullOrWhiteSpace(profile.CoverImagePath))
+        profile.CoverImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+
     }
 
     private static string ExtractVanillaVersion(string? version)
