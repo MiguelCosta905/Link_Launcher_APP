@@ -1,3 +1,6 @@
+using System.IO;
+using System.Linq;
+
 namespace LinkLauncher.Core.Models;
 
 public sealed class LauncherSettings
@@ -10,14 +13,10 @@ public sealed class LauncherSettings
     public List<LauncherProfile> Profiles { get; set; } = new();
     public string? SelectedProfileId { get; set; }
 
-    public LauncherProfile GetSelectedProfile()
+    public LauncherProfile? GetSelectedProfile()
     {
         if (Profiles.Count == 0)
-        {
-            var defaultProfile = new LauncherProfile { Name = "Instância Principal" };
-            Profiles.Add(defaultProfile);
-            SelectedProfileId = defaultProfile.Id;
-        }
+            return null;
 
         var selected = Profiles.FirstOrDefault(p => p.Id == SelectedProfileId);
         if (selected is not null)
@@ -27,15 +26,42 @@ public sealed class LauncherSettings
         return Profiles[0];
     }
 
+    public string GetInstanceDirectory(LauncherProfile profile)
+    {
+        return Path.Combine(SettingsDirectory, "Instances", GetInstanceFolderName(profile));
+    }
+
     public static LauncherSettings CreateDefault(string settingsDirectory, string sharedGameDirectory)
     {
-        var settings = new LauncherSettings
+        return new LauncherSettings
         {
             SettingsDirectory = settingsDirectory,
             SharedGameDirectory = sharedGameDirectory
         };
+    }
 
-        settings.GetSelectedProfile();
-        return settings;
+    private string GetInstanceFolderName(LauncherProfile profile)
+    {
+        var baseName = SanitizeDirectoryName(profile.Name);
+
+        var hasDuplicateName = Profiles.Count(p =>
+            string.Equals(SanitizeDirectoryName(p.Name), baseName, StringComparison.OrdinalIgnoreCase)) > 1;
+
+        if (!hasDuplicateName)
+            return baseName;
+
+        var suffix = profile.Id.Length >= 6 ? profile.Id[..6] : profile.Id;
+        return $"{baseName}-{suffix}";
+    }
+
+    private static string SanitizeDirectoryName(string? name)
+    {
+        var source = string.IsNullOrWhiteSpace(name) ? "Instancia" : name.Trim();
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var cleaned = new string(source.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray())
+            .Trim()
+            .TrimEnd('.');
+
+        return string.IsNullOrWhiteSpace(cleaned) ? "Instancia" : cleaned;
     }
 }

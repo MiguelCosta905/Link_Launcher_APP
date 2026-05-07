@@ -22,8 +22,11 @@ public sealed class LaunchRequest
 
     public static LaunchRequest FromSettings(LauncherSettings settings)
     {
-        var profile = settings.GetSelectedProfile();
-        var instanceDirectory = Path.Combine(settings.SettingsDirectory, "Instances", profile.Id);
+        var profile = settings.GetSelectedProfile()
+        ?? throw new InvalidOperationException("No installation selected.");
+
+        var instanceDirectory = settings.GetInstanceDirectory(profile);
+
 
         return new LaunchRequest
         {

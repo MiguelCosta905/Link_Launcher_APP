@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -10,11 +11,10 @@ namespace LinkLauncher.App.ViewModels;
 public sealed class CreateViewModel : INotifyPropertyChanged
 {
     private string _newInstanceName = string.Empty;
-    private string _selectedImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+    private const string DefaultCoverImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+    private string _selectedImagePath = DefaultCoverImagePath;
     private MinecraftVersionItem? _selectedVersion;
     private LoaderType _selectedLoaderType = LoaderType.Vanilla;
-
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public CreateViewModel(MainWindowViewModel app)
@@ -25,8 +25,6 @@ public sealed class CreateViewModel : INotifyPropertyChanged
         if (FilteredVersions.Count > 0)
             _selectedVersion = FilteredVersions[0];
     }
-
-
     public MainWindowViewModel App { get; }
 
     public string InstallationSummary => App.InstallationSummary;
@@ -87,8 +85,9 @@ public sealed class CreateViewModel : INotifyPropertyChanged
     public ICommand CreateInstanceCommand { get; }
     public ICommand UseDefaultImageCommand => new RelayCommand(() =>
     {
-        SelectedImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+        SelectedImagePath = DefaultCoverImagePath;
     });
+
 
     private void CreateInstance()
     {
@@ -99,7 +98,7 @@ public sealed class CreateViewModel : INotifyPropertyChanged
             SelectedImagePath);
 
         NewInstanceName = string.Empty;
-        SelectedImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+        SelectedImagePath = DefaultCoverImagePath;
 
         if (FilteredVersions.Count > 0)
             SelectedVersion = FilteredVersions[0];

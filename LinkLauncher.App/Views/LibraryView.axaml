@@ -3,6 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="using:LinkLauncher.App.ViewModels"
+             xmlns:converters="using:LinkLauncher.App.Converters"
+
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.LibraryView"
              x:DataType="viewModels:LibraryViewModel">
@@ -147,20 +149,24 @@
                                         <Grid ColumnDefinitions="72,*"
                                               ColumnSpacing="12">
                                             <Border Width="72"
-                                                    Height="72"
-                                                    Background="#8B6144"
-                                                    BorderBrush="#4A2D1B"
-                                                    BorderThickness="2"
-                                                    CornerRadius="4"
-                                                    ClipToBounds="True">
+                                                        Height="72"
+                                                        Background="#8B6144"
+                                                        BorderBrush="#4A2D1B"
+                                                        BorderThickness="2"
+                                                        CornerRadius="4"
+                                                        ClipToBounds="True"
+                                                        Padding="4">
                                                 <Grid>
-                                                    <Image Source="avares://LinkLauncher.App/Assets/logo.png"
-                                                           Stretch="UniformToFill" />
+                                                        <Image Source="avares://LinkLauncher.App/Assets/logo.png"
+                                                        Stretch="Uniform" />
 
-                                                    <Image Source="{Binding CoverImagePath}"
-                                                           Stretch="UniformToFill" />
+                                                        <Image Source="{Binding CoverImagePath, Converter={x:Static converters:ImagePathToBitmapConverter.Instance}}"
+                                                        Stretch="Uniform" />
                                                 </Grid>
-                                            </Border>
+                                                </Border>
+
+
+
 
                                             <StackPanel Grid.Column="1"
                                                         Spacing="4"

@@ -142,8 +142,7 @@ public sealed class LibraryViewModel : INotifyPropertyChanged
 
     public string CopyInstallationButtonText => App.CopyInstallationButtonText;
     public ICommand DuplicateInstallationCommand => App.DuplicateInstallationCommand;
-
-    public string DeleteInstallationButtonText => App.DeleteInstallationButtonText;
+    public string DeleteInstallationButtonText => App.CurrentDeleteInstallationButtonText;
     public ICommand DeleteInstallationCommand => App.DeleteInstallationCommand;
 
     public string OpenInstallationFolderButtonText => App.OpenInstallationFolderButtonText;
@@ -162,6 +161,11 @@ public sealed class LibraryViewModel : INotifyPropertyChanged
     public string EventsSubtitleText => App.EventsSubtitleText;
     public ObservableCollection<AppLogEntry> Logs => App.Logs;
 
+    public bool HasSelectedInstallation => App.HasSelectedInstallation;
+    public bool HasNoInstallation => App.HasNoInstallation;
+    public string EmptyLibraryMessage => "Ainda nao tens instancias. Vai a Criar para comecar.";
+
+
     public AppLogEntry? SelectedLogEntry
     {
         get => App.SelectedLogEntry;
@@ -173,8 +177,13 @@ public sealed class LibraryViewModel : INotifyPropertyChanged
     private void OnAppPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         OnPropertyChanged(e.PropertyName);
-    }
 
+        if (e.PropertyName == nameof(App.HasSelectedInstallation))
+        {
+            OnPropertyChanged(nameof(HasNoInstallation));
+            OnPropertyChanged(nameof(EmptyLibraryMessage));
+        }
+    }
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

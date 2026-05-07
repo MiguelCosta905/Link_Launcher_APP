@@ -60,7 +60,7 @@ public sealed class SettingsService
             {
                 var profile = lastProfile.ToObject<LauncherProfile>() ?? new LauncherProfile();
                 if (string.IsNullOrWhiteSpace(profile.Name))
-                    profile.Name = "Instância Principal";
+                    profile.Name = "Instancia Principal";
 
                 settings.Profiles.Add(profile);
                 settings.SelectedProfileId = profile.Id;
@@ -91,7 +91,7 @@ public sealed class SettingsService
 
         if (settings.Profiles.Count == 0)
         {
-            settings.Profiles.Add(new LauncherProfile { Name = "Instância Principal" });
+            settings.Profiles.Add(new LauncherProfile { Name = "Instancia Principal" });
             settings.SelectedProfileId = settings.Profiles[0].Id;
         }
 
@@ -110,7 +110,7 @@ public sealed class SettingsService
             profile.Id = Guid.NewGuid().ToString("N");
 
         if (string.IsNullOrWhiteSpace(profile.Name))
-            profile.Name = "Instância";
+            profile.Name = "Instancia";
 
         profile.ModLoader ??= new ModLoaderProfile();
         profile.MinecraftVersion = ExtractVanillaVersion(profile.MinecraftVersion);
@@ -122,7 +122,7 @@ public sealed class SettingsService
 
         if (string.IsNullOrWhiteSpace(profile.PlayerName))
             profile.PlayerName = "Player";
-            
+
         if (string.IsNullOrWhiteSpace(profile.CoverImagePath))
         profile.CoverImagePath = "avares://LinkLauncher.App/Assets/logo.png";
 

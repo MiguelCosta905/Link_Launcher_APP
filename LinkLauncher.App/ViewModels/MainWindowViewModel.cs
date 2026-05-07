@@ -60,8 +60,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public SkinsViewModel SkinsPage { get; }
     public LibraryViewModel LibraryPage { get; }
     public CreateViewModel CreatePage { get; }
-
-
+    private string? _pendingDeleteProfileId;
     public MainWindowViewModel(
         LauncherService launcherService,
         MicrosoftAuthService authService)
@@ -69,14 +68,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         _launcherService = launcherService;
         _authService = authService;
 
-        PlayOfflineCommand = new AsyncRelayCommand(PlayOfflineAsync, () => !IsBusy);
+        
         LoginMicrosoftCommand = new AsyncRelayCommand(LoginMicrosoftAsync, () => !IsBusy);
-        PlayOnlineCommand = new AsyncRelayCommand(PlayOnlineAsync, () => !IsBusy && _microsoftSession is not null);
         OpenGameFolderCommand = new AsyncRelayCommand(OpenGameFolderAsync);
-        OpenInstallationFolderCommand = new AsyncRelayCommand(OpenInstallationFolderAsync);
         NewInstallationCommand = new AsyncRelayCommand(NewInstallationAsync, () => !IsBusy);
-        DuplicateInstallationCommand = new AsyncRelayCommand(DuplicateInstallationAsync, () => !IsBusy);
-        DeleteInstallationCommand = new AsyncRelayCommand(DeleteInstallationAsync, () => !IsBusy && Settings.Profiles.Count > 1);
         ShowHomeCommand = new RelayCommand(() => SetSection(LauncherSection.Home));
         ShowSkinsCommand = new RelayCommand(() => SetSection(LauncherSection.Skins));
         ShowLibraryCommand = new RelayCommand(() => SetSection(LauncherSection.Library));
@@ -85,7 +80,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         SkinsPage = new SkinsViewModel(this);
         LibraryPage = new LibraryViewModel(this);
         CreatePage = new CreateViewModel(this);
-
+        PlayOfflineCommand = new AsyncRelayCommand(PlayOfflineAsync, () => !IsBusy && HasSelectedInstallation);
+        PlayOnlineCommand = new AsyncRelayCommand(PlayOnlineAsync, () => !IsBusy && HasSelectedInstallation && _microsoftSession is not null);
+        OpenInstallationFolderCommand = new AsyncRelayCommand(OpenInstallationFolderAsync, () => HasSelectedInstallation);
+        DuplicateInstallationCommand = new AsyncRelayCommand(DuplicateInstallationAsync, () => !IsBusy && HasSelectedInstallation);
+        DeleteInstallationCommand = new AsyncRelayCommand(DeleteInstallationAsync, () => !IsBusy && HasSelectedInstallation);
 
         RebuildLanguageOptions();
         RebuildThemeOptions();
@@ -147,6 +146,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     public string NewInstallationButtonText => T("new_installation");
     public string CopyInstallationButtonText => T("copy_installation");
     public string DeleteInstallationButtonText => T("delete_installation");
+    public string CurrentDeleteInstallationButtonText =>
+        SelectedProfile is { } profile && _pendingDeleteProfileId == profile.Id ? "Confirm Delete" : DeleteInstallationButtonText;
     public string OpenInstallationFolderButtonText => T("open_installation_folder");
     public string GameFolderTitleText => T("game_folder_title");
     public string OpenGameFolderButtonText => T("open_game_folder");
@@ -272,13 +273,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    public LauncherProfile SelectedProfile => Settings.GetSelectedProfile();
-
+    public LauncherProfile? SelectedProfile => Settings.GetSelectedProfile();
+    public bool HasSelectedInstallation => SelectedProfile is not null;
+    public bool HasNoInstallation => !HasSelectedInstallation;
     public string InstallationName
     {
-        get => SelectedProfile.Name;
+        get => SelectedProfile?.Name ?? string.Empty;
         set
         {
+            if (SelectedProfile is null)
+                return;
+
             var normalized = string.IsNullOrWhiteSpace(value) ? T("instance_default_name") : value.Trim();
             if (SelectedProfile.Name == normalized)
                 return;
@@ -288,20 +293,33 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(SelectedInstallation));
             OnPropertyChanged(nameof(InstallationSummary));
+            OnPropertyChanged(nameof(InstallationDirectory));
         }
     }
-
-    public string InstallationDirectory => Path.Combine(Settings.SettingsDirectory, "Instances", SelectedProfile.Id);
+    public string InstallationDirectory =>
+    SelectedProfile is null ? string.Empty : Settings.GetInstanceDirectory(SelectedProfile);
 
     public string InstallationSummary =>
-        $"{InstallationName} - {MinecraftVersion} - {SelectedRamLabel} - {ModLoaderSummary}";
+    SelectedProfile is null
+        ? "No installations available"
+        : $"{InstallationName} - {MinecraftVersion} - {SelectedRamLabel} - {ModLoaderSummary}";
 
     public LauncherProfile? SelectedInstallation
     {
         get => SelectedProfile;
         set
         {
-            if (value is null || Settings.SelectedProfileId == value.Id)
+            if (value is null)
+            {
+                if (Settings.SelectedProfileId is null)
+                    return;
+
+                Settings.SelectedProfileId = null;
+                OnSelectedProfileChanged();
+                return;
+            }
+
+            if (Settings.SelectedProfileId == value.Id)
                 return;
 
             Settings.SelectedProfileId = value.Id;
@@ -309,7 +327,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             _ = RefreshLoaderDataAsync();
         }
     }
-
     public string StatusText
     {
         get => _statusText;
@@ -368,10 +385,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string MinecraftVersion
     {
-        get => SelectedProfile.MinecraftVersion;
+        get => SelectedProfile?.MinecraftVersion ?? string.Empty;
         set
         {
-            if (SelectedProfile.MinecraftVersion == value)
+            if (SelectedProfile is null || SelectedProfile.MinecraftVersion == value)
                 return;
 
             SelectedProfile.MinecraftVersion = value;
@@ -402,10 +419,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public int MaximumRamMb
     {
-        get => SelectedProfile.MaximumRamMb;
+        get => SelectedProfile?.MaximumRamMb ?? 2048;
         set
         {
-            if (SelectedProfile.MaximumRamMb == value)
+            if (SelectedProfile is null || SelectedProfile.MaximumRamMb == value)
                 return;
 
             SelectedProfile.MaximumRamMb = value;
@@ -457,10 +474,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string PlayerName
     {
-        get => SelectedProfile.PlayerName;
+        get => SelectedProfile?.PlayerName ?? "Player";
         set
         {
-            if (SelectedProfile.PlayerName == value)
+            if (SelectedProfile is null || SelectedProfile.PlayerName == value)
                 return;
 
             SelectedProfile.PlayerName = value;
@@ -471,10 +488,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public LoaderType SelectedLoaderType
     {
-        get => SelectedProfile.ModLoader.LoaderType;
+        get => SelectedProfile?.ModLoader.LoaderType ?? LoaderType.Vanilla;
         set
         {
-            if (SelectedProfile.ModLoader.LoaderType == value)
+            if (SelectedProfile is null || SelectedProfile.ModLoader.LoaderType == value)
                 return;
 
             SelectedProfile.ModLoader.LoaderType = value;
@@ -494,9 +511,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     public string LoaderVersion
     {
-        get => SelectedProfile.ModLoader.LoaderVersion ?? string.Empty;
+        get => SelectedProfile?.ModLoader.LoaderVersion ?? string.Empty;
         set
         {
+            if (SelectedProfile is null)
+                return;
+
             var normalized = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
             if (SelectedProfile.ModLoader.LoaderVersion == normalized)
                 return;
@@ -507,6 +527,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(InstallationSummary));
         }
     }
+
 
     public string ModLoaderSummary
     {
@@ -597,6 +618,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private void OnSelectedProfileChanged()
     {
+        ClearPendingDelete();
         OnPropertyChanged(nameof(SelectedInstallation));
         OnPropertyChanged(nameof(InstallationName));
         OnPropertyChanged(nameof(InstallationDirectory));
@@ -664,6 +686,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private Task DuplicateInstallationAsync()
     {
+        if (SelectedProfile is null)
+        return Task.CompletedTask;
+
         var profile = SelectedProfile.Clone($"{SelectedProfile.Name} {T("copy_suffix")}");
         Settings.Profiles.Add(profile);
         Settings.SelectedProfileId = profile.Id;
@@ -676,22 +701,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private Task DeleteInstallationAsync()
     {
-        if (Settings.Profiles.Count <= 1)
+        if (SelectedProfile is null)
+            return Task.CompletedTask;
+
+        var profile = SelectedProfile;
+
+        if (_pendingDeleteProfileId != profile.Id)
         {
-            SetStatus(T("status_keep_one_installation"));
+            _pendingDeleteProfileId = profile.Id;
+            OnPropertyChanged(nameof(CurrentDeleteInstallationButtonText));
+            SetStatus($"Confirm delete for {profile.Name}");
             return Task.CompletedTask;
         }
 
-        var profile = SelectedProfile;
+        ClearPendingDelete();
         Settings.Profiles.Remove(profile);
-        Settings.SelectedProfileId = Settings.Profiles[0].Id;
+        Settings.SelectedProfileId = Settings.Profiles.Count == 0 ? null : Settings.Profiles[0].Id;
+
         RefreshInstallations();
         OnSelectedProfileChanged();
         SetStatus(TF("status_installation_removed", profile.Name));
         AddLog("Info", T("log_installation_removed"), profile.Name);
         return Task.CompletedTask;
     }
-
     public void ApplyVersions(IEnumerable<MinecraftVersionItem> versions)
     {
         _allVersions.Clear();
@@ -851,15 +883,26 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private async Task PlayOfflineAsync()
     {
+        if (!HasSelectedInstallation)
+        {
+            SetStatus("No installation selected.");
+            return;
+        }
+
         await LaunchAsync("Offline", null);
     }
 
     private async Task PlayOnlineAsync()
     {
+        if (!HasSelectedInstallation)
+        {
+            SetStatus("No installation selected.");
+            return;
+        }
+
         if (_microsoftSession is null)
         {
             SetStatus(T("warning_login_before_online"));
-            AddLog("Warning", T("warning_online_blocked"), T("warning_no_active_session"));
             return;
         }
 
@@ -941,6 +984,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
 
     private Task OpenInstallationFolderAsync()
     {
+        if (!HasSelectedInstallation)
+        return Task.CompletedTask;
+
         Directory.CreateDirectory(InstallationDirectory);
 
         Process.Start(new ProcessStartInfo
@@ -1229,7 +1275,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             depth++;
         }
     }
+    private void ClearPendingDelete()
+    {
+        if (_pendingDeleteProfileId is null)
+            return;
 
+        _pendingDeleteProfileId = null;
+        OnPropertyChanged(nameof(CurrentDeleteInstallationButtonText));
+    }
     private void RaiseCommandStates()
     {
         if (PlayOfflineCommand is AsyncRelayCommand offlineCommand)

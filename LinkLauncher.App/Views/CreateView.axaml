@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="using:LinkLauncher.App.ViewModels"
+             xmlns:converters="using:LinkLauncher.App.Converters"
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.CreateView"
              x:DataType="viewModels:CreateViewModel">
@@ -77,7 +78,7 @@
                     CornerRadius="6"
                     Padding="18">
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*"
-                    RowSpacing="12">
+                      RowSpacing="12">
                     <StackPanel Grid.Row="0"
                                 Spacing="2">
                         <TextBlock Text="Criar nova instancia"
@@ -96,18 +97,16 @@
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
                         <TextBox Watermark="Ex: Survival Fabric"
-                            Text="{Binding NewInstanceName, Mode=TwoWay}" />
-
+                                 Text="{Binding NewInstanceName, Mode=TwoWay}" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="2"
                                 Spacing="6">
                         <TextBlock Text="Versao base"
-                                    FontWeight="Bold"
-                                    Foreground="#2A1A10" />
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
                         <ComboBox ItemsSource="{Binding FilteredVersions}"
-                                    SelectedItem="{Binding SelectedVersion}" />
-
+                                  SelectedItem="{Binding SelectedVersion}" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="3"
@@ -116,33 +115,44 @@
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
                         <ComboBox ItemsSource="{Binding LoaderTypes}"
-                                    SelectedItem="{Binding SelectedLoaderType}" />
-
+                                  SelectedItem="{Binding SelectedLoaderType}" />
                     </StackPanel>
+
                     <StackPanel Grid.Row="4"
                                 Spacing="6">
                         <TextBlock Text="Imagem da instancia"
-                                FontWeight="Bold"
-                                Foreground="#2A1A10" />
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
 
-                        <Border Width="96"
-                                Height="96"
+                        <Border Width="120"
+                                Height="120"
                                 Background="#8B6144"
                                 BorderBrush="#4A2D1B"
                                 BorderThickness="2"
                                 CornerRadius="4"
-                                ClipToBounds="True">
-                            <Image Source="{Binding SelectedImagePath}"
-                                Stretch="UniformToFill" />
+                                ClipToBounds="True"
+                                Padding="6">
+                            <Image Source="{Binding SelectedImagePath, Converter={x:Static converters:ImagePathToBitmapConverter.Instance}}"
+                                   Stretch="Uniform" />
                         </Border>
 
-                        <Button Background="#E2C39B"
-                                BorderBrush="#6F4A2D"
-                                Foreground="#2A1A10"
-                                Content="Usar logo default"
-                                Command="{Binding UseDefaultImageCommand}" />
-                    </StackPanel>
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="8">
+                            <Button Grid.Column="0"
+                                    Background="#E2C39B"
+                                    BorderBrush="#6F4A2D"
+                                    Foreground="#2A1A10"
+                                    Content="Escolher imagem"
+                                    Click="ChooseImageButton_Click" />
 
+                            <Button Grid.Column="1"
+                                    Background="#E2C39B"
+                                    BorderBrush="#6F4A2D"
+                                    Foreground="#2A1A10"
+                                    Content="Usar logo default"
+                                    Command="{Binding UseDefaultImageCommand}" />
+                        </Grid>
+                    </StackPanel>
 
                     <StackPanel Grid.Row="5"
                                 Spacing="10"
@@ -162,7 +172,6 @@
                                 Foreground="#11200D"
                                 Content="Criar instancia"
                                 Command="{Binding CreateInstanceCommand}" />
-
                     </StackPanel>
                 </Grid>
             </Border>
