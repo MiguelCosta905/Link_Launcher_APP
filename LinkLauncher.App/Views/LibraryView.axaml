@@ -6,6 +6,46 @@
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.LibraryView"
              x:DataType="viewModels:LibraryViewModel">
+        <UserControl.Styles>
+        <Style Selector="ListBox.instance-list">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="ListBox.instance-list ListBoxItem">
+                <Setter Property="Padding" Value="6" />
+                <Setter Property="Margin" Value="0,0,0,8" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+
+        <Style Selector="ListBox.instance-list ListBoxItem:pointerover">
+                <Setter Property="Background" Value="#BE8D64" />
+        </Style>
+
+        <Style Selector="ListBox.instance-list ListBoxItem:selected">
+                <Setter Property="Background" Value="#7A4D2E" />
+                <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="ListBox.instance-list ListBoxItem /template/ ContentPresenter">
+                <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBox.instance-list ListBoxItem:selected /template/ ContentPresenter">
+                <Setter Property="Background" Value="#7A4D2E" />
+        </Style>
+
+        <Style Selector="ListBox.instance-list ListBoxItem:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#BE8D64" />
+        </Style>
+
+        <Style Selector="ListBox.instance-list ListBoxItem /template/ Rectangle#FocusVisual">
+                <Setter Property="IsVisible" Value="False" />
+        </Style>
+        </UserControl.Styles>
+
 
     <Grid RowDefinitions="Auto,*"
           RowSpacing="18">
@@ -91,10 +131,12 @@
 
                     <ScrollViewer Grid.Row="1"
                                   VerticalScrollBarVisibility="Auto">
-                        <ListBox ItemsSource="{Binding Installations}"
-                                 SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
-                                 Background="Transparent"
-                                 BorderThickness="0">
+                        <ListBox Classes="instance-list"
+                                ItemsSource="{Binding Installations}"
+                                SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
+                                Background="Transparent"
+                                BorderThickness="0">
+
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="#E7C9A2"
@@ -102,7 +144,7 @@
                                             BorderThickness="2"
                                             CornerRadius="6"
                                             Padding="12"
-                                            Margin="0,0,0,12">
+                                            Margin="0">
                                         <Grid ColumnDefinitions="72,*"
                                               ColumnSpacing="12">
                                             <Border Width="72"
