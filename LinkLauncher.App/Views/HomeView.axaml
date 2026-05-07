@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="using:LinkLauncher.App.ViewModels"
+             xmlns:models="using:LinkLauncher.Core.Models"
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.HomeView"
              x:DataType="viewModels:HomeViewModel">
@@ -24,7 +25,7 @@
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <TextBlock Text="O teu painel principal do launcher: instancias, atualizacoes e novidades."
+                    <TextBlock Text="O teu painel principal do launcher: instancias recentes, noticias e changelog."
                                TextWrapping="Wrap"
                                Foreground="#5B3922" />
 
@@ -89,7 +90,7 @@
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
 
-                        <TextBlock Text="Por agora esta lista usa as instancias disponiveis no launcher."
+                        <TextBlock Text="{Binding RecentInstallationsSubtitleText}"
                                    TextWrapping="Wrap"
                                    Foreground="#6A4B37" />
                     </StackPanel>
@@ -108,9 +109,9 @@
 
                     <ScrollViewer Grid.Row="2"
                                   VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding App.Installations}">
+                        <ItemsControl ItemsSource="{Binding RecentInstallations}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="models:LauncherProfile">
                                     <Border Background="#E7C9A2"
                                             BorderBrush="#6F4A2D"
                                             BorderThickness="2"
@@ -123,11 +124,14 @@
                                                        FontWeight="Bold"
                                                        Foreground="#2A1A10" />
 
-                                            <TextBlock Text="{Binding MinecraftVersion}"
+                                            <TextBlock Text="{Binding MinecraftVersion, StringFormat='Versao: {0}'}"
                                                        Foreground="#6A4B37" />
 
-                                            <TextBlock Text="{Binding PlayerName}"
+                                            <TextBlock Text="{Binding PlayerName, StringFormat='Jogador: {0}'}"
                                                        Foreground="#5B3922" />
+
+                                            <TextBlock Text="{Binding LastPlayedAtUtc, StringFormat='Ultima vez: {0:dd/MM/yyyy HH:mm}'}"
+                                                       Foreground="#6A4B37" />
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>
@@ -152,61 +156,43 @@
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
 
-                        <TextBlock Text="Bloco pronto para ligares noticias reais mais tarde."
+                        <TextBlock Text="{Binding NewsSubtitleText}"
                                    TextWrapping="Wrap"
                                    Foreground="#6A4B37" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1"
-                                Spacing="12">
-                        <Border Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="14">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Nova snapshot disponivel"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="Reserva esta area para noticias curtas do Minecraft, snapshots, updates de Java ou eventos de servidores."
-                                           TextWrapping="Wrap"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding NewsItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:HomeNewsItem">
+                                    <Border Background="#E7C9A2"
+                                            BorderBrush="#6F4A2D"
+                                            BorderThickness="2"
+                                            CornerRadius="4"
+                                            Padding="14"
+                                            Margin="0,0,0,12">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="{Binding Category}"
+                                                       Foreground="#6A4B37" />
 
-                        <Border Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="14">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Estado dos loaders"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="Aqui podes mostrar avisos como suporte novo para Fabric, Forge, NeoForge ou incompatibilidades temporarias."
-                                           TextWrapping="Wrap"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
+                                            <TextBlock Text="{Binding Title}"
+                                                       FontSize="16"
+                                                       FontWeight="Bold"
+                                                       Foreground="#2A1A10" />
 
-                        <Border Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="14">
-                            <StackPanel Spacing="6">
-                                <TextBlock Text="Destaque da comunidade"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="Tambem podes usar esta zona para mods populares, packs recomendados ou avisos do teu proprio launcher."
-                                           TextWrapping="Wrap"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
+                                            <TextBlock Text="{Binding Summary}"
+                                                       TextWrapping="Wrap"
+                                                       Foreground="#6A4B37" />
+
+                                            <TextBlock Text="{Binding Footer}"
+                                                       Foreground="#5B3922" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
             </Border>
 
@@ -225,49 +211,36 @@
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
 
-                        <TextBlock Text="Resumo rapido do que mudou no launcher."
+                        <TextBlock Text="{Binding ChangelogSubtitleText}"
                                    TextWrapping="Wrap"
                                    Foreground="#6A4B37" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1"
-                                Spacing="10">
-                        <Border Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="12">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="v0.1.0"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="- Nova navegacao com Home, Skins, Biblioteca e Criar"
-                                           TextWrapping="Wrap"
-                                           Foreground="#6A4B37" />
-                                <TextBlock Text="- Biblioteca separada da janela principal"
-                                           TextWrapping="Wrap"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding ChangelogItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:LauncherChangelogItem">
+                                    <Border Background="#E7C9A2"
+                                            BorderBrush="#6F4A2D"
+                                            BorderThickness="2"
+                                            CornerRadius="4"
+                                            Padding="12"
+                                            Margin="0,0,0,10">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Version}"
+                                                       FontWeight="Bold"
+                                                       Foreground="#2A1A10" />
 
-                        <Border Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="12">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="Proximo"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="- Importacao de skins"
-                                           TextWrapping="Wrap"
-                                           Foreground="#6A4B37" />
-                                <TextBlock Text="- Criacao e importacao de instancias"
-                                           TextWrapping="Wrap"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
+                                            <TextBlock Text="{Binding Summary}"
+                                                       TextWrapping="Wrap"
+                                                       Foreground="#6A4B37" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
             </Border>
 

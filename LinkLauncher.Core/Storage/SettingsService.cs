@@ -112,6 +112,9 @@ public sealed class SettingsService
         if (string.IsNullOrWhiteSpace(profile.Name))
             profile.Name = "Instancia";
 
+        if (string.IsNullOrWhiteSpace(profile.InstanceFolderName))
+            profile.InstanceFolderName = BuildDefaultInstanceFolderName(profile);
+
         profile.ModLoader ??= new ModLoaderProfile();
         profile.MinecraftVersion = ExtractVanillaVersion(profile.MinecraftVersion);
 
@@ -125,8 +128,24 @@ public sealed class SettingsService
 
         if (string.IsNullOrWhiteSpace(profile.CoverImagePath))
             profile.CoverImagePath = "avares://LinkLauncher.App/Assets/logo.png";
+    }
 
+    private static string BuildDefaultInstanceFolderName(LauncherProfile profile)
+    {
+        var safeName = SanitizeDirectoryName(profile.Name);
+        var suffix = profile.Id.Length >= 6 ? profile.Id[..6] : profile.Id;
+        return $"{safeName}-{suffix}";
+    }
 
+    private static string SanitizeDirectoryName(string? name)
+    {
+        var source = string.IsNullOrWhiteSpace(name) ? "Instancia" : name.Trim();
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var cleaned = new string(source.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray())
+            .Trim()
+            .TrimEnd('.');
+
+        return string.IsNullOrWhiteSpace(cleaned) ? "Instancia" : cleaned;
     }
 
     private static string ExtractVanillaVersion(string? version)

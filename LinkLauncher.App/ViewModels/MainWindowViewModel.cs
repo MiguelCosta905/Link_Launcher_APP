@@ -55,7 +55,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _showSnapshots;
     private bool _showOldBeta;
     private bool _showOldAlpha;
-    private LauncherSection _currentSection = LauncherSection.Library;
+    private LauncherSection _currentSection = LauncherSection.Home;
     public HomeViewModel HomePage { get; }
     public SkinsViewModel SkinsPage { get; }
     public LibraryViewModel LibraryPage { get; }
@@ -714,14 +714,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             return Task.CompletedTask;
         }
 
-        ClearPendingDelete();
-        Settings.Profiles.Remove(profile);
-        Settings.SelectedProfileId = Settings.Profiles.Count == 0 ? null : Settings.Profiles[0].Id;
+        try
+        {
+            var installationDirectory = Settings.GetInstanceDirectory(profile);
 
-        RefreshInstallations();
-        OnSelectedProfileChanged();
-        SetStatus(TF("status_installation_removed", profile.Name));
-        AddLog("Info", T("log_installation_removed"), profile.Name);
+            ClearPendingDelete();
+            Settings.Profiles.Remove(profile);
+            Settings.SelectedProfileId = Settings.Profiles.Count == 0 ? null : Settings.Profiles[0].Id;
+
+            if (Directory.Exists(installationDirectory))
+                Directory.Delete(installationDirectory, recursive: true);
+
+            RefreshInstallations();
+            OnSelectedProfileChanged();
+            SetStatus(TF("status_installation_removed", profile.Name));
+            AddLog("Info", T("log_installation_removed"), $"{profile.Name}{Environment.NewLine}Deleted folder: {installationDirectory}");
+        }
+        catch (Exception ex)
+        {
+            HandleError($"Delete installation {profile.Name}", ex);
+        }
+
         return Task.CompletedTask;
     }
     public void ApplyVersions(IEnumerable<MinecraftVersionItem> versions)
@@ -953,8 +966,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
             }
 
             var processIdText = result.ProcessId?.ToString(CultureInfo.InvariantCulture) ?? "-";
+
+            if (SelectedProfile is not null)
+            {
+                SelectedProfile.LastPlayedAtUtc = DateTimeOffset.UtcNow;
+                HomePage.Refresh();
+            }
+
             SetStatus(TF("status_minecraft_started", processIdText));
             AddLog("Info", TF("log_launch_success", launchMode), $"Process ID: {processIdText}");
+
         }
         catch (Exception ex)
         {

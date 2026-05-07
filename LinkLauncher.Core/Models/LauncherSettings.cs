@@ -28,7 +28,7 @@ public sealed class LauncherSettings
 
     public string GetInstanceDirectory(LauncherProfile profile)
     {
-        return Path.Combine(SettingsDirectory, "Instances", GetInstanceFolderName(profile));
+        return Path.Combine(SettingsDirectory, "Instances", EnsureInstanceFolderName(profile));
     }
 
     public static LauncherSettings CreateDefault(string settingsDirectory, string sharedGameDirectory)
@@ -40,18 +40,25 @@ public sealed class LauncherSettings
         };
     }
 
-    private string GetInstanceFolderName(LauncherProfile profile)
+    private string EnsureInstanceFolderName(LauncherProfile profile)
     {
+        if (!string.IsNullOrWhiteSpace(profile.InstanceFolderName))
+            return profile.InstanceFolderName;
+
         var baseName = SanitizeDirectoryName(profile.Name);
 
         var hasDuplicateName = Profiles.Count(p =>
             string.Equals(SanitizeDirectoryName(p.Name), baseName, StringComparison.OrdinalIgnoreCase)) > 1;
 
         if (!hasDuplicateName)
-            return baseName;
+        {
+            profile.InstanceFolderName = baseName;
+            return profile.InstanceFolderName;
+        }
 
         var suffix = profile.Id.Length >= 6 ? profile.Id[..6] : profile.Id;
-        return $"{baseName}-{suffix}";
+        profile.InstanceFolderName = $"{baseName}-{suffix}";
+        return profile.InstanceFolderName;
     }
 
     private static string SanitizeDirectoryName(string? name)

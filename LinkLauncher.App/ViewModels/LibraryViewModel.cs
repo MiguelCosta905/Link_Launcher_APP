@@ -9,12 +9,15 @@ namespace LinkLauncher.App.ViewModels;
 
 public sealed class LibraryViewModel : INotifyPropertyChanged
 {
+    private bool _isDetailsEditMode;
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public LibraryViewModel(MainWindowViewModel app)
     {
         App = app;
         App.PropertyChanged += OnAppPropertyChanged;
+        ToggleDetailsEditModeCommand = new RelayCommand(ToggleDetailsEditMode);
     }
 
     public MainWindowViewModel App { get; }
@@ -99,6 +102,26 @@ public sealed class LibraryViewModel : INotifyPropertyChanged
         set => App.LoaderVersion = value;
     }
 
+    public bool IsDetailsEditMode
+    {
+        get => _isDetailsEditMode;
+        set
+        {
+            if (_isDetailsEditMode == value)
+                return;
+
+            _isDetailsEditMode = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsDetailsSummaryVisible));
+            OnPropertyChanged(nameof(DetailsEditButtonText));
+        }
+    }
+
+    public bool IsDetailsSummaryVisible => !IsDetailsEditMode;
+    public bool CanEditLoaderVersion => HasSelectedInstallation && IsLoaderSelected;
+    public string DetailsEditButtonText => IsDetailsEditMode ? "Fechar edicao" : "Editar instancia";
+    public ICommand ToggleDetailsEditModeCommand { get; }
+
     public string VanillaLoaderMessageText => App.VanillaLoaderMessageText;
     public int MaximumRamIndex => App.MaximumRamIndex;
 
@@ -182,8 +205,24 @@ public sealed class LibraryViewModel : INotifyPropertyChanged
         {
             OnPropertyChanged(nameof(HasNoInstallation));
             OnPropertyChanged(nameof(EmptyLibraryMessage));
+            OnPropertyChanged(nameof(CanEditLoaderVersion));
+
+            if (!HasSelectedInstallation)
+                IsDetailsEditMode = false;
         }
+
+        if (e.PropertyName == nameof(App.IsLoaderSelected))
+            OnPropertyChanged(nameof(CanEditLoaderVersion));
     }
+
+    private void ToggleDetailsEditMode()
+    {
+        if (!HasSelectedInstallation)
+            return;
+
+        IsDetailsEditMode = !IsDetailsEditMode;
+    }
+
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

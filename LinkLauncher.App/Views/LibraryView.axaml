@@ -199,85 +199,174 @@
                     Padding="18">
                 <Grid RowDefinitions="Auto,Auto,Auto,*"
                       RowSpacing="14">
-                    <StackPanel Grid.Row="0"
-                                Spacing="2">
-                        <TextBlock Text="Detalhes da instancia"
-                                   FontSize="22"
-                                   FontWeight="Bold"
-                                   Foreground="#2A1A10" />
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto"
+                          ColumnSpacing="12">
+                        <StackPanel Grid.Column="0"
+                                    Spacing="2">
+                            <TextBlock Text="Detalhes da instancia"
+                                       FontSize="22"
+                                       FontWeight="Bold"
+                                       Foreground="#2A1A10" />
 
-                        <TextBlock Text="Os detalhes aparecem para a instancia selecionada."
-                                   TextWrapping="Wrap"
-                                   Foreground="#6A4B37" />
-                    </StackPanel>
+                            <TextBlock Text="Os detalhes aparecem para a instancia selecionada."
+                                       TextWrapping="Wrap"
+                                       Foreground="#6A4B37" />
+                        </StackPanel>
 
-                    <Grid Grid.Row="1"
-                          ColumnDefinitions="*,*"
-                          ColumnSpacing="12"
-                          RowDefinitions="Auto,Auto">
-                        <Border Grid.Row="0"
-                                Grid.Column="0"
-                                Background="#E7C9A2"
+                        <Button Grid.Column="1"
+                                Background="#E2C39B"
                                 BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="12">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="Nome"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="{Binding InstallationName}"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
+                                Foreground="#2A1A10"
+                                VerticalAlignment="Top"
+                                Content="{Binding DetailsEditButtonText}"
+                                Command="{Binding ToggleDetailsEditModeCommand}" />
+                    </Grid>
 
-                        <Border Grid.Row="0"
-                                Grid.Column="1"
-                                Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="12">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="Versao"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="{Binding MinecraftVersion}"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
+                    <Grid Grid.Row="1">
+                        <Grid IsVisible="{Binding IsDetailsSummaryVisible}"
+                              ColumnDefinitions="*,*"
+                              ColumnSpacing="12"
+                              RowDefinitions="Auto,Auto">
+                            <Border Grid.Row="0"
+                                    Grid.Column="0"
+                                    Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Nome"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBlock Text="{Binding InstallationName}"
+                                               Foreground="#6A4B37" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border Grid.Row="1"
-                                Grid.Column="0"
-                                Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="12">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="RAM"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="{Binding SelectedRamLabel}"
-                                           Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
+                            <Border Grid.Row="0"
+                                    Grid.Column="1"
+                                    Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Versao"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBlock Text="{Binding MinecraftVersion}"
+                                               Foreground="#6A4B37" />
+                                </StackPanel>
+                            </Border>
 
-                        <Border Grid.Row="1"
-                                Grid.Column="1"
-                                Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="12">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="Loader"
-                                           FontWeight="Bold"
-                                           Foreground="#2A1A10" />
-                                <TextBlock Text="{Binding ModLoaderSummary}"
+                            <Border Grid.Row="1"
+                                    Grid.Column="0"
+                                    Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="RAM"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBlock Text="{Binding SelectedRamLabel}"
+                                               Foreground="#6A4B37" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1"
+                                    Grid.Column="1"
+                                    Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Loader"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBlock Text="{Binding ModLoaderSummary}"
+                                               Foreground="#6A4B37" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <StackPanel IsVisible="{Binding IsDetailsEditMode}"
+                                    Spacing="12">
+                            <Border Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="Nome da instancia"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBox Text="{Binding InstallationName, Mode=TwoWay}"
+                                             Watermark="Nome da instancia" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="RAM alocada"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+
+                                    <TextBlock Text="{Binding SelectedRamLabel}"
+                                               FontWeight="SemiBold"
+                                               Foreground="#6A4B37" />
+
+                                    <Grid ColumnDefinitions="76,*"
+                                          ColumnSpacing="6">
+                                        <ComboBox Grid.Column="0"
+                                                  ItemsSource="{Binding RamOptions}"
+                                                  SelectedItem="{Binding SelectedRamOption, Mode=TwoWay}" />
+
+                                        <Slider Grid.Column="1"
+                                                Minimum="0"
+                                                Maximum="{Binding MaximumRamIndex}"
+                                                Value="{Binding SelectedRamIndexValue, Mode=TwoWay}"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True"
+                                                Margin="0,0,4,0"
+                                                VerticalAlignment="Center" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border IsVisible="{Binding CanEditLoaderVersion}"
+                                    Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="Versao do loader"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <ComboBox ItemsSource="{Binding LoaderVersions}"
+                                              SelectedItem="{Binding LoaderVersion, Mode=TwoWay}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border IsVisible="{Binding IsVanillaSelected}"
+                                    Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <TextBlock Text="Esta instancia usa Vanilla, por isso nao ha versao de loader para editar."
+                                           TextWrapping="Wrap"
                                            Foreground="#6A4B37" />
-                            </StackPanel>
-                        </Border>
+                            </Border>
+                        </StackPanel>
                     </Grid>
 
                     <Grid Grid.Row="2"
