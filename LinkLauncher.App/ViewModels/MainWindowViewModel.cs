@@ -616,6 +616,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ApplyMinecraftVersionFilters();
         RaiseCommandStates();
     }
+    public void CreateInstallationFromDraft(string name, string minecraftVersion, LoaderType loaderType)
+    {
+        var profile = new LauncherProfile
+        {
+            Name = string.IsNullOrWhiteSpace(name) ? TF("instance_numbered", Settings.Profiles.Count + 1) : name.Trim(),
+            PlayerName = PlayerName,
+            MinecraftVersion = string.IsNullOrWhiteSpace(minecraftVersion) ? "latest-release" : minecraftVersion,
+            MaximumRamMb = MaximumRamMb
+        };
+
+        profile.ModLoader.LoaderType = loaderType;
+
+        if (loaderType == LoaderType.Vanilla)
+            profile.ModLoader.LoaderVersion = null;
+
+        Settings.Profiles.Add(profile);
+        Settings.SelectedProfileId = profile.Id;
+        RefreshInstallations();
+        OnSelectedProfileChanged();
+        _ = RefreshLoaderDataAsync();
+        SetStatus(TF("status_installation_created", profile.Name));
+        AddLog("Info", T("log_installation_created"), profile.Name);
+    }
 
     private Task NewInstallationAsync()
     {

@@ -6,365 +6,308 @@
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.LibraryView"
              x:DataType="viewModels:LibraryViewModel">
-    <Grid RowDefinitions="Auto,Auto,*"
+
+    <Grid RowDefinitions="Auto,*"
           RowSpacing="18">
+
         <Border Grid.Row="0"
-                Background="#D1A57D"
+                Background="#C59A71"
                 BorderBrush="#4A2D1B"
                 BorderThickness="2"
                 CornerRadius="6"
-                Padding="18">
-            <Grid ColumnDefinitions="*,220"
-                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-                  ColumnSpacing="18"
-                  RowSpacing="10">
-                <StackPanel Grid.Row="0"
-                            Grid.ColumnSpan="2"
-                            Spacing="2">
-                    <TextBlock Text="{Binding App.CurrentInstallationTitleText}"
-                               FontSize="20"
+                Padding="22">
+            <Grid ColumnDefinitions="*,260"
+                  ColumnSpacing="18">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Biblioteca"
+                               FontSize="30"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <TextBlock Text="{Binding App.InstallationSummary}"
-                               Foreground="#6A4B37" />
-                </StackPanel>
-
-                <StackPanel Grid.Row="1"
-                            Grid.ColumnSpan="2"
-                            Spacing="6">
-                    <TextBlock Text="{Binding App.NameLabelText}"
-                               FontWeight="Bold"
-                               Foreground="#2A1A10" />
-
-                    <TextBox Text="{Binding App.InstallationName, Mode=TwoWay}"
-                             HorizontalAlignment="Stretch" />
-                </StackPanel>
-
-                <StackPanel Grid.Row="2"
-                            Grid.Column="0"
-                            Spacing="6">
-                    <TextBlock Text="{Binding App.MinecraftLabelText}"
-                               FontWeight="Bold"
-                               Foreground="#2A1A10" />
-
-                    <ComboBox ItemsSource="{Binding App.FilteredVersions}"
-                              SelectedItem="{Binding App.SelectedVersion}"
-                              HorizontalAlignment="Stretch" />
-                </StackPanel>
-
-                <StackPanel Grid.Row="2"
-                            Grid.Column="1"
-                            Spacing="6">
-                    <TextBlock Text="{Binding App.InstanceRamLabelText}"
-                               FontWeight="Bold"
-                               Foreground="#2A1A10" />
-
-                    <ComboBox ItemsSource="{Binding App.RamOptions}"
-                              SelectedItem="{Binding App.SelectedRamOption, Mode=TwoWay}"
-                              HorizontalAlignment="Stretch" />
-                </StackPanel>
-
-                <StackPanel Grid.Row="3"
-                            Grid.ColumnSpan="2"
-                            Orientation="Horizontal"
-                            Spacing="12"
-                            IsVisible="{Binding App.IsVanillaSelected}">
-                    <CheckBox Content="{Binding App.ReleasesText}"
-                              IsChecked="{Binding App.ShowReleases}" />
-
-                    <CheckBox Content="{Binding App.SnapshotsText}"
-                              IsChecked="{Binding App.ShowSnapshots}" />
-
-                    <CheckBox Content="{Binding App.OldBetaText}"
-                              IsChecked="{Binding App.ShowOldBeta}" />
-
-                    <CheckBox Content="{Binding App.OldAlphaText}"
-                              IsChecked="{Binding App.ShowOldAlpha}" />
-                </StackPanel>
-
-                <Grid Grid.Row="4"
-                      Grid.ColumnSpan="2"
-                      ColumnDefinitions="220,*"
-                      ColumnSpacing="18">
-                    <StackPanel Grid.Column="0"
-                                Spacing="6">
-                        <TextBlock Text="{Binding App.LoaderLabelText}"
-                                   FontWeight="Bold"
-                                   Foreground="#2A1A10" />
-
-                        <ComboBox ItemsSource="{Binding App.LoaderTypes}"
-                                  SelectedItem="{Binding App.SelectedLoaderType}"
-                                  HorizontalAlignment="Stretch" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1"
-                                Spacing="6"
-                                IsVisible="{Binding App.IsLoaderSelected}">
-                        <TextBlock Text="{Binding App.LoaderVersionLabelText}"
-                                   FontWeight="Bold"
-                                   Foreground="#2A1A10" />
-
-                        <ComboBox ItemsSource="{Binding App.LoaderVersions}"
-                                  SelectedItem="{Binding App.LoaderVersion, Mode=TwoWay}"
-                                  HorizontalAlignment="Stretch" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1"
-                                Spacing="6"
-                                IsVisible="{Binding App.IsVanillaSelected}">
-                        <TextBlock Text="{Binding App.LoaderVersionLabelText}"
-                                   FontWeight="Bold"
-                                   Foreground="#2A1A10" />
-
-                        <Border Background="#E7C9A2"
-                                BorderBrush="#6F4A2D"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                Padding="10,8">
-                            <TextBlock Text="{Binding App.VanillaLoaderMessageText}"
-                                       Foreground="#6A4B37" />
-                        </Border>
-                    </StackPanel>
-                </Grid>
-
-                <Slider Grid.Row="5"
-                        Grid.ColumnSpan="2"
-                        Minimum="0"
-                        Maximum="{Binding App.MaximumRamIndex}"
-                        TickFrequency="1"
-                        IsSnapToTickEnabled="True"
-                        Value="{Binding App.SelectedRamIndexValue, Mode=TwoWay}" />
-            </Grid>
-        </Border>
-
-        <Border Grid.Row="1"
-                IsVisible="{Binding App.IsProgressVisible}"
-                Background="#3E2B1E"
-                BorderBrush="#6FC546"
-                BorderThickness="2"
-                CornerRadius="6"
-                Padding="18">
-            <StackPanel Spacing="8">
-                <TextBlock Text="{Binding App.ProgressTitleText}"
-                           FontSize="20"
-                           FontWeight="Bold"
-                           Foreground="#F7FFEF" />
-
-                <TextBlock Text="{Binding App.FilesLabelText}"
-                           Foreground="#DCECCB" />
-
-                <ProgressBar Minimum="0"
-                             Maximum="100"
-                             Value="{Binding App.FileProgressPercent}" />
-
-                <TextBlock Text="{Binding App.DownloadLabelText}"
-                           Foreground="#DCECCB" />
-
-                <ProgressBar Minimum="0"
-                             Maximum="100"
-                             Value="{Binding App.ByteProgressPercent}" />
-            </StackPanel>
-        </Border>
-
-        <Grid Grid.Row="2"
-              ColumnDefinitions="310,*"
-              ColumnSpacing="18">
-            <Border Grid.Column="0"
-                    Background="#C59A71"
-                    BorderBrush="#4A2D1B"
-                    BorderThickness="2"
-                    CornerRadius="6"
-                    Padding="18">
-                <StackPanel Spacing="14">
-                    <TextBlock Text="{Binding App.AccountTitleText}"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               Foreground="#2A1A10" />
+                    <TextBlock Text="Escolhe uma instancia e abre os detalhes dela, com um layout mais limpo e focado."
+                               TextWrapping="Wrap"
+                               Foreground="#5B3922" />
 
                     <Border Background="#E7C9A2"
                             BorderBrush="#6F4A2D"
                             BorderThickness="2"
                             CornerRadius="4"
-                            Padding="12">
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="{Binding App.AccountText}"
-                                       Foreground="#3F742F"
-                                       FontWeight="Bold"
-                                       TextWrapping="Wrap" />
-
-                            <TextBlock Text="{Binding App.PlayerLabelText}"
-                                       Foreground="#6A4B37" />
-                        </StackPanel>
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <TextBlock Text="{Binding InstallationSummary}"
+                                   TextWrapping="Wrap"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
                     </Border>
+                </StackPanel>
 
-                    <Button Background="#8ED85E"
-                            BorderBrush="#4C7F2A"
-                            Foreground="#11200D"
-                            Content="{Binding App.LoginMicrosoftButtonText}"
-                            Command="{Binding App.LoginMicrosoftCommand}"
-                            HorizontalAlignment="Stretch" />
+                <Border Grid.Column="1"
+                        Background="#2F2218"
+                        BorderBrush="#6FC546"
+                        BorderThickness="2"
+                        CornerRadius="6"
+                        Padding="16">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Conta"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#F7FFEF" />
 
-                    <Button Background="#5FAE46"
-                            BorderBrush="#3F742F"
-                            Foreground="#F4FFE9"
-                            Content="{Binding App.PlayOnlineButtonText}"
-                            Command="{Binding App.PlayOnlineCommand}"
-                            HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding AccountText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#DCECCB" />
 
-                    <Button Background="#E2C39B"
-                            BorderBrush="#6F4A2D"
-                            Foreground="#2A1A10"
-                            Content="{Binding App.PlayOfflineButtonText}"
-                            Command="{Binding App.PlayOfflineCommand}"
-                            HorizontalAlignment="Stretch" />
+                        <TextBlock Text="{Binding PlayerLabelText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#8ED85E" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
 
-                    <Separator Margin="0,6"
-                               Background="#7E583D" />
+        <Grid Grid.Row="1"
+              ColumnDefinitions="1.35*,0.95*"
+              ColumnSpacing="18">
 
-                    <TextBlock Text="{Binding App.InstallationsTitleText}"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#2A1A10" />
+            <Border Grid.Column="0"
+                    Background="#D1A57D"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*"
+                      RowSpacing="14">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Instancias"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
 
-                    <ComboBox ItemsSource="{Binding App.Installations}"
-                              SelectedItem="{Binding App.SelectedInstallation, Mode=TwoWay}"
-                              HorizontalAlignment="Stretch" />
+                        <TextBlock Text="Visual de biblioteca em cards. Mais perto do estilo CurseForge."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
 
-                    <Grid ColumnDefinitions="*,*,*"
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ListBox ItemsSource="{Binding Installations}"
+                                 SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
+                                 Background="Transparent"
+                                 BorderThickness="0">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#E7C9A2"
+                                            BorderBrush="#6F4A2D"
+                                            BorderThickness="2"
+                                            CornerRadius="6"
+                                            Padding="12"
+                                            Margin="0,0,0,12">
+                                        <Grid ColumnDefinitions="72,*"
+                                              ColumnSpacing="12">
+                                            <Border Width="72"
+                                                    Height="72"
+                                                    Background="#8B6144"
+                                                    BorderBrush="#4A2D1B"
+                                                    BorderThickness="2"
+                                                    CornerRadius="4">
+                                                <Grid>
+                                                    <TextBlock Text="IMG"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               FontWeight="Bold"
+                                                               Foreground="#F7E7D2" />
+                                                </Grid>
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1"
+                                                        Spacing="4"
+                                                        VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontSize="17"
+                                                           FontWeight="Bold"
+                                                           Foreground="#2A1A10" />
+
+                                                <TextBlock Text="{Binding MinecraftVersion}"
+                                                           Foreground="#6A4B37" />
+
+                                                <TextBlock Text="{Binding PlayerName}"
+                                                           Foreground="#5B3922" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Background="#C59A71"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,Auto,Auto,*"
+                      RowSpacing="14">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Detalhes da instancia"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Os detalhes aparecem para a instancia selecionada."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1"
+                          ColumnDefinitions="*,*"
+                          ColumnSpacing="12"
+                          RowDefinitions="Auto,Auto">
+                        <Border Grid.Row="0"
+                                Grid.Column="0"
+                                Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Nome"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="{Binding InstallationName}"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="0"
+                                Grid.Column="1"
+                                Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Versao"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="{Binding MinecraftVersion}"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="1"
+                                Grid.Column="0"
+                                Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="RAM"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="{Binding SelectedRamLabel}"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="1"
+                                Grid.Column="1"
+                                Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Loader"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="{Binding ModLoaderSummary}"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="2"
+                          ColumnDefinitions="*,*"
                           ColumnSpacing="8">
                         <Button Grid.Column="0"
                                 Background="#E2C39B"
                                 BorderBrush="#6F4A2D"
                                 Foreground="#2A1A10"
-                                Content="{Binding App.NewInstallationButtonText}"
-                                Command="{Binding App.NewInstallationCommand}"
-                                HorizontalAlignment="Stretch" />
+                                Content="{Binding OpenInstallationFolderButtonText}"
+                                Command="{Binding OpenInstallationFolderCommand}" />
 
                         <Button Grid.Column="1"
                                 Background="#E2C39B"
                                 BorderBrush="#6F4A2D"
                                 Foreground="#2A1A10"
-                                Content="{Binding App.CopyInstallationButtonText}"
-                                Command="{Binding App.DuplicateInstallationCommand}"
-                                HorizontalAlignment="Stretch" />
+                                Content="{Binding OpenGameFolderButtonText}"
+                                Command="{Binding OpenGameFolderCommand}" />
+                    </Grid>
 
-                        <Button Grid.Column="2"
-                                Background="#E2C39B"
+                    <StackPanel Grid.Row="3"
+                                Spacing="10"
+                                VerticalAlignment="Top">
+                        <Button Background="#5FAE46"
+                                BorderBrush="#3F742F"
+                                Foreground="#F4FFE9"
+                                Content="{Binding PlayOnlineButtonText}"
+                                Command="{Binding PlayOnlineCommand}" />
+
+                        <Button Background="#8ED85E"
+                                BorderBrush="#4C7F2A"
+                                Foreground="#11200D"
+                                Content="{Binding PlayOfflineButtonText}"
+                                Command="{Binding PlayOfflineCommand}" />
+
+                        <Button Background="#E2C39B"
                                 BorderBrush="#6F4A2D"
                                 Foreground="#2A1A10"
-                                Content="{Binding App.DeleteInstallationButtonText}"
-                                Command="{Binding App.DeleteInstallationCommand}"
-                                HorizontalAlignment="Stretch" />
-                    </Grid>
+                                Content="{Binding LoginMicrosoftButtonText}"
+                                Command="{Binding LoginMicrosoftCommand}" />
 
-                    <Button Background="#E2C39B"
-                            BorderBrush="#6F4A2D"
-                            Foreground="#2A1A10"
-                            Content="{Binding App.OpenInstallationFolderButtonText}"
-                            Command="{Binding App.OpenInstallationFolderCommand}"
-                            HorizontalAlignment="Stretch" />
+                        <Grid ColumnDefinitions="*,*"
+                                ColumnSpacing="8"
+                                Margin="0,4,0,0">
+                                <Button Grid.Column="0"
+                                        Background="#E2C39B"
+                                        BorderBrush="#6F4A2D"
+                                        Foreground="#2A1A10"
+                                        Content="{Binding CopyInstallationButtonText}"
+                                        Command="{Binding DuplicateInstallationCommand}" />
 
-                    <Separator Margin="0,6"
-                               Background="#7E583D" />
+                                <Button Grid.Column="1"
+                                        Background="#D88E7C"
+                                        BorderBrush="#8F473C"
+                                        Foreground="#2A1A10"
+                                        Content="{Binding DeleteInstallationButtonText}"
+                                        Command="{Binding DeleteInstallationCommand}" />
+                        </Grid>
 
-                    <TextBlock Text="{Binding App.GameFolderTitleText}"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#2A1A10" />
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12"
+                                Margin="0,8,0,0">
+                                <StackPanel Spacing="4">
+                                <TextBlock Text="Estado atual"
+                                        FontWeight="Bold"
+                                        Foreground="#2A1A10" />
+                                <TextBlock Text="{Binding StatusText}"
+                                        TextWrapping="Wrap"
+                                        Foreground="#6A4B37" />
+                                </StackPanel>
+                        </Border>
+                        </StackPanel>
 
-                    <TextBlock Text="{Binding App.GameDirectory}"
-                               Foreground="#6A4B37"
-                               TextWrapping="Wrap" />
-
-                    <Button Background="#E2C39B"
-                            BorderBrush="#6F4A2D"
-                            Foreground="#2A1A10"
-                            Content="{Binding App.OpenGameFolderButtonText}"
-                            Command="{Binding App.OpenGameFolderCommand}"
-                            HorizontalAlignment="Stretch" />
-                </StackPanel>
+                </Grid>
             </Border>
-
-            <Grid Grid.Column="1"
-                  ColumnDefinitions="*,310"
-                  ColumnSpacing="18">
-                <Border Grid.Column="0"
-                        Background="#2F2218"
-                        BorderBrush="#6FC546"
-                        BorderThickness="2"
-                        CornerRadius="6"
-                        Padding="18">
-                    <Grid RowDefinitions="Auto,Auto,*"
-                          RowSpacing="10">
-                        <StackPanel Grid.Row="0"
-                                    Spacing="2">
-                            <TextBlock Text="{Binding App.MissionControlTitleText}"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#F7FFEF" />
-
-                            <TextBlock Text="{Binding App.StatusText}"
-                                       Foreground="#DCECCB"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <Separator Grid.Row="1"
-                                   Background="#4F8D36" />
-
-                        <ScrollViewer Grid.Row="2"
-                                      VerticalScrollBarVisibility="Auto"
-                                      HorizontalScrollBarVisibility="Auto">
-                            <TextBox Text="{Binding App.MinecraftConsoleText}"
-                                     AcceptsReturn="True"
-                                     IsReadOnly="True"
-                                     TextWrapping="NoWrap"
-                                     FontFamily="Consolas"
-                                     Background="#2F2218"
-                                     Foreground="#8ED85E"
-                                     BorderThickness="0"
-                                     MinHeight="220" />
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1"
-                        Background="#C59A71"
-                        BorderBrush="#4A2D1B"
-                        BorderThickness="2"
-                        CornerRadius="6"
-                        Padding="18">
-                    <Grid RowDefinitions="Auto,Auto,*"
-                          RowSpacing="10">
-                        <StackPanel Grid.Row="0"
-                                    Spacing="2">
-                            <TextBlock Text="{Binding App.EventsTitleText}"
-                                       FontSize="20"
-                                       FontWeight="Bold"
-                                       Foreground="#2A1A10" />
-
-                            <TextBlock Text="{Binding App.EventsSubtitleText}"
-                                       Foreground="#6A4B37"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <ComboBox Grid.Row="1"
-                                  ItemsSource="{Binding App.Logs}"
-                                  SelectedItem="{Binding App.SelectedLogEntry}"
-                                  HorizontalAlignment="Stretch" />
-
-                        <ScrollViewer Grid.Row="2"
-                                      VerticalScrollBarVisibility="Auto"
-                                      HorizontalScrollBarVisibility="Auto">
-                            <TextBox Text="{Binding App.SelectedLogDetails}"
-                                     AcceptsReturn="True"
-                                     IsReadOnly="True"
-                                     TextWrapping="Wrap"
-                                     MinHeight="220" />
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-            </Grid>
         </Grid>
     </Grid>
 </UserControl>
