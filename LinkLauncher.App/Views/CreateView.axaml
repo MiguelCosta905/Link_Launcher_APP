@@ -1,19 +1,305 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="LinkLauncher.App.Views.CreateView">
-    <Border Background="#C59A71"
-            BorderBrush="#4A2D1B"
-            BorderThickness="2"
-            CornerRadius="6"
-            Padding="24">
-        <StackPanel Spacing="14">
-            <TextBlock Text="Criar"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Foreground="#2A1A10" />
-            <TextBlock Text="Aqui vao entrar os fluxos para criar instancias novas e importar modpacks ou instancias externas."
-                       TextWrapping="Wrap"
-                       Foreground="#5B3922" />
-        </StackPanel>
-    </Border>
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="using:LinkLauncher.App.ViewModels"
+             mc:Ignorable="d"
+             x:Class="LinkLauncher.App.Views.CreateView"
+             x:DataType="viewModels:CreateViewModel">
+
+    <Grid RowDefinitions="Auto,*"
+          RowSpacing="18">
+
+        <Border Grid.Row="0"
+                Background="#C59A71"
+                BorderBrush="#4A2D1B"
+                BorderThickness="2"
+                CornerRadius="6"
+                Padding="22">
+            <Grid ColumnDefinitions="*,280"
+                  ColumnSpacing="18">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Criar"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               Foreground="#2A1A10" />
+
+                    <TextBlock Text="Zona para criar novas instancias e importar conteudo de fora do launcher."
+                               TextWrapping="Wrap"
+                               Foreground="#5B3922" />
+
+                    <Border Background="#E7C9A2"
+                            BorderBrush="#6F4A2D"
+                            BorderThickness="2"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Instancia atual"
+                                       FontWeight="Bold"
+                                       Foreground="#2A1A10" />
+
+                            <TextBlock Text="{Binding App.InstallationSummary}"
+                                       TextWrapping="Wrap"
+                                       Foreground="#6A4B37" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Background="#2F2218"
+                        BorderBrush="#6FC546"
+                        BorderThickness="2"
+                        CornerRadius="6"
+                        Padding="16">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Dica"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#F7FFEF" />
+
+                        <TextBlock Text="Usa esta pagina para separar bem os teus fluxos: criar, importar instancia e importar modpack."
+                                   TextWrapping="Wrap"
+                                   Foreground="#DCECCB" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1"
+              ColumnDefinitions="1.1*,1.1*,0.9*"
+              ColumnSpacing="18">
+
+            <Border Grid.Column="0"
+                    Background="#D1A57D"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Criar nova instancia"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Fluxo para criar uma instancia limpa diretamente no launcher."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1"
+                                Spacing="6">
+                        <TextBlock Text="Nome"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+                        <TextBox Watermark="Ex: Survival Fabric"
+                                 Text="{Binding App.InstallationName, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2"
+                                Spacing="6">
+                        <TextBlock Text="Versao base"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+                        <ComboBox ItemsSource="{Binding App.FilteredVersions}"
+                                  SelectedItem="{Binding App.SelectedVersion}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="3"
+                                Spacing="6">
+                        <TextBlock Text="Loader"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+                        <ComboBox ItemsSource="{Binding App.LoaderTypes}"
+                                  SelectedItem="{Binding App.SelectedLoaderType}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="4"
+                                Spacing="10"
+                                VerticalAlignment="Bottom">
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <TextBlock Text="Mais tarde podes separar este formulario do perfil atual e criar um fluxo proprio so para novas instancias."
+                                       TextWrapping="Wrap"
+                                       Foreground="#6A4B37" />
+                        </Border>
+
+                        <Button Background="#8ED85E"
+                                BorderBrush="#4C7F2A"
+                                Foreground="#11200D"
+                                Content="Criar instancia" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Background="#D1A57D"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*,Auto"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Importar"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Recebe instancias antigas ou modpacks vindos de outros launchers e pastas."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1"
+                                Spacing="12">
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="14">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Importar instancia existente"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Seleciona uma pasta de instancia ja preparada para a trazer para o teu launcher."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                                <Button Background="#E2C39B"
+                                        BorderBrush="#6F4A2D"
+                                        Foreground="#2A1A10"
+                                        Content="Escolher pasta" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="14">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Importar modpack"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Prepara esta zona para ZIPs, packs exportados e estruturas vindas de CurseForge, Modrinth ou MultiMC."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                                <Button Background="#E2C39B"
+                                        BorderBrush="#6F4A2D"
+                                        Foreground="#2A1A10"
+                                        Content="Escolher ficheiro" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="14">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Importacao guiada"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Depois podes adicionar validacao, deteccao de loader, nome automatico e verificacao de ficheiros em falta."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <Button Grid.Row="2"
+                            Background="#5FAE46"
+                            BorderBrush="#3F742F"
+                            Foreground="#F4FFE9"
+                            Content="Iniciar importacao" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Background="#C59A71"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Checklist"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Resumo do que este modulo vai precisar quando ligares a logica real."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1"
+                                Spacing="10">
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <TextBlock Text="1. Seletor de pasta e ficheiro"
+                                       TextWrapping="Wrap"
+                                       Foreground="#2A1A10" />
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <TextBlock Text="2. Servico para importar instancias"
+                                       TextWrapping="Wrap"
+                                       Foreground="#2A1A10" />
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <TextBlock Text="3. Servico para importar modpacks"
+                                       TextWrapping="Wrap"
+                                       Foreground="#2A1A10" />
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <TextBlock Text="4. Validacao e feedback visual"
+                                       TextWrapping="Wrap"
+                                       Foreground="#2A1A10" />
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <TextBlock Text="5. ViewModel proprio para esta pagina"
+                                       TextWrapping="Wrap"
+                                       Foreground="#2A1A10" />
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Grid>
 </UserControl>

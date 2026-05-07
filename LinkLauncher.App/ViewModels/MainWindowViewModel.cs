@@ -56,6 +56,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private bool _showOldBeta;
     private bool _showOldAlpha;
     private LauncherSection _currentSection = LauncherSection.Library;
+    public HomeViewModel HomePage { get; }
+    public SkinsViewModel SkinsPage { get; }
+    public LibraryViewModel LibraryPage { get; }
+    public CreateViewModel CreatePage { get; }
+
 
     public MainWindowViewModel(
         LauncherService launcherService,
@@ -76,6 +81,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         ShowSkinsCommand = new RelayCommand(() => SetSection(LauncherSection.Skins));
         ShowLibraryCommand = new RelayCommand(() => SetSection(LauncherSection.Library));
         ShowCreateCommand = new RelayCommand(() => SetSection(LauncherSection.Create));
+        HomePage = new HomeViewModel(this);
+        SkinsPage = new SkinsViewModel(this);
+        LibraryPage = new LibraryViewModel(this);
+        CreatePage = new CreateViewModel(this);
+
 
         RebuildLanguageOptions();
         RebuildThemeOptions();

@@ -5,7 +5,7 @@
              xmlns:viewModels="using:LinkLauncher.App.ViewModels"
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.HomeView"
-             x:DataType="viewModels:MainWindowViewModel">
+             x:DataType="viewModels:HomeViewModel">
 
     <Grid RowDefinitions="Auto,*"
           RowSpacing="18">
@@ -39,7 +39,7 @@
                                        FontWeight="Bold"
                                        Foreground="#2A1A10" />
 
-                            <TextBlock Text="{Binding StatusText}"
+                            <TextBlock Text="{Binding App.StatusText}"
                                        TextWrapping="Wrap"
                                        Foreground="#6A4B37" />
                         </StackPanel>
@@ -58,11 +58,11 @@
                                    FontWeight="Bold"
                                    Foreground="#F7FFEF" />
 
-                        <TextBlock Text="{Binding AccountText}"
+                        <TextBlock Text="{Binding App.AccountText}"
                                    TextWrapping="Wrap"
                                    Foreground="#DCECCB" />
 
-                        <TextBlock Text="{Binding PlayerLabelText}"
+                        <TextBlock Text="{Binding App.PlayerLabelText}"
                                    TextWrapping="Wrap"
                                    Foreground="#8ED85E" />
                     </StackPanel>
@@ -100,7 +100,7 @@
                             BorderThickness="2"
                             CornerRadius="4"
                             Padding="10">
-                        <TextBlock Text="{Binding InstallationSummary}"
+                        <TextBlock Text="{Binding App.InstallationSummary}"
                                    FontWeight="Bold"
                                    TextWrapping="Wrap"
                                    Foreground="#2A1A10" />
@@ -108,7 +108,7 @@
 
                     <ScrollViewer Grid.Row="2"
                                   VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Installations}">
+                        <ItemsControl ItemsSource="{Binding App.Installations}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="#E7C9A2"

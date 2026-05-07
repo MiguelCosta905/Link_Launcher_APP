@@ -5,7 +5,7 @@
              xmlns:viewModels="using:LinkLauncher.App.ViewModels"
              mc:Ignorable="d"
              x:Class="LinkLauncher.App.Views.LibraryView"
-             x:DataType="viewModels:MainWindowViewModel">
+             x:DataType="viewModels:LibraryViewModel">
     <Grid RowDefinitions="Auto,Auto,*"
           RowSpacing="18">
         <Border Grid.Row="0"
@@ -21,47 +21,47 @@
                 <StackPanel Grid.Row="0"
                             Grid.ColumnSpan="2"
                             Spacing="2">
-                    <TextBlock Text="{Binding CurrentInstallationTitleText}"
+                    <TextBlock Text="{Binding App.CurrentInstallationTitleText}"
                                FontSize="20"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <TextBlock Text="{Binding InstallationSummary}"
+                    <TextBlock Text="{Binding App.InstallationSummary}"
                                Foreground="#6A4B37" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="1"
                             Grid.ColumnSpan="2"
                             Spacing="6">
-                    <TextBlock Text="{Binding NameLabelText}"
+                    <TextBlock Text="{Binding App.NameLabelText}"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <TextBox Text="{Binding InstallationName, Mode=TwoWay}"
+                    <TextBox Text="{Binding App.InstallationName, Mode=TwoWay}"
                              HorizontalAlignment="Stretch" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="2"
                             Grid.Column="0"
                             Spacing="6">
-                    <TextBlock Text="{Binding MinecraftLabelText}"
+                    <TextBlock Text="{Binding App.MinecraftLabelText}"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <ComboBox ItemsSource="{Binding FilteredVersions}"
-                              SelectedItem="{Binding SelectedVersion}"
+                    <ComboBox ItemsSource="{Binding App.FilteredVersions}"
+                              SelectedItem="{Binding App.SelectedVersion}"
                               HorizontalAlignment="Stretch" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="2"
                             Grid.Column="1"
                             Spacing="6">
-                    <TextBlock Text="{Binding InstanceRamLabelText}"
+                    <TextBlock Text="{Binding App.InstanceRamLabelText}"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <ComboBox ItemsSource="{Binding RamOptions}"
-                              SelectedItem="{Binding SelectedRamOption, Mode=TwoWay}"
+                    <ComboBox ItemsSource="{Binding App.RamOptions}"
+                              SelectedItem="{Binding App.SelectedRamOption, Mode=TwoWay}"
                               HorizontalAlignment="Stretch" />
                 </StackPanel>
 
@@ -69,18 +69,18 @@
                             Grid.ColumnSpan="2"
                             Orientation="Horizontal"
                             Spacing="12"
-                            IsVisible="{Binding IsVanillaSelected}">
-                    <CheckBox Content="{Binding ReleasesText}"
-                              IsChecked="{Binding ShowReleases}" />
+                            IsVisible="{Binding App.IsVanillaSelected}">
+                    <CheckBox Content="{Binding App.ReleasesText}"
+                              IsChecked="{Binding App.ShowReleases}" />
 
-                    <CheckBox Content="{Binding SnapshotsText}"
-                              IsChecked="{Binding ShowSnapshots}" />
+                    <CheckBox Content="{Binding App.SnapshotsText}"
+                              IsChecked="{Binding App.ShowSnapshots}" />
 
-                    <CheckBox Content="{Binding OldBetaText}"
-                              IsChecked="{Binding ShowOldBeta}" />
+                    <CheckBox Content="{Binding App.OldBetaText}"
+                              IsChecked="{Binding App.ShowOldBeta}" />
 
-                    <CheckBox Content="{Binding OldAlphaText}"
-                              IsChecked="{Binding ShowOldAlpha}" />
+                    <CheckBox Content="{Binding App.OldAlphaText}"
+                              IsChecked="{Binding App.ShowOldAlpha}" />
                 </StackPanel>
 
                 <Grid Grid.Row="4"
@@ -89,31 +89,31 @@
                       ColumnSpacing="18">
                     <StackPanel Grid.Column="0"
                                 Spacing="6">
-                        <TextBlock Text="{Binding LoaderLabelText}"
+                        <TextBlock Text="{Binding App.LoaderLabelText}"
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
 
-                        <ComboBox ItemsSource="{Binding LoaderTypes}"
-                                  SelectedItem="{Binding SelectedLoaderType}"
+                        <ComboBox ItemsSource="{Binding App.LoaderTypes}"
+                                  SelectedItem="{Binding App.SelectedLoaderType}"
                                   HorizontalAlignment="Stretch" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1"
                                 Spacing="6"
-                                IsVisible="{Binding IsLoaderSelected}">
-                        <TextBlock Text="{Binding LoaderVersionLabelText}"
+                                IsVisible="{Binding App.IsLoaderSelected}">
+                        <TextBlock Text="{Binding App.LoaderVersionLabelText}"
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
 
-                        <ComboBox ItemsSource="{Binding LoaderVersions}"
-                                  SelectedItem="{Binding LoaderVersion, Mode=TwoWay}"
+                        <ComboBox ItemsSource="{Binding App.LoaderVersions}"
+                                  SelectedItem="{Binding App.LoaderVersion, Mode=TwoWay}"
                                   HorizontalAlignment="Stretch" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1"
                                 Spacing="6"
-                                IsVisible="{Binding IsVanillaSelected}">
-                        <TextBlock Text="{Binding LoaderVersionLabelText}"
+                                IsVisible="{Binding App.IsVanillaSelected}">
+                        <TextBlock Text="{Binding App.LoaderVersionLabelText}"
                                    FontWeight="Bold"
                                    Foreground="#2A1A10" />
 
@@ -122,7 +122,7 @@
                                 BorderThickness="2"
                                 CornerRadius="4"
                                 Padding="10,8">
-                            <TextBlock Text="{Binding VanillaLoaderMessageText}"
+                            <TextBlock Text="{Binding App.VanillaLoaderMessageText}"
                                        Foreground="#6A4B37" />
                         </Border>
                     </StackPanel>
@@ -131,39 +131,39 @@
                 <Slider Grid.Row="5"
                         Grid.ColumnSpan="2"
                         Minimum="0"
-                        Maximum="{Binding MaximumRamIndex}"
+                        Maximum="{Binding App.MaximumRamIndex}"
                         TickFrequency="1"
                         IsSnapToTickEnabled="True"
-                        Value="{Binding SelectedRamIndexValue, Mode=TwoWay}" />
+                        Value="{Binding App.SelectedRamIndexValue, Mode=TwoWay}" />
             </Grid>
         </Border>
 
         <Border Grid.Row="1"
-                IsVisible="{Binding IsProgressVisible}"
+                IsVisible="{Binding App.IsProgressVisible}"
                 Background="#3E2B1E"
                 BorderBrush="#6FC546"
                 BorderThickness="2"
                 CornerRadius="6"
                 Padding="18">
             <StackPanel Spacing="8">
-                <TextBlock Text="{Binding ProgressTitleText}"
+                <TextBlock Text="{Binding App.ProgressTitleText}"
                            FontSize="20"
                            FontWeight="Bold"
                            Foreground="#F7FFEF" />
 
-                <TextBlock Text="{Binding FilesLabelText}"
+                <TextBlock Text="{Binding App.FilesLabelText}"
                            Foreground="#DCECCB" />
 
                 <ProgressBar Minimum="0"
                              Maximum="100"
-                             Value="{Binding FileProgressPercent}" />
+                             Value="{Binding App.FileProgressPercent}" />
 
-                <TextBlock Text="{Binding DownloadLabelText}"
+                <TextBlock Text="{Binding App.DownloadLabelText}"
                            Foreground="#DCECCB" />
 
                 <ProgressBar Minimum="0"
                              Maximum="100"
-                             Value="{Binding ByteProgressPercent}" />
+                             Value="{Binding App.ByteProgressPercent}" />
             </StackPanel>
         </Border>
 
@@ -177,7 +177,7 @@
                     CornerRadius="6"
                     Padding="18">
                 <StackPanel Spacing="14">
-                    <TextBlock Text="{Binding AccountTitleText}"
+                    <TextBlock Text="{Binding App.AccountTitleText}"
                                FontSize="20"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
@@ -188,12 +188,12 @@
                             CornerRadius="4"
                             Padding="12">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="{Binding AccountText}"
+                            <TextBlock Text="{Binding App.AccountText}"
                                        Foreground="#3F742F"
                                        FontWeight="Bold"
                                        TextWrapping="Wrap" />
 
-                            <TextBlock Text="{Binding PlayerLabelText}"
+                            <TextBlock Text="{Binding App.PlayerLabelText}"
                                        Foreground="#6A4B37" />
                         </StackPanel>
                     </Border>
@@ -201,34 +201,34 @@
                     <Button Background="#8ED85E"
                             BorderBrush="#4C7F2A"
                             Foreground="#11200D"
-                            Content="{Binding LoginMicrosoftButtonText}"
-                            Command="{Binding LoginMicrosoftCommand}"
+                            Content="{Binding App.LoginMicrosoftButtonText}"
+                            Command="{Binding App.LoginMicrosoftCommand}"
                             HorizontalAlignment="Stretch" />
 
                     <Button Background="#5FAE46"
                             BorderBrush="#3F742F"
                             Foreground="#F4FFE9"
-                            Content="{Binding PlayOnlineButtonText}"
-                            Command="{Binding PlayOnlineCommand}"
+                            Content="{Binding App.PlayOnlineButtonText}"
+                            Command="{Binding App.PlayOnlineCommand}"
                             HorizontalAlignment="Stretch" />
 
                     <Button Background="#E2C39B"
                             BorderBrush="#6F4A2D"
                             Foreground="#2A1A10"
-                            Content="{Binding PlayOfflineButtonText}"
-                            Command="{Binding PlayOfflineCommand}"
+                            Content="{Binding App.PlayOfflineButtonText}"
+                            Command="{Binding App.PlayOfflineCommand}"
                             HorizontalAlignment="Stretch" />
 
                     <Separator Margin="0,6"
                                Background="#7E583D" />
 
-                    <TextBlock Text="{Binding InstallationsTitleText}"
+                    <TextBlock Text="{Binding App.InstallationsTitleText}"
                                FontSize="16"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <ComboBox ItemsSource="{Binding Installations}"
-                              SelectedItem="{Binding SelectedInstallation, Mode=TwoWay}"
+                    <ComboBox ItemsSource="{Binding App.Installations}"
+                              SelectedItem="{Binding App.SelectedInstallation, Mode=TwoWay}"
                               HorizontalAlignment="Stretch" />
 
                     <Grid ColumnDefinitions="*,*,*"
@@ -237,51 +237,51 @@
                                 Background="#E2C39B"
                                 BorderBrush="#6F4A2D"
                                 Foreground="#2A1A10"
-                                Content="{Binding NewInstallationButtonText}"
-                                Command="{Binding NewInstallationCommand}"
+                                Content="{Binding App.NewInstallationButtonText}"
+                                Command="{Binding App.NewInstallationCommand}"
                                 HorizontalAlignment="Stretch" />
 
                         <Button Grid.Column="1"
                                 Background="#E2C39B"
                                 BorderBrush="#6F4A2D"
                                 Foreground="#2A1A10"
-                                Content="{Binding CopyInstallationButtonText}"
-                                Command="{Binding DuplicateInstallationCommand}"
+                                Content="{Binding App.CopyInstallationButtonText}"
+                                Command="{Binding App.DuplicateInstallationCommand}"
                                 HorizontalAlignment="Stretch" />
 
                         <Button Grid.Column="2"
                                 Background="#E2C39B"
                                 BorderBrush="#6F4A2D"
                                 Foreground="#2A1A10"
-                                Content="{Binding DeleteInstallationButtonText}"
-                                Command="{Binding DeleteInstallationCommand}"
+                                Content="{Binding App.DeleteInstallationButtonText}"
+                                Command="{Binding App.DeleteInstallationCommand}"
                                 HorizontalAlignment="Stretch" />
                     </Grid>
 
                     <Button Background="#E2C39B"
                             BorderBrush="#6F4A2D"
                             Foreground="#2A1A10"
-                            Content="{Binding OpenInstallationFolderButtonText}"
-                            Command="{Binding OpenInstallationFolderCommand}"
+                            Content="{Binding App.OpenInstallationFolderButtonText}"
+                            Command="{Binding App.OpenInstallationFolderCommand}"
                             HorizontalAlignment="Stretch" />
 
                     <Separator Margin="0,6"
                                Background="#7E583D" />
 
-                    <TextBlock Text="{Binding GameFolderTitleText}"
+                    <TextBlock Text="{Binding App.GameFolderTitleText}"
                                FontSize="16"
                                FontWeight="Bold"
                                Foreground="#2A1A10" />
 
-                    <TextBlock Text="{Binding GameDirectory}"
+                    <TextBlock Text="{Binding App.GameDirectory}"
                                Foreground="#6A4B37"
                                TextWrapping="Wrap" />
 
                     <Button Background="#E2C39B"
                             BorderBrush="#6F4A2D"
                             Foreground="#2A1A10"
-                            Content="{Binding OpenGameFolderButtonText}"
-                            Command="{Binding OpenGameFolderCommand}"
+                            Content="{Binding App.OpenGameFolderButtonText}"
+                            Command="{Binding App.OpenGameFolderCommand}"
                             HorizontalAlignment="Stretch" />
                 </StackPanel>
             </Border>
@@ -299,12 +299,12 @@
                           RowSpacing="10">
                         <StackPanel Grid.Row="0"
                                     Spacing="2">
-                            <TextBlock Text="{Binding MissionControlTitleText}"
+                            <TextBlock Text="{Binding App.MissionControlTitleText}"
                                        FontSize="20"
                                        FontWeight="Bold"
                                        Foreground="#F7FFEF" />
 
-                            <TextBlock Text="{Binding StatusText}"
+                            <TextBlock Text="{Binding App.StatusText}"
                                        Foreground="#DCECCB"
                                        TextWrapping="Wrap" />
                         </StackPanel>
@@ -315,7 +315,7 @@
                         <ScrollViewer Grid.Row="2"
                                       VerticalScrollBarVisibility="Auto"
                                       HorizontalScrollBarVisibility="Auto">
-                            <TextBox Text="{Binding MinecraftConsoleText}"
+                            <TextBox Text="{Binding App.MinecraftConsoleText}"
                                      AcceptsReturn="True"
                                      IsReadOnly="True"
                                      TextWrapping="NoWrap"
@@ -338,25 +338,25 @@
                           RowSpacing="10">
                         <StackPanel Grid.Row="0"
                                     Spacing="2">
-                            <TextBlock Text="{Binding EventsTitleText}"
+                            <TextBlock Text="{Binding App.EventsTitleText}"
                                        FontSize="20"
                                        FontWeight="Bold"
                                        Foreground="#2A1A10" />
 
-                            <TextBlock Text="{Binding EventsSubtitleText}"
+                            <TextBlock Text="{Binding App.EventsSubtitleText}"
                                        Foreground="#6A4B37"
                                        TextWrapping="Wrap" />
                         </StackPanel>
 
                         <ComboBox Grid.Row="1"
-                                  ItemsSource="{Binding Logs}"
-                                  SelectedItem="{Binding SelectedLogEntry}"
+                                  ItemsSource="{Binding App.Logs}"
+                                  SelectedItem="{Binding App.SelectedLogEntry}"
                                   HorizontalAlignment="Stretch" />
 
                         <ScrollViewer Grid.Row="2"
                                       VerticalScrollBarVisibility="Auto"
                                       HorizontalScrollBarVisibility="Auto">
-                            <TextBox Text="{Binding SelectedLogDetails}"
+                            <TextBox Text="{Binding App.SelectedLogDetails}"
                                      AcceptsReturn="True"
                                      IsReadOnly="True"
                                      TextWrapping="Wrap"

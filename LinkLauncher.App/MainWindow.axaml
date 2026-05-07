@@ -5,10 +5,10 @@
         xmlns:viewModels="using:LinkLauncher.App.ViewModels"
         xmlns:views="using:LinkLauncher.App.Views"
         mc:Ignorable="d"
-        d:DesignWidth="1180"
-        d:DesignHeight="780"
         x:Class="LinkLauncher.App.MainWindow"
+        x:Name="RootWindow"
         x:DataType="viewModels:MainWindowViewModel"
+
         Title="Link Launcher"
         Icon="avares://LinkLauncher.App/Assets/app.ico"
         Width="1180"
@@ -208,10 +208,15 @@
                     </Border>
 
                     <Grid Grid.Column="1">
-                        <views:HomeView IsVisible="{Binding IsHomeSelected}" />
-                        <views:SkinsView IsVisible="{Binding IsSkinsSelected}" />
-                        <views:LibraryView IsVisible="{Binding IsLibrarySelected}" />
-                        <views:CreateView IsVisible="{Binding IsCreateSelected}" />
+                <views:HomeView DataContext="{Binding HomePage}"
+                    IsVisible="{Binding DataContext.IsHomeSelected, ElementName=RootWindow}" />
+                <views:SkinsView DataContext="{Binding SkinsPage}"
+                    IsVisible="{Binding DataContext.IsSkinsSelected, ElementName=RootWindow}" />
+                <views:LibraryView DataContext="{Binding LibraryPage}"
+                    IsVisible="{Binding DataContext.IsLibrarySelected, ElementName=RootWindow}" />
+                <views:CreateView DataContext="{Binding CreatePage}"
+                    IsVisible="{Binding DataContext.IsCreateSelected, ElementName=RootWindow}" />
+
                     </Grid>
                 </Grid>
             </Border>

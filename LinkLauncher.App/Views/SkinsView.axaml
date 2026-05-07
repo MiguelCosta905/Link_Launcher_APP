@@ -1,19 +1,331 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="LinkLauncher.App.Views.SkinsView">
-    <Border Background="#C59A71"
-            BorderBrush="#4A2D1B"
-            BorderThickness="2"
-            CornerRadius="6"
-            Padding="24">
-        <StackPanel Spacing="14">
-            <TextBlock Text="Skins"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Foreground="#2A1A10" />
-            <TextBlock Text="Esta pagina vai receber a importacao de skins, preview local e o futuro skin maker."
-                       TextWrapping="Wrap"
-                       Foreground="#5B3922" />
-        </StackPanel>
-    </Border>
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="using:LinkLauncher.App.ViewModels"
+             mc:Ignorable="d"
+             x:Class="LinkLauncher.App.Views.SkinsView"
+             x:DataType="viewModels:SkinsViewModel">
+
+    <Grid RowDefinitions="Auto,*"
+          RowSpacing="18">
+
+        <Border Grid.Row="0"
+                Background="#C59A71"
+                BorderBrush="#4A2D1B"
+                BorderThickness="2"
+                CornerRadius="6"
+                Padding="22">
+            <Grid ColumnDefinitions="*,260"
+                  ColumnSpacing="18">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Skins"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               Foreground="#2A1A10" />
+
+                    <TextBlock Text="Aqui vais poder importar, organizar e criar skins para as tuas instancias."
+                               TextWrapping="Wrap"
+                               Foreground="#5B3922" />
+
+                    <Border Background="#E7C9A2"
+                            BorderBrush="#6F4A2D"
+                            BorderThickness="2"
+                            CornerRadius="4"
+                            Padding="12"
+                            Margin="0,8,0,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Instancia selecionada"
+                                       FontWeight="Bold"
+                                       Foreground="#2A1A10" />
+
+                            <TextBlock Text="{Binding App.InstallationName}"
+                                       TextWrapping="Wrap"
+                                       Foreground="#6A4B37" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Background="#2F2218"
+                        BorderBrush="#6FC546"
+                        BorderThickness="2"
+                        CornerRadius="6"
+                        Padding="16">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Utilizador"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#F7FFEF" />
+
+                        <TextBlock Text="{Binding App.AccountText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#DCECCB" />
+
+                        <TextBlock Text="{Binding App.PlayerLabelText}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#8ED85E" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1"
+              ColumnDefinitions="320,*,320"
+              ColumnSpacing="18">
+
+            <Border Grid.Column="0"
+                    Background="#D1A57D"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,Auto,Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Skin atual"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Resumo rapido da skin ligada ao perfil."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <Border Grid.Row="1"
+                            Background="#E7C9A2"
+                            BorderBrush="#6F4A2D"
+                            BorderThickness="2"
+                            CornerRadius="4"
+                            Padding="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Skin padrao"
+                                       FontWeight="Bold"
+                                       Foreground="#2A1A10" />
+                            <TextBlock Text="Ainda sem sistema real de skins ligado."
+                                       TextWrapping="Wrap"
+                                       Foreground="#6A4B37" />
+                        </StackPanel>
+                    </Border>
+
+                    <Grid Grid.Row="2"
+                          ColumnDefinitions="*,*"
+                          ColumnSpacing="8">
+                        <Button Grid.Column="0"
+                                Background="#8ED85E"
+                                BorderBrush="#4C7F2A"
+                                Foreground="#11200D"
+                                Content="Importar skin" />
+
+                        <Button Grid.Column="1"
+                                Background="#E2C39B"
+                                BorderBrush="#6F4A2D"
+                                Foreground="#2A1A10"
+                                Content="Aplicar" />
+                    </Grid>
+
+                    <StackPanel Grid.Row="3"
+                                Spacing="10">
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Formato esperado"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="PNG 64x64 ou 64x32"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Destino"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Mais tarde podes aplicar por perfil ou por conta."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1"
+                    Background="#C59A71"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Preview"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Zona central para o preview da skin e futuro editor."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1"
+                          RowDefinitions="2*,Auto,1.2*"
+                          RowSpacing="12">
+                        <Border Grid.Row="0"
+                                Background="#2F2218"
+                                BorderBrush="#6FC546"
+                                BorderThickness="2"
+                                CornerRadius="6"
+                                Padding="18">
+                            <Grid>
+                                <StackPanel HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Spacing="10">
+                                    <Border Width="160"
+                                            Height="220"
+                                            Background="#3A2A1E"
+                                            BorderBrush="#8ED85E"
+                                            BorderThickness="2"
+                                            CornerRadius="4">
+                                        <Grid>
+                                            <TextBlock Text="Preview da skin"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="#DCECCB" />
+                                        </Grid>
+                                    </Border>
+
+                                    <TextBlock Text="Aqui depois entra o preview real da skin."
+                                               Foreground="#DCECCB"
+                                               HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="1"
+                              ColumnDefinitions="*,*,*"
+                              ColumnSpacing="8">
+                            <Button Grid.Column="0"
+                                    Background="#E2C39B"
+                                    BorderBrush="#6F4A2D"
+                                    Foreground="#2A1A10"
+                                    Content="Frente" />
+
+                            <Button Grid.Column="1"
+                                    Background="#E2C39B"
+                                    BorderBrush="#6F4A2D"
+                                    Foreground="#2A1A10"
+                                    Content="Costas" />
+
+                            <Button Grid.Column="2"
+                                    Background="#E2C39B"
+                                    BorderBrush="#6F4A2D"
+                                    Foreground="#2A1A10"
+                                    Content="Modelo" />
+                        </Grid>
+
+                        <Border Grid.Row="2"
+                                Background="#E7C9A2"
+                                BorderBrush="#6F4A2D"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                Padding="14">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Skin maker"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Foreground="#2A1A10" />
+                                <TextBlock Text="Mais tarde esta area pode receber ferramentas para editar cabeca, corpo, bracos, pernas e overlay."
+                                           TextWrapping="Wrap"
+                                           Foreground="#6A4B37" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Background="#D1A57D"
+                    BorderBrush="#4A2D1B"
+                    BorderThickness="2"
+                    CornerRadius="6"
+                    Padding="18">
+                <Grid RowDefinitions="Auto,*"
+                      RowSpacing="12">
+                    <StackPanel Grid.Row="0"
+                                Spacing="2">
+                        <TextBlock Text="Biblioteca de skins"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="#2A1A10" />
+
+                        <TextBlock Text="Lista local para skins guardadas no launcher."
+                                   TextWrapping="Wrap"
+                                   Foreground="#6A4B37" />
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="10">
+                            <Border Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Default Steve"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBlock Text="Exemplo de skin guardada"
+                                               Foreground="#6A4B37" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Default Alex"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBlock Text="Outro exemplo de item local"
+                                               Foreground="#6A4B37" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Background="#E7C9A2"
+                                    BorderBrush="#6F4A2D"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="12">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Skin personalizada"
+                                               FontWeight="Bold"
+                                               Foreground="#2A1A10" />
+                                    <TextBlock Text="Esta zona depois vai ser gerada por dados reais"
+                                               TextWrapping="Wrap"
+                                               Foreground="#6A4B37" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+        </Grid>
+    </Grid>
 </UserControl>
